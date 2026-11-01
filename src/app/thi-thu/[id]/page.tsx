@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const access = me ? await canAccessTest(me.id, t) : t.price_vnd === 0;
 
   return (
-    <div className="card mx-auto max-w-xl space-y-3">
+    <div className="card mx-auto max-w-xl space-y-3 !p-7 shadow-soft">
       <h1 className="text-2xl font-bold">{t.title}</h1>
       <p className="text-stone-600">{t.description}</p>
       <ul className="text-sm text-stone-600"><li>{count ?? 0} câu hỏi</li><li>{t.duration_min} phút</li><li>Giá: <b className="text-ink">{vnd(t.price_vnd)}</b></li></ul>

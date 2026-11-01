@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BottomNav } from "@/components/NavLinks";
 import { getMe } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -15,8 +16,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="vi">
       <body className="flex min-h-screen flex-col">
         <Header me={me} />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-24 lg:pb-8">{children}</main>
         <Footer />
+        <BottomNav />
       </body>
     </html>
   );

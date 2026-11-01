@@ -92,3 +92,47 @@ export async function setUserRole(userId: string, fd: FormData) {
   await adminDb().from("profiles").update({ role }).eq("id", userId);
   revalidatePath("/admin/users");
 }
+
+// ===== CRUD dùng chung cho Phase 2 (trường, học bổng, giáo viên, khóa học, bài giảng) =====
+import { RESOURCES } from "@/lib/admin-resources";
+
+export async function saveResource(key: string, id: string | null, fd: FormData) {
+  const res = RESOURCES[key];
+  if (!res) throw new Error("Resource không hợp lệ");
+  await requireAdmin(res.area);
+  const row: Record<string, unknown> = {};
+  for (const f of res.fields) {
+    const raw = fd.get(f.name);
+    const str = typeof raw === "string" ? raw.trim() : "";
+    switch (f.type) {
+      case "checkbox": row[f.name] = raw === "on"; break;
+      case "number": row[f.name] = str === "" ? (f.nullable ? null : 0) : Math.min(f.max ?? 1e9, Math.max(f.min ?? -1e9, Math.round(Number(str)) || 0)); break;
+      case "tags": row[f.name] = str.split(",").map((t) => t.trim()).filter(Boolean); break;
+      case "date": row[f.name] = /^\d{4}-\d{2}-\d{2}$/.test(str) ? str : null; break;
+      case "ref": row[f.name] = /^[0-9a-f-]{36}$/.test(str) ? str : null; break;
+      case "select": row[f.name] = f.options && str in f.options && str !== "" ? str : null; break;
+      default: row[f.name] = str === "" ? (f.nullable ? null : "") : str;
+    }
+    if (f.required && (row[f.name] === null || row[f.name] === "")) redirect(`/admin/data/${key}/${id ?? "new"}?error=1`);
+  }
+  const db = adminDb();
+  const { error } = id ? await db.from(res.table).update(row).eq("id", id) : await db.from(res.table).insert(row);
+  if (error) redirect(`/admin/data/${key}/${id ?? "new"}?error=1`);
+  revalidatePath(`/admin/data/${key}`);
+  redirect(`/admin/data/${key}`);
+}
+
+export async function deleteResource(key: string, id: string) {
+  const res = RESOURCES[key];
+  if (!res) return;
+  await requireAdmin(res.area);
+  await adminDb().from(res.table).delete().eq("id", id);
+  revalidatePath(`/admin/data/${key}`);
+  redirect(`/admin/data/${key}`);
+}
+
+export async function setLeadStatus(id: string, status: "new" | "contacted" | "closed") {
+  await requireAdmin("leads");
+  await adminDb().from("consultations").update({ status }).eq("id", id);
+  revalidatePath("/admin/leads");
+}

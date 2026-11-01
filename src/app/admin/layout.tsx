@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { ADMIN_AREAS, requireAdmin } from "@/lib/auth";
 
-const LINKS = [["/admin", "Dashboard", "dashboard"], ["/admin/questions", "Question Bank", "questions"], ["/admin/tests", "Mock Test", "tests"], ["/admin/orders", "Đơn hàng", "orders"], ["/admin/users", "Người dùng", "users"]] as const;
+const LINKS = [
+  ["/admin", "Dashboard", "dashboard"], ["/admin/analytics", "Analytics", "analytics"], ["/admin/questions", "Question Bank", "questions"], ["/admin/tests", "Mock Test", "tests"],
+  ["/admin/data/schools", "Trường", "schools"], ["/admin/data/scholarships", "Học bổng", "schools"], ["/admin/leads", "Tư vấn / Leads", "leads"],
+  ["/admin/data/courses", "Khóa học", "academy"], ["/admin/data/lessons", "Bài giảng", "academy"], ["/admin/data/teachers", "Giáo viên", "academy"],
+  ["/admin/orders", "Đơn hàng", "orders"], ["/admin/users", "Người dùng", "users"],
+] as const;
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const me = await requireAdmin("dashboard");

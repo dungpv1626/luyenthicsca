@@ -34,3 +34,5 @@ export type Role = keyof typeof ROLES;
 export const QUICK_TEST = { questions: 20, minutes: 15 };
 
 export const vnd = (n: number) => (n === 0 ? "Miễn phí" : n.toLocaleString("vi-VN") + "đ");
+
+export const TUTOR_DAILY_LIMIT = 30;

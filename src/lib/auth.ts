@@ -25,6 +25,10 @@ export const ADMIN_AREAS = {
   tests: ["super_admin", "content_manager"],
   orders: ["super_admin", "sales"],
   users: ["super_admin", "sales"],
+  schools: ["super_admin", "content_manager", "sales"],
+  academy: ["super_admin", "content_manager"],
+  leads: ["super_admin", "sales"],
+  analytics: ["super_admin", "content_manager", "sales"],
   dashboard: ["super_admin", "content_manager", "academic_reviewer", "sales"],
 } as const satisfies Record<string, Role[]>;
 

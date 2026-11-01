@@ -11,8 +11,8 @@ export function AuthForm({ mode, action, next, audience }: { mode: "login" | "re
   const v = state?.values ?? {};
   const reg = mode === "register";
   return (
-    <form action={formAction} className="card mx-auto max-w-md space-y-4">
-      <h1 className="text-2xl font-bold">{reg ? "Đăng ký tài khoản" : "Đăng nhập"}</h1>
+    <form action={formAction} className="card mx-auto max-w-md space-y-4 !p-7 shadow-soft">
+      <h1 className="text-2xl font-extrabold">{reg ? "Đăng ký tài khoản" : "Đăng nhập"}</h1>
       <input type="hidden" name="next" value={next} />
       {reg && (
         <>

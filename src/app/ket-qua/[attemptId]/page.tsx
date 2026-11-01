@@ -5,6 +5,8 @@ import { adminDb } from "@/lib/supabase/admin";
 import { SUBJECTS, type Subject } from "@/lib/constants";
 import type { Breakdown } from "@/lib/scoring";
 import type { AiReport } from "@/lib/ai";
+import { TutorChat } from "@/components/TutorChat";
+import { ScoreRing } from "@/components/ScoreRing";
 
 export default async function Page({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = await params;
@@ -24,10 +26,10 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
 
   return (
     <div className="space-y-6">
-      <div className="card text-center">
+      <div className="card flex flex-col items-center text-center shadow-soft">
         <p className="text-sm text-stone-500">{att.title}</p>
-        <p className="mt-1 text-sm font-semibold uppercase text-brand">CSCA Readiness Score</p>
-        <p className="text-6xl font-extrabold">{att.readiness}<span className="text-2xl text-stone-400">/100</span></p>
+        <p className="eyebrow mt-1">CSCA Readiness Score</p>
+        <ScoreRing value={att.readiness ?? 0} size={150} />
         <p className="mt-2 text-stone-600">Đúng {att.score}/{b.total} câu · Chính xác {b.accuracy}% · Tốc độ {b.speed}%</p>
       </div>
 
@@ -68,13 +70,14 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
                 </ul>
                 <p className="mt-1 text-sm">Bạn chọn: <b>{mine ?? "—"}</b> · Đáp án: <b>{q.correct_answer}</b></p>
                 {q.explanation && <p className="mt-1 text-sm text-stone-700">💡 {q.explanation}</p>}
+                <details className="mt-2"><summary className="cursor-pointer text-sm font-bold text-brand">Hỏi Gia sư AI về câu này</summary><div className="mt-2 rounded-xl border border-stone-200 bg-white"><TutorChat compact ctx={{ attemptId, questionId: q.id }} suggestions={["Giải thích chi tiết từng bước", "Vì sao các đáp án còn lại sai?", "Cho mình một câu tương tự"]} /></div></details>
               </div>
             );
           })}
         </div>
       </div>
 
-      <div className="flex gap-3"><Link href="/luyen-tap" className="btn">Luyện tập chủ đề yếu</Link><Link href="/dashboard" className="btn-outline">Về Dashboard</Link></div>
+      <div className="flex flex-wrap gap-3"><Link href="/lo-trinh" className="btn">Tạo / xem lộ trình học</Link><Link href="/luyen-tap" className="btn-outline">Luyện tập chủ đề yếu</Link><Link href="/gia-su" className="btn-outline">Gia sư AI</Link><Link href="/dashboard" className="btn-outline">Dashboard</Link></div>
     </div>
   );
 }

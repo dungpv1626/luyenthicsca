@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { requireMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
-import { canAccessTest, createAttempt, pickQuestions, startQuickTest, submitAttempt } from "@/lib/exam";
+import { canAccessTest, createAttempt, pickQuestions, startQuickTest, submitAttempt, wrongQuestionIds } from "@/lib/exam";
 import { SUBJECT_KEYS, type Difficulty, type Subject } from "@/lib/constants";
 
 export async function startQuickTestAction() {
@@ -22,14 +22,17 @@ export async function startPracticeAction(fd: FormData) {
   const difficulty = String(fd.get("difficulty") ?? "");
   const topic = String(fd.get("topic") ?? "").trim();
   const count = Math.min(50, Math.max(5, Number(fd.get("count")) || 10));
-  const ids = await pickQuestions({
-    subjects: SUBJECT_KEYS.includes(subject as Subject) ? [subject as Subject] : undefined,
-    difficulty: ["easy", "medium", "hard"].includes(difficulty) ? (difficulty as Difficulty) : undefined,
-    topic: topic || undefined,
-    count,
-  });
+  const wrongMode = fd.get("mode") === "wrong";
+  const ids = wrongMode
+    ? (await wrongQuestionIds(me.id)).slice(0, count)
+    : await pickQuestions({
+        subjects: SUBJECT_KEYS.includes(subject as Subject) ? [subject as Subject] : undefined,
+        difficulty: ["easy", "medium", "hard"].includes(difficulty) ? (difficulty as Difficulty) : undefined,
+        topic: topic || undefined,
+        count,
+      });
   if (!ids.length) redirect("/luyen-tap?error=empty");
-  const id = await createAttempt({ userId: me.id, kind: "practice", title: "Luyện tập", questionIds: ids, durationSec: ids.length * 90 });
+  const id = await createAttempt({ userId: me.id, kind: "practice", title: wrongMode ? "Luyện lại câu đã sai" : "Luyện tập", questionIds: ids, durationSec: ids.length * 90 });
   redirect(`/thi/${id}`);
 }
 

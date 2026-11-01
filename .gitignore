@@ -7,3 +7,6 @@ next-env.d.ts
 .open-next
 .wrangler
 .dev.vars
+.env.production
+.env.production.bak
+.env.local.bak

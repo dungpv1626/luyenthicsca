@@ -10,7 +10,15 @@ Mock Test Engine (random đề, timer, tự lưu, nộp bài) · Chấm điểm 
 Thanh toán (đơn hàng + VietQR + webhook tự xác nhận / xác nhận tay) · Admin (Dashboard, Question Bank, Mock Test, Đơn hàng, Người dùng, phân quyền 5 vai trò) ·
 Luyện tập theo môn/chủ đề/độ khó · Dashboard học sinh.
 
-Phase 2/3 (AI Study Plan, Academy, School DB, Adaptive Test, B2B, Mobile…) chưa làm.
+## Phase 2 (đã làm)
+AI CSCA (hồ sơ năng lực, biểu đồ tiến bộ, bản đồ kỹ năng) · AI Study Plan (Claude lập lộ trình theo ngày, nhiệm vụ tự hoàn thành khi nộp bài) ·
+AI Tutor (chat + hỏi từng câu trong kết quả, 30 lượt/ngày) · Câu đã sai · School & Scholarship Database (lọc, so sánh, đối chiếu hồ sơ, đăng ký tư vấn) ·
+Academy (khóa học, bài giảng video/nội dung, quiz, tiến độ, mua khóa) · Admin: Analytics, Leads, CRUD trường/học bổng/khóa học/bài giảng/giáo viên.
+
+Phase 3 (Adaptive Test, AI Question Generator, B2B/School Dashboard, Mobile App, API) và Blog chưa làm.
+
+Database: chạy thêm `supabase/migrations/0002_phase2.sql` và (tùy chọn) `supabase/seed_phase2.sql`.
+Seed trường **không chứa** mức chuẩn CSCA — nhập từ thông báo chính thức ở Admin → Trường.
 
 ## Chạy thử
 ```bash
@@ -46,7 +54,8 @@ Server kiểm tra quyền admin theo vai trò, từ chối đáp án nộp muộ
 Dùng `@opennextjs/cloudflare`. Cần gói **Workers Paid** cho bản chạy thật (giới hạn CPU/kích thước của gói miễn phí quá thấp).
 ```bash
 npm run cf:preview   # chạy thử bằng workerd (đặt khóa trong .dev.vars, không commit)
-npm run cf:deploy    # build + deploy; cần CLOUDFLARE_API_TOKEN và CLOUDFLARE_ACCOUNT_ID
+npm run cf:deploy    # build + deploy; cần CLOUDFLARE_API_TOKEN và CLOUDFLARE_ACCOUNT_ID.
+                     # Script tạm gỡ .env.local để KHÔNG nhúng khóa bí mật vào mã Worker (OpenNext ghi mọi file .env* vào bundle).
 ```
 Biến không bí mật nằm trong `wrangler.jsonc`. Khóa bí mật đặt bằng `npx wrangler secret put <TÊN>`:
 `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `PAYMENT_ACCOUNT_NO`, `PAYMENT_WEBHOOK_KEY`.

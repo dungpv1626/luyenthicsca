@@ -41,6 +41,7 @@ export async function createAttempt(p: {
   questionIds: string[];
   durationSec: number;
   testId?: string;
+  planTaskId?: string;
 }) {
   const { data, error } = await adminDb()
     .from("attempts")
@@ -51,6 +52,7 @@ export async function createAttempt(p: {
       title: p.title,
       question_ids: p.questionIds,
       duration_sec: p.durationSec,
+      plan_task_id: p.planTaskId ?? null,
     })
     .select("id")
     .single();
@@ -93,12 +95,28 @@ export async function submitAttempt(attemptId: string, userId: string, answers: 
   if (!late) for (const q of ordered) if (["A", "B", "C", "D"].includes(answers[q.id])) clean[q.id] = answers[q.id];
   const { correct, readiness, breakdown } = scoreAttempt(ordered, clean, timeSpent);
 
+  const wrong_ids = ordered.filter((q) => clean[q.id] !== q.correct_answer).map((q) => q.id);
   const { data: prof } = await db.from("profiles").select("target").eq("id", userId).single();
   const ai_report = await generateReport(breakdown, readiness, { goal: prof?.target });
 
   await db
     .from("attempts")
-    .update({ answers: clean, time_spent: timeSpent, submitted_at: new Date().toISOString(), score: correct, readiness, breakdown, ai_report })
+    .update({ answers: clean, time_spent: timeSpent, submitted_at: new Date().toISOString(), score: correct, readiness, breakdown, ai_report, wrong_ids })
     .eq("id", attemptId)
     .is("submitted_at", null);
+  // Hoàn thành nhiệm vụ trong lộ trình nếu bài làm bắt đầu từ nhiệm vụ đó
+  if (att.plan_task_id) await db.from("plan_tasks").update({ done_at: new Date().toISOString() }).eq("id", att.plan_task_id).eq("user_id", userId).is("done_at", null);
 }
+
+/** Các câu người dùng từng làm sai (mới nhất trước), chỉ lấy câu còn ở trạng thái approved. */
+export async function wrongQuestionIds(userId: string, limit = 200) {
+  const db = adminDb();
+  const { data } = await db.from("attempts").select("wrong_ids").eq("user_id", userId).not("submitted_at", "is", null).order("submitted_at", { ascending: false }).limit(30);
+  const ids = [...new Set((data ?? []).flatMap((a) => a.wrong_ids as string[]))];
+  if (!ids.length) return [];
+  const { data: ok } = await db.from("questions").select("id").in("id", ids).eq("status", "approved");
+  const set = new Set((ok ?? []).map((q) => q.id));
+  return ids.filter((id) => set.has(id)).slice(0, limit);
+}
+
+export { shuffle };

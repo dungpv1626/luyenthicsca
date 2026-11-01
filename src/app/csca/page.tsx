@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { SUBJECTS } from "@/lib/constants";
+import { PageHeader } from "@/components/Section";
+import { Icon } from "@/components/Icon";
 
 const FAQ = [
   ["CSCA là gì?", "CSCA (China Scholastic Competency Assessment) là kỳ thi đánh giá năng lực học thuật dành cho học sinh quốc tế muốn học bậc đại học tại Trung Quốc."],
@@ -10,22 +12,18 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold">CSCA là gì?</h1>
-      <section className="card">
-        <h2 className="mb-2 text-xl font-bold">Các môn thi</h2>
-        <ul className="list-disc pl-6">{Object.values(SUBJECTS).map((s) => <li key={s}>{s}</li>)}</ul>
+    <div className="space-y-10">
+      <PageHeader en="What is CSCA?" vi="Tìm hiểu kỳ thi">Kỳ thi đánh giá năng lực học thuật cho học sinh quốc tế vào đại học Trung Quốc.</PageHeader>
+      <section>
+        <h2 className="mb-4 text-xl font-bold">Các môn thi</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{Object.values(SUBJECTS).map((s) => <div key={s} className="card card-hover text-center"><span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-brand text-white"><Icon name="book" /></span><p className="mt-3 font-bold">{s}</p></div>)}</div>
         <p className="mt-3 text-sm text-stone-500">Cấu trúc, lịch thi và quy định chi tiết: vui lòng đối chiếu thông báo chính thức của đơn vị tổ chức kỳ thi.</p>
       </section>
       <section>
-        <h2 className="mb-3 text-xl font-bold">FAQ</h2>
-        <div className="space-y-2">
-          {FAQ.map(([q, a]) => (
-            <details key={q} className="card"><summary className="cursor-pointer font-semibold">{q}</summary><p className="mt-2 text-stone-600">{a}</p></details>
-          ))}
-        </div>
+        <h2 className="mb-4 text-xl font-bold">Câu hỏi thường gặp</h2>
+        <div className="space-y-2">{FAQ.map(([q, a]) => <details key={q} className="card group"><summary className="cursor-pointer font-semibold marker:text-brand">{q}</summary><p className="mt-2 text-stone-600">{a}</p></details>)}</div>
       </section>
-      <Link href="/quick-test" className="btn">Thi thử miễn phí ngay</Link>
+      <div className="flex flex-wrap gap-3"><Link href="/quick-test" className="btn">Thi thử miễn phí ngay</Link><Link href="/truong" className="btn-outline">Xem trường yêu cầu CSCA</Link></div>
     </div>
   );
 }
