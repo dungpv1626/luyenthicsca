@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "luyenthicsca",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "observability": { "enabled": true },
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://gikncgdtbbqtrqjilqvp.supabase.co",
+    "ANTHROPIC_MODEL": "claude-sonnet-5-5",
+    "PAYMENT_BANK_ID": "VCB",
+    "PAYMENT_ACCOUNT_NAME": "CONG TY LUYENTHICSCA"
+  }
+}

@@ -41,3 +41,13 @@ Có thể thay bằng cổng khác (PayOS, VNPay…) bằng cách gọi `markOrd
 Đáp án đúng không bao giờ gửi xuống trình duyệt khi đang làm bài; bảng `questions` không có RLS policy (chỉ server/service role đọc).
 Server kiểm tra quyền admin theo vai trò, từ chối đáp án nộp muộn quá hạn.
 **Không commit `.env.local`; `SUPABASE_SERVICE_ROLE_KEY` chỉ dùng ở server.**
+
+## Triển khai Cloudflare (Workers)
+Dùng `@opennextjs/cloudflare`. Cần gói **Workers Paid** cho bản chạy thật (giới hạn CPU/kích thước của gói miễn phí quá thấp).
+```bash
+npm run cf:preview   # chạy thử bằng workerd (đặt khóa trong .dev.vars, không commit)
+npm run cf:deploy    # build + deploy; cần CLOUDFLARE_API_TOKEN và CLOUDFLARE_ACCOUNT_ID
+```
+Biến không bí mật nằm trong `wrangler.jsonc`. Khóa bí mật đặt bằng `npx wrangler secret put <TÊN>`:
+`NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `PAYMENT_ACCOUNT_NO`, `PAYMENT_WEBHOOK_KEY`.
+Chạy `npm run cf:build` khi đã có `.env.local`: biến `NEXT_PUBLIC_*` được nhúng vào bản build tại thời điểm build.

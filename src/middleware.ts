@@ -1,8 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Làm mới phiên Supabase trên mỗi request. */
-export async function proxy(request: NextRequest) {
+/** Làm mới phiên Supabase trên mỗi request (edge middleware: ổn định hơn proxy.ts trên Cloudflare). */
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     cookies: {
