@@ -3,10 +3,12 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { AUDIENCES } from "@/lib/constants";
 
-type Action = (prev: unknown, fd: FormData) => Promise<{ error?: string } | void>;
+type State = { error?: string; values?: Record<string, string> } | undefined;
+type Action = (prev: State, fd: FormData) => Promise<State | void>;
 
 export function AuthForm({ mode, action, next, audience }: { mode: "login" | "register"; action: Action; next: string; audience?: string }) {
-  const [state, formAction, pending] = useActionState(action, undefined);
+  const [state, formAction, pending] = useActionState<State, FormData>(async (p, fd) => (await action(p, fd)) ?? undefined, undefined);
+  const v = state?.values ?? {};
   const reg = mode === "register";
   return (
     <form action={formAction} className="card mx-auto max-w-md space-y-4">
@@ -14,20 +16,20 @@ export function AuthForm({ mode, action, next, audience }: { mode: "login" | "re
       <input type="hidden" name="next" value={next} />
       {reg && (
         <>
-          <div><label className="label">Họ và tên</label><input name="full_name" required className="input" /></div>
-          <div><label className="label">Số điện thoại</label><input name="phone" className="input" /></div>
+          <div><label className="label">Họ và tên</label><input name="full_name" required defaultValue={v.full_name} className="input" /></div>
+          <div><label className="label">Số điện thoại</label><input name="phone" defaultValue={v.phone} className="input" /></div>
           <div>
             <label className="label">Bạn là</label>
-            <select name="audience" className="input" defaultValue={audience ?? ""}>
+            <select name="audience" className="input" defaultValue={v.audience || audience || ""}>
               <option value="">— Chọn —</option>
               {Object.entries(AUDIENCES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>
           </div>
-          <div><label className="label">Mục tiêu (vd: Đại học Trung Quốc)</label><input name="target" className="input" /></div>
-          <div><label className="label">Kỳ thi dự kiến</label><input type="date" name="exam_date" className="input" /></div>
+          <div><label className="label">Mục tiêu (vd: Đại học Trung Quốc)</label><input name="target" defaultValue={v.target} className="input" /></div>
+          <div><label className="label">Kỳ thi dự kiến</label><input type="date" name="exam_date" defaultValue={v.exam_date} className="input" /></div>
         </>
       )}
-      <div><label className="label">Email</label><input type="email" name="email" required className="input" /></div>
+      <div><label className="label">Email</label><input type="email" name="email" required defaultValue={v.email} className="input" /></div>
       <div><label className="label">Mật khẩu</label><input type="password" name="password" required minLength={reg ? 8 : 1} className="input" /></div>
       {state?.error && <p className="rounded bg-red-50 p-2 text-sm text-red-700">{state.error}</p>}
       <button disabled={pending} className="btn w-full">{pending ? "Đang xử lý…" : reg ? "Đăng ký" : "Đăng nhập"}</button>
