@@ -8,6 +8,8 @@ export type AiReport = {
   strengths: string[];
   weaknesses: { topic: string; advice: string }[];
   next_steps: string[];
+  /** Lý do dùng báo cáo dự phòng (chỉ lưu để chẩn đoán, không hiển thị). */
+  fallback_reason?: string;
 };
 
 const label = (key: string) => {
@@ -38,11 +40,12 @@ CHỈ trả về một JSON hợp lệ (không markdown) với dạng:
 - summary: 2-3 câu tổng quan.
 - strengths: tối đa 3 mục, nêu chủ đề mạnh.
 - weaknesses: tối đa 3 mục, mỗi mục có lời khuyên ôn tập cụ thể.
-- next_steps: 3-4 hành động ưu tiên cho 1-2 tuần tới.`;
+- next_steps: 3-4 hành động ưu tiên cho 1-2 tuần tới.
+Viết ngắn gọn: mỗi câu advice/step tối đa 25 từ. Không dùng ký tự xuống dòng trong giá trị chuỗi.`;
 
 export async function generateReport(b: Breakdown, readiness: number, ctx: { goal?: string | null }): Promise<AiReport> {
   const fallback = ruleReport(b, readiness);
-  if (!process.env.ANTHROPIC_API_KEY) return fallback;
+  if (!process.env.ANTHROPIC_API_KEY) return { ...fallback, fallback_reason: "no_api_key" };
   try {
     const client = new Anthropic();
     const data = {
@@ -57,10 +60,11 @@ export async function generateReport(b: Breakdown, readiness: number, ctx: { goa
     };
     const res = await client.messages.create({
       model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5",
-      max_tokens: 1200,
+      max_tokens: 4000,
       system: SYSTEM,
       messages: [{ role: "user", content: JSON.stringify(data) }],
     });
+    if (res.stop_reason === "max_tokens") throw new Error("Phản hồi AI bị cắt do vượt max_tokens");
     const text = res.content.map((c) => (c.type === "text" ? c.text : "")).join("");
     const json = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
     return {
@@ -74,6 +78,6 @@ export async function generateReport(b: Breakdown, readiness: number, ctx: { goa
     };
   } catch (e) {
     console.error("AI report failed, using rule-based fallback:", e);
-    return fallback;
+    return { ...fallback, fallback_reason: String(e instanceof Error ? `${e.name}: ${e.message}` : e).slice(0, 400) };
   }
 }
