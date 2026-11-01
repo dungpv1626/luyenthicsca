@@ -29,6 +29,15 @@ export async function saveQuestion(id: string | null, fd: FormData) {
     source: String(fd.get("source") ?? "").trim() || null,
     status,
     reviewer: status === "approved" ? me.id : null,
+    translations: Object.fromEntries((["en", "zh"] as const).flatMap((lg) => {
+      const body = String(fd.get(`tr_${lg}_body`) ?? "").trim();
+      if (!body) return [];
+      return [[lg, {
+        body,
+        options: Object.fromEntries((["A", "B", "C", "D"] as const).map((k) => [k, String(fd.get(`tr_${lg}_opt_${k}`) ?? "").trim()])),
+        explanation: String(fd.get(`tr_${lg}_explanation`) ?? "").trim(),
+      }]];
+    })),
   };
   if (!row.topic || !row.body || Object.values(row.options).some((o) => !o)) redirect(`/admin/questions/${id ?? "new"}?error=1`);
 
@@ -135,4 +144,21 @@ export async function setLeadStatus(id: string, status: "new" | "contacted" | "c
   await requireAdmin("leads");
   await adminDb().from("consultations").update({ status }).eq("id", id);
   revalidatePath("/admin/leads");
+}
+
+// ===== Duyệt câu hỏi (giáo viên) =====
+export async function reviewQuestionAction(id: string, next: string, fd: FormData) {
+  const me = await requireAdmin("questions");
+  const decision = String(fd.get("decision"));
+  const note = String(fd.get("note") ?? "").trim().slice(0, 500);
+  const canApprove = me.role === "super_admin" || me.role === "academic_reviewer";
+  const db = adminDb();
+  if (decision === "approve" && canApprove) {
+    await db.from("questions").update({ status: "approved", reviewer: me.id, review_note: note || null, reviewed_at: new Date().toISOString() }).eq("id", id).eq("status", "review");
+  } else if (decision === "reject") {
+    if (!note) redirect(`${next}${next.includes("?") ? "&" : "?"}need_note=1`);
+    await db.from("questions").update({ status: "rejected", reviewer: me.id, review_note: note, reviewed_at: new Date().toISOString() }).eq("id", id).in("status", ["review", "draft"]);
+  }
+  revalidatePath("/admin/review");
+  redirect(next.startsWith("/admin/review") ? next : "/admin/review");
 }

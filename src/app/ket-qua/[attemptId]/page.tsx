@@ -6,10 +6,12 @@ import { SUBJECTS, type Subject } from "@/lib/constants";
 import type { Breakdown } from "@/lib/scoring";
 import type { AiReport } from "@/lib/ai";
 import { TutorChat } from "@/components/TutorChat";
+import { Rich } from "@/components/Rich";
 import { ScoreRing } from "@/components/ScoreRing";
 
-export default async function Page({ params }: { params: Promise<{ attemptId: string }> }) {
+export default async function Page({ params, searchParams }: { params: Promise<{ attemptId: string }>; searchParams: Promise<{ lang?: string }> }) {
   const { attemptId } = await params;
+  const lang = (await searchParams).lang === "en" ? "en" : (await searchParams).lang === "zh" ? "zh" : "vi";
   const me = await requireMe(`/ket-qua/${attemptId}`);
   const db = adminDb();
   const { data: att } = await db.from("attempts").select("*").eq("id", attemptId).eq("user_id", me.id).single();
@@ -18,7 +20,7 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
 
   const b = att.breakdown as Breakdown;
   const ai = att.ai_report as AiReport;
-  const { data: qs } = await db.from("questions").select("id, body, options, correct_answer, explanation, subject, topic").in("id", att.question_ids);
+  const { data: qs } = await db.from("questions").select("id, body, options, correct_answer, explanation, subject, topic, translations").in("id", att.question_ids);
   const byId = new Map((qs ?? []).map((q) => [q.id, q]));
   const review = (att.question_ids as string[]).map((id) => byId.get(id)).filter(Boolean) as NonNullable<ReturnType<typeof byId.get>>[];
   const ans = att.answers as Record<string, string>;
@@ -55,21 +57,23 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
       </div>
 
       <div className="card">
-        <h2 className="mb-3 text-lg font-bold">Xem lại từng câu</h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-bold">Xem lại từng câu</h2><div className="flex rounded-full border border-stone-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={`?lang=${k}`} className={`rounded-full px-3 py-1 ${lang === k ? "bg-brand text-white" : "text-stone-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
         <div className="space-y-4">
           {review.map((q, i) => {
             const mine = ans[q.id];
             const ok = mine === q.correct_answer;
+            const tr = lang !== "vi" ? (q.translations as Record<string, { body: string; options: Record<string, string>; explanation: string }> | null)?.[lang] : null;
+            const view = { body: tr?.body ?? q.body, options: (tr?.options ?? q.options) as Record<string, string>, explanation: tr?.explanation ?? q.explanation };
             return (
               <div key={q.id} className={`rounded-lg border p-3 ${ok ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}>
-                <p className="font-medium">Câu {i + 1}. {q.body}</p>
+                <p className="font-medium">Câu {i + 1}. <Rich text={view.body} /></p>
                 <ul className="mt-1 text-sm">
-                  {Object.entries(q.options as Record<string, string>).map(([k, v]) => (
+                  {Object.entries(view.options).map(([k, v]) => (
                     <li key={k} className={k === q.correct_answer ? "font-bold text-green-700" : k === mine ? "font-bold text-red-700" : ""}>{k}. {v}</li>
                   ))}
                 </ul>
                 <p className="mt-1 text-sm">Bạn chọn: <b>{mine ?? "—"}</b> · Đáp án: <b>{q.correct_answer}</b></p>
-                {q.explanation && <p className="mt-1 text-sm text-stone-700">💡 {q.explanation}</p>}
+                {view.explanation && <p className="mt-1 text-sm text-stone-700">💡 <Rich text={view.explanation} /></p>}
                 <details className="mt-2"><summary className="cursor-pointer text-sm font-bold text-brand">Hỏi Gia sư AI về câu này</summary><div className="mt-2 rounded-xl border border-stone-200 bg-white"><TutorChat compact ctx={{ attemptId, questionId: q.id }} suggestions={["Giải thích chi tiết từng bước", "Vì sao các đáp án còn lại sai?", "Cho mình một câu tương tự"]} /></div></details>
               </div>
             );

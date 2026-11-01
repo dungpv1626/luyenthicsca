@@ -2,12 +2,15 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { submitExamAction } from "@/app/exam-actions";
 import { SUBJECTS, type Subject } from "@/lib/constants";
+import { Rich } from "./Rich";
 
-type Q = { id: string; subject: string; topic: string; body: string; options: Record<string, string> };
+type Q = { id: string; subject: string; topic: string; body: string; options: Record<string, string>; tr?: Record<string, { body: string; options: Record<string, string> }> };
+const LANGS = [["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const;
 
 export function ExamRunner({ attemptId, title, questions, deadline }: { attemptId: string; title: string; questions: Q[]; deadline: number }) {
   const storeKey = `exam:${attemptId}`;
   const [idx, setIdx] = useState(0);
+  const [lang, setLang] = useState<"vi" | "en" | "zh">("vi");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [left, setLeft] = useState(() => Math.max(0, Math.round((deadline - Date.now()) / 1000)));
   const [pending, start] = useTransition();
@@ -19,6 +22,8 @@ export function ExamRunner({ attemptId, title, questions, deadline }: { attemptI
     try {
       const s = JSON.parse(localStorage.getItem(storeKey) ?? "null");
       if (s) { setAnswers(s.answers ?? {}); spent.current = s.spent ?? {}; }
+      const l = localStorage.getItem("csca_lang");
+      if (l === "vi" || l === "en" || l === "zh") setLang(l);
     } catch { /* bỏ qua */ }
   }, [storeKey]);
 
@@ -49,6 +54,9 @@ export function ExamRunner({ attemptId, title, questions, deadline }: { attemptI
   useEffect(() => { if (left === 0) submit(); }, [left, submit]);
 
   const q = questions[idx];
+  const view = lang !== "vi" && q.tr?.[lang] ? q.tr[lang] : { body: q.body, options: q.options };
+  const hasTr = questions.some((x) => x.tr && Object.keys(x.tr).length);
+  const pickLang = (l: "vi" | "en" | "zh") => { setLang(l); try { localStorage.setItem("csca_lang", l); } catch { /* bỏ qua */ } };
   const done = Object.keys(answers).length;
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
   const ss = String(left % 60).padStart(2, "0");
@@ -57,18 +65,19 @@ export function ExamRunner({ attemptId, title, questions, deadline }: { attemptI
     <div className="space-y-4">
       <div className="card flex flex-wrap items-center justify-between gap-3">
         <div><h1 className="font-bold">{title}</h1><p className="text-sm text-stone-500">Đã trả lời {done}/{questions.length}</p></div>
+        {hasTr && <div className="flex rounded-full border border-stone-200 p-0.5 text-xs font-semibold">{LANGS.map(([k, label]) => <button key={k} onClick={() => pickLang(k)} className={`rounded-full px-3 py-1 ${lang === k ? "bg-brand text-white" : "text-stone-600 hover:text-brand"}`}>{label}</button>)}</div>}
         <div className={`rounded-lg px-4 py-2 font-mono text-2xl font-bold ${left < 60 ? "bg-red-100 text-red-700" : "bg-stone-100"}`}>{mm}:{ss}</div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-[1fr_220px]">
         <div className="card space-y-4">
           <p className="text-xs font-semibold uppercase text-brand">{SUBJECTS[q.subject as Subject]} · {q.topic}</p>
-          <p className="whitespace-pre-wrap text-lg">Câu {idx + 1}. {q.body}</p>
+          <p className="text-lg">Câu {idx + 1}. <Rich text={view.body} /></p>
           <div className="space-y-2">
-            {Object.entries(q.options).map(([k, v]) => (
+            {Object.entries(view.options).map(([k, v]) => (
               <label key={k} className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 ${answers[q.id] === k ? "border-brand bg-red-50" : "border-stone-200 hover:bg-stone-50"}`}>
                 <input type="radio" name={q.id} checked={answers[q.id] === k} onChange={() => setAnswers((a) => ({ ...a, [q.id]: k }))} className="mt-1" />
-                <span><b>{k}.</b> {v}</span>
+                <span><b>{k}.</b> <Rich text={v} /></span>
               </label>
             ))}
           </div>

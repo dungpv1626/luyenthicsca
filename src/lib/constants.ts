@@ -11,7 +11,7 @@ export const DIFFICULTY = { easy: "Dễ", medium: "Trung bình", hard: "Khó" } 
 export type Difficulty = keyof typeof DIFFICULTY;
 
 export const LANGUAGES = { vi: "Tiếng Việt", en: "English", zh: "中文" } as const;
-export const STATUS_LABEL = { draft: "Nháp", review: "Chờ duyệt", approved: "Đã duyệt" } as const;
+export const STATUS_LABEL = { draft: "Nháp", review: "Chờ duyệt", approved: "Đã duyệt", rejected: "Đã loại" } as const;
 
 export const AUDIENCES = {
   lop11: "Học sinh lớp 11",

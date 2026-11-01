@@ -36,6 +36,20 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         <div><label className="label">Nguồn tham khảo</label><input name="source" defaultValue={q?.source ?? ""} className="input" /></div>
       </div>
       <div><label className="label">Giải thích</label><textarea name="explanation" defaultValue={q?.explanation} rows={3} className="input" /></div>
+      {(["en", "zh"] as const).map((lg) => {
+        const t = (q?.translations?.[lg] ?? {}) as { body?: string; options?: Record<string, string>; explanation?: string };
+        return (
+          <details key={lg} className="rounded-xl border border-stone-200 p-3" open={!!t.body}>
+            <summary className="cursor-pointer font-semibold">{lg === "en" ? "Bản tiếng Anh (English)" : "Bản tiếng Trung (中文)"}</summary>
+            <div className="mt-3 space-y-3">
+              <textarea name={`tr_${lg}_body`} rows={3} defaultValue={t.body ?? ""} placeholder="Nội dung câu hỏi" className="input" />
+              {(["A", "B", "C", "D"] as const).map((k) => <input key={k} name={`tr_${lg}_opt_${k}`} defaultValue={t.options?.[k] ?? ""} placeholder={`Đáp án ${k}`} className="input" />)}
+              <textarea name={`tr_${lg}_explanation`} rows={3} defaultValue={t.explanation ?? ""} placeholder="Giải thích" className="input" />
+              <p className="text-xs text-stone-500">Thứ tự A–D phải tương đương bản tiếng Việt. Để trống phần nội dung để bỏ bản dịch này.</p>
+            </div>
+          </details>
+        );
+      })}
       <div><label className="label">Trạng thái</label>{sel("status", STATUS_LABEL, q?.status ?? "draft")}</div>
       <button className="btn">Lưu</button>
     </form>
