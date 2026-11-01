@@ -81,6 +81,11 @@ const tool = (r, name) => r.content.find((c) => c.type === "tool_use" && c.name 
 const shuffle = (a) => { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 const shingles = (s) => { const t = s.toLowerCase().replace(/\$[^$]*\$/g, " ").replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/).filter(Boolean); const out = new Set(); for (let i = 0; i + 2 < t.length; i++) out.add(t.slice(i, i + 3).join(" ")); if (!out.size) t.forEach((w) => out.add(w)); return out; };
 const jaccard = (a, b) => { if (!a.size || !b.size) return 0; let n = 0; for (const x of a) if (b.has(x)) n++; return n / (a.size + b.size - n); };
+// Chữ cái đáp án "trần" trong lời giải (ngoài LaTeX). Chữ cái phải VIẾT HOA và theo sau không phải chữ/số
+// (tránh nhầm "lựa chọn còn lại", "phương án dừng"…).
+const KW = /(?:[Đđ]áp án|[Pp]hương án|[Ll]ựa chọn|[Oo]ption|[Aa]nswer|[Cc]hoice|选项|答案)\s*[ABCD](?![\p{L}\p{N}])/u;
+const SUB = /(?:^|[\s(（,;])[ABCD]\s*(?:sai|đúng|nhầm|là|do|vì|is|are|was|wrong|correct|错|对|是)(?![\p{L}\p{N}])/u;
+const bareLetters = (t) => { const x = String(t ?? "").replace(/\$[^$]*\$/g, " "); return KW.test(x) || SUB.test(x); };
 const asText = (l) => `${l.body}\n${["A", "B", "C", "D"].map((k) => `${k}. ${l.options[k]}`).join("\n")}`;
 
 // ---------- một "ô" blueprint: sinh → xáo trộn → kiểm tra → lưu ----------
@@ -126,8 +131,7 @@ async function runTask({ subject, topic, difficulty, count, hints }) {
     for (const [k, l] of [["en", en], ["zh", zh]]) if (!l.body?.trim() || Object.values(l.options).some((v) => !String(v).trim())) issues.push(`thiếu bản ${k}`);
     if (!vi.explanation?.trim()) issues.push("thiếu giải thích");
     // còn sót chữ cái đáp án "trần" trong lời giải (ngoài công thức LaTeX) → sau xáo trộn sẽ sai
-    const bare = (t) => { const x = String(t).replace(/\$[^$]*\$/g, " "); return /(?:đáp án|phương án|lựa chọn|option|answer|choice|选项|答案)\s*[ABCD]\b|(?:^|[\s(（,;])[ABCD]\s*(?:sai|đúng|nhầm|là|do|vì|is|are|was|wrong|correct|错|对|是)\b/i.test(x); };
-    if ([vi, en, zh].some((l) => bare(l.explanation))) issues.push("lời giải còn nhắc chữ cái đáp án (sẽ sai sau khi xáo trộn)");
+    if ([vi, en, zh].some((l) => bareLetters(l.explanation))) issues.push("lời giải còn nhắc chữ cái đáp án (sẽ sai sau khi xáo trộn)");
 
     // chống trùng lặp
     const sh = shingles(vi.body);
@@ -176,15 +180,39 @@ async function pool(tasks, n, fn) {
   await Promise.all(Array.from({ length: n }, async () => {
     while (i < tasks.length) {
       const t = tasks[i++];
-      try { const r = await fn(t); results.push({ t, r }); console.log(`✓ ${t.subject} · ${t.topic} · ${t.difficulty} ×${t.count}: tạo ${r.gen}, đạt ${r.pass}, lệch ${r.mismatch}, lỗi ${r.invalid}, trùng ${r.dupSkipped}, lưu ${r.saved}`); }
-      catch (e) { console.error(`✗ ${t.subject} · ${t.topic} · ${t.difficulty}: ${e.message}`); results.push({ t, r: null }); }
+      try { const r = await fn(t); results.push({ t, r }); if (t.count !== undefined) console.log(`✓ ${t.subject} · ${t.topic} · ${t.difficulty} ×${t.count}: tạo ${r.gen}, đạt ${r.pass}, lệch ${r.mismatch}, lỗi ${r.invalid}, trùng ${r.dupSkipped}, lưu ${r.saved}`); }
+      catch (e) { console.error(`✗ ${t.subject ?? t.id} · ${t.topic ?? ""}: ${e.message}`); results.push({ t, r: null }); }
     }
   }));
   return results;
 }
 
 // ---------- chế độ chạy ----------
+async function reverify() {
+  const { data } = await sb.from("questions").select("*").eq("origin", "ai_generated").eq("status", "review").in("verify_status", ["invalid", "unchecked"]);
+  console.log(`Kiểm tra lại ${data.length} câu…`);
+  let fixed = 0, still = 0, mism = 0;
+  await pool(data, CONCURRENCY, async (q) => {
+    const issues = [];
+    const en = q.translations?.en, zh = q.translations?.zh;
+    if (!q.explanation?.trim()) issues.push("thiếu giải thích");
+    if (!en?.body || !zh?.body) issues.push("thiếu bản dịch");
+    if ([q.explanation, en?.explanation, zh?.explanation].some(bareLetters)) issues.push("lời giải còn nhắc chữ cái đáp án (sẽ sai sau khi xáo trộn)");
+    let patch;
+    if (issues.length) { still++; patch = { verify_status: "invalid", verify_note: issues.join("; ") }; }
+    else {
+      const ans = tool(await call({ max_tokens: 1500, system: "Bạn là học sinh giỏi. Giải câu trắc nghiệm sau cẩn thận từng bước rồi nộp đáp án bằng công cụ answer (chọn đúng MỘT đáp án).", tools: [ANS_TOOL], messages: [{ role: "user", content: asText(q) }] }), "answer");
+      if (ans?.choice === q.correct_answer) { fixed++; patch = { verify_status: "pass", verify_note: null }; }
+      else { mism++; patch = { verify_status: "mismatch", verify_note: `Người giải độc lập chọn ${ans?.choice}, đáp án soạn là ${q.correct_answer}. ${String(ans?.reasoning ?? "").slice(0, 300)}` }; }
+    }
+    if (!DRY) await sb.from("questions").update(patch).eq("id", q.id);
+    return { gen: 0, pass: 0, mismatch: 0, invalid: 0, dupSkipped: 0, saved: 0 };
+  });
+  console.log(`Sau kiểm tra lại: đạt ${fixed} · lệch ${mism} · vẫn lỗi ${still}`);
+}
+
 async function main() {
+  if (arg("reverify", false)) return reverify();
   const { data: bp, error } = await sb.from("blueprint").select("*").order("subject").order("topic");
   if (error) throw new Error(error.message);
   const hintsOf = (s, t) => bp.find((b) => b.subject === s && b.topic === t)?.hints ?? "";

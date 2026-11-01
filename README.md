@@ -60,3 +60,17 @@ npm run cf:deploy    # build + deploy; cần CLOUDFLARE_API_TOKEN và CLOUDFLARE
 Biến không bí mật nằm trong `wrangler.jsonc`. Khóa bí mật đặt bằng `npx wrangler secret put <TÊN>`:
 `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `PAYMENT_ACCOUNT_NO`, `PAYMENT_WEBHOOK_KEY`.
 Chạy `npm run cf:build` khi đã có `.env.local`: biến `NEXT_PUBLIC_*` được nhúng vào bản build tại thời điểm build.
+
+
+## Ngân hàng câu hỏi (4 môn × 300 câu, 3 ngôn ngữ Việt–Anh–Trung)
+Migration: `0003a_enum.sql` rồi `0003b_question_bank.sql`; blueprint nháp: `seed_blueprint.sql` (cần đối chiếu đặc tả chính thức của CSCA).
+
+Sinh câu hỏi GỐC bằng Claude, luôn vào hàng chờ duyệt (không bao giờ tự "Đã duyệt"):
+```bash
+node --env-file=.env.local scripts/generate-questions.mjs --pilot                 # lô thử 40 câu
+node --env-file=.env.local scripts/generate-questions.mjs --fill --subject math --max 60   # lấp thiếu hụt theo blueprint (dư 30%)
+node --env-file=.env.local scripts/generate-questions.mjs --reverify              # kiểm tra lại câu bị cờ
+```
+Mỗi câu: 3 ngôn ngữ tương đương → xáo trộn đáp án (đổi `[[X]]` trong lời giải) → giải độc lập → chống trùng → hàng chờ.
+Giáo viên duyệt tại **Admin → Duyệt câu hỏi** (xem đủ 3 ngôn ngữ, duyệt/loại kèm lý do). Tiến độ: **Admin → Blueprint**.
+Công thức dùng LaTeX `$...$` (KaTeX). Giải độc lập bằng cùng một model chỉ là bước sàng lọc, KHÔNG thay giáo viên.
