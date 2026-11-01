@@ -1,0 +1,40 @@
+"use client";
+import { useActionState } from "react";
+import Link from "next/link";
+import { AUDIENCES } from "@/lib/constants";
+
+type Action = (prev: unknown, fd: FormData) => Promise<{ error?: string } | void>;
+
+export function AuthForm({ mode, action, next, audience }: { mode: "login" | "register"; action: Action; next: string; audience?: string }) {
+  const [state, formAction, pending] = useActionState(action, undefined);
+  const reg = mode === "register";
+  return (
+    <form action={formAction} className="card mx-auto max-w-md space-y-4">
+      <h1 className="text-2xl font-bold">{reg ? "Đăng ký tài khoản" : "Đăng nhập"}</h1>
+      <input type="hidden" name="next" value={next} />
+      {reg && (
+        <>
+          <div><label className="label">Họ và tên</label><input name="full_name" required className="input" /></div>
+          <div><label className="label">Số điện thoại</label><input name="phone" className="input" /></div>
+          <div>
+            <label className="label">Bạn là</label>
+            <select name="audience" className="input" defaultValue={audience ?? ""}>
+              <option value="">— Chọn —</option>
+              {Object.entries(AUDIENCES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+          </div>
+          <div><label className="label">Mục tiêu (vd: Đại học Trung Quốc)</label><input name="target" className="input" /></div>
+          <div><label className="label">Kỳ thi dự kiến</label><input type="date" name="exam_date" className="input" /></div>
+        </>
+      )}
+      <div><label className="label">Email</label><input type="email" name="email" required className="input" /></div>
+      <div><label className="label">Mật khẩu</label><input type="password" name="password" required minLength={reg ? 8 : 1} className="input" /></div>
+      {state?.error && <p className="rounded bg-red-50 p-2 text-sm text-red-700">{state.error}</p>}
+      <button disabled={pending} className="btn w-full">{pending ? "Đang xử lý…" : reg ? "Đăng ký" : "Đăng nhập"}</button>
+      <p className="text-center text-sm text-stone-600">
+        {reg ? <>Đã có tài khoản? <Link className="text-brand" href={`/dang-nhap?next=${encodeURIComponent(next)}`}>Đăng nhập</Link></>
+             : <>Chưa có tài khoản? <Link className="text-brand" href={`/dang-ky?next=${encodeURIComponent(next)}`}>Đăng ký</Link></>}
+      </p>
+    </form>
+  );
+}

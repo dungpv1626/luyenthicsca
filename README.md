@@ -1,0 +1,43 @@
+# Luyenthicsca – MVP giai đoạn 1
+
+Hệ thống đánh giá và nâng cao năng lực CSCA: **Thi thử → Chấm điểm → AI phân tích → Luyện tập → Thi lại**.
+
+**Stack:** Next.js (App Router) · TypeScript · Tailwind · Supabase (Auth + Postgres) · Claude API.
+
+## Phạm vi MVP (theo tài liệu §XVII)
+Homepage · Tài khoản (đăng ký/đăng nhập, hồ sơ, mục tiêu) · Question Bank (CRUD + quy trình Draft→Review→Approved) ·
+Mock Test Engine (random đề, timer, tự lưu, nộp bài) · Chấm điểm tự động (Readiness Score) · AI Assessment (Claude, có fallback theo luật) ·
+Thanh toán (đơn hàng + VietQR + webhook tự xác nhận / xác nhận tay) · Admin (Dashboard, Question Bank, Mock Test, Đơn hàng, Người dùng, phân quyền 5 vai trò) ·
+Luyện tập theo môn/chủ đề/độ khó · Dashboard học sinh.
+
+Phase 2/3 (AI Study Plan, Academy, School DB, Adaptive Test, B2B, Mobile…) chưa làm.
+
+## Chạy thử
+```bash
+npm install
+cp .env.example .env.local   # điền khóa Supabase, Anthropic, ngân hàng
+```
+1. Tạo project Supabase → SQL Editor: chạy `supabase/migrations/0001_init.sql`, rồi (tùy chọn) `supabase/seed.sql` để có câu hỏi mẫu.
+2. Authentication → tắt "Confirm email" nếu muốn đăng ký xong vào luôn khi thử nghiệm.
+3. Đăng ký một tài khoản, rồi nâng thành admin:
+   ```sql
+   update profiles set role = 'super_admin' where id = (select id from auth.users where email = 'you@example.com');
+   ```
+4. `npm run dev` → http://localhost:3000
+
+Kiểm tra: `npm run typecheck && npm test && npm run build`.
+
+## Thanh toán
+Đơn hàng sinh mã `LTCxxxxxx` làm nội dung chuyển khoản, hiển thị VietQR. Hai cách mở khóa đề:
+- **Tự động:** cấu hình webhook của SePay (hoặc dịch vụ tương tự) trỏ tới `POST /api/payment/webhook` với header `Authorization: Apikey $PAYMENT_WEBHOOK_KEY`.
+- **Thủ công:** Admin → Đơn hàng → "Xác nhận đã thu".
+
+Có thể thay bằng cổng khác (PayOS, VNPay…) bằng cách gọi `markOrderPaid()` trong `src/lib/orders.ts`.
+
+## Công thức Readiness Score
+`80% × độ chính xác (trọng số Easy 1 / Medium 1.5 / Hard 2) + 20% × tốc độ` (thời gian dự kiến ÷ thời gian thực). Xem `src/lib/scoring.ts`.
+
+## Bảo mật
+Đáp án đúng không bao giờ gửi xuống trình duyệt khi đang làm bài; bảng `questions` không có RLS policy (chỉ server/service role đọc).
+Server kiểm tra quyền admin theo vai trò, từ chối đáp án nộp muộn quá hạn.
+**Không commit `.env.local`; `SUPABASE_SERVICE_ROLE_KEY` chỉ dùng ở server.**
