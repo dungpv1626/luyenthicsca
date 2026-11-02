@@ -229,3 +229,25 @@ export async function createLevelSets(fd: FormData) {
   back(`ok=${built.sets.length}${short}${warn ? `&warn=${warn}` : ""}`);
 }
 const SUBJECTS_VI: Record<string, string> = { math: "Toán", physics: "Vật lý", chemistry: "Hóa học", chinese: "Professional Chinese" };
+
+// ===== Duyệt KHUÔN câu hỏi tham số (duyệt một khuôn = duyệt toàn bộ biến thể của nó) =====
+export async function reviewTemplateAction(key: string, fd: FormData) {
+  const me = await requireAdmin("questions");
+  const decision = String(fd.get("decision"));
+  const note = String(fd.get("note") ?? "").trim().slice(0, 500);
+  const canApprove = me.role === "super_admin" || me.role === "academic_reviewer";
+  if (!canApprove) redirect("/admin/templates?error=" + encodeURIComponent("Chỉ giáo viên duyệt / quản trị cấp cao mới duyệt được khuôn."));
+  const db = adminDb();
+  const now = new Date().toISOString();
+  if (decision === "approve") {
+    await db.from("template_reviews").upsert({ template_key: key, status: "approved", reviewer: me.id, note: note || null, reviewed_at: now });
+    await db.from("questions").update({ status: "approved", auto_published: false, reviewer: me.id, review_note: note || "Giáo viên xác nhận khuôn", reviewed_at: now }).eq("template_key", key).neq("status", "rejected");
+  } else if (decision === "reject") {
+    if (!note) redirect("/admin/templates?error=" + encodeURIComponent("Cần ghi lý do khi loại khuôn."));
+    await db.from("template_reviews").upsert({ template_key: key, status: "rejected", reviewer: me.id, note, reviewed_at: now });
+    await db.from("questions").update({ status: "rejected", auto_published: false, reviewer: me.id, review_note: `Loại khuôn: ${note}`, reviewed_at: now }).eq("template_key", key).neq("status", "rejected");
+  }
+  revalidatePath("/admin/templates");
+  revalidatePath("/admin/review");
+  redirect("/admin/templates?ok=1");
+}

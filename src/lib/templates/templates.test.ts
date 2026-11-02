@@ -47,7 +47,7 @@ test("đáp án đúng luôn là opts[0] và không bị trùng với đáp án 
   // mỗi khuôn ít nhất 1 biến thể: đáp án đúng xuất hiện trong lời giải (số/biểu thức) — kiểm tra thô
   for (const t of TEMPLATES) {
     const v = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => t.build(mkRng(seedFor(t.key, i)))).find(Boolean)!;
-    const correct = v.vi.opts[0].replace(/^\$|\$$/g, "").replace(/\\ \\text\{[^}]*\}/g, "").replace(/\{,\}/g, ",").replace(/\{\}\^\\circ\\text\{C\}/g, "").trim();
+    const correct = v.vi.opts[0].replace(/^\$|\$$/g, "").replace(/\\ \\text\{[^}]*\}/g, "").replace(/\^2$/, "").replace(/\\ \\Omega/g, "").replace(/\{,\}/g, ",").replace(/\{\}\^\\circ\\text\{C\}/g, "").trim();
     const hay = v.vi.steps.replace(/\{,\}/g, ",").replace(/\\,\^\\circ\\text\{C\}/g, "").replace(/\s/g, "");
     assert.ok(hay.includes(correct.replace(/\s/g, "").replace(/^\+/, "")) || hay.includes(correct.replace(/\\cdot10\^8/, "").trim()), `${t.key}: lời giải không chứa đáp án "${correct}"`);
   }

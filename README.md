@@ -76,6 +76,16 @@ Giáo viên duyệt tại **Admin → Duyệt câu hỏi** (xem đủ 3 ngôn ng
 Công thức dùng LaTeX `$...$` (KaTeX). Giải độc lập bằng cùng một model chỉ là bước sàng lọc, KHÔNG thay giáo viên.
 
 
+## Khuôn câu hỏi tham số (Toán / Vật lý / Hóa học)
+
+Ngoài câu do AI soạn, hệ thống có **41 khuôn** (`src/lib/templates/`): mỗi khuôn là một dạng bài có tham số; **đáp án và các đáp án nhiễu do mã tính** (không gọi API, không tốn tiền), đề + lời giải có đủ Việt–Anh–Trung.
+
+- Sinh biến thể: `node --env-file=.env.local scripts/generate-from-templates.mjs --dry` (xem số lượng) · `--show <key>` (in thử) · `--publish` (ghi và công bố ngay).
+- Mỗi khuôn chỉ lấy tối đa ½ số biến thể duy nhất (tối đa 100) để tránh đề na ná nhau; khuôn ít biến thể (<50) chỉ lấy 8.
+- Giáo viên duyệt **theo khuôn** tại Admin → *Khuôn câu hỏi*: duyệt = xác nhận toàn bộ biến thể; loại = gỡ toàn bộ biến thể.
+- Kiểm thử: `npm test` (mỗi khuôn sinh 400 biến thể: 4 đáp án khác nhau, đủ 3 ngôn ngữ, lời giải chứa đáp án đúng; đối chiếu các công thức bằng cách tính khác). Mọi công thức LaTeX sinh ra đã được KaTeX (strict) phân tích thử, 0 lỗi.
+- Thêm khuôn mới: viết `add({ key, subject, topic, subtopic, difficulty, build })` trong `math.ts` / `physics.ts` / `chemistry.ts`; `build` trả `null` khi tham số không hợp lệ.
+
 ## Bộ đề theo cấp
 4 cấp (`src/lib/levels.ts`): **1 Nền tảng** (dễ 70/TB 30/khó 0) · **2 Cơ bản** (40/50/10) · **3 Nâng cao** (15/50/35) · **4 Mô phỏng thi** (35/45/20).
 Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration: `0004_levels.sql`.

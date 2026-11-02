@@ -10,7 +10,8 @@ export const mixTemp = (m1: number, t1: number, m2: number, t2: number) => (m1 *
 
 const T: Template[] = [];
 const add = (t: Template) => T.push(t);
-const u = (x: number, l: "vi" | "en" | "zh", unit: string, d = 3) => M(unit === "^\\circ C" ? `${num(x, l, d)}{}^\\circ\\text{C}` : `${num(x, l, d)}\\ \\text{${unit}}`);
+const unitTex = (unit: string) => (unit === "^\\circ C" ? "{}^\\circ\\text{C}" : unit === "m/s^2" ? "\\ \\text{m/s}^2" : unit === "\\Omega" ? "\\ \\Omega" : `\\ \\text{${unit}}`);
+const u = (x: number, l: "vi" | "en" | "zh", unit: string, d = 3) => M(`${num(x, l, d)}${unitTex(unit)}`);
 // các đáp án phải giống nhau ở 3 ngôn ngữ về mặt số; chỉ dấu thập phân đổi theo ngôn ngữ
 const opts = (l: "vi" | "en" | "zh", vals: number[], unit: string, d = 3) => vals.map((v) => u(v, l, unit, d));
 const pickN = (correct: number, cands: number[]) => { const w = pick3(String(rnd(correct)), cands.map((x) => String(rnd(x)))); return w ? w.map(Number) : null; };
