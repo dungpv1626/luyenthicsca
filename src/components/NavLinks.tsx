@@ -21,7 +21,7 @@ export function DesktopNav() {
   return (
     <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex">
       {NAV.map(([href, label]) => (
-        <Link key={href} href={href} className={`whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold transition xl:px-3 xl:text-sm ${active(path, href) ? "bg-brand-soft text-brand" : "text-stone-700 hover:text-brand"}`}>{label}</Link>
+        <Link key={href} href={href} className={`whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold transition xl:px-3 xl:text-sm ${active(path, href) ? "bg-white/15 text-white" : "text-white/80 hover:text-white"}`}>{label}</Link>
       ))}
     </nav>
   );
@@ -32,9 +32,9 @@ export function MobileMenu() {
   const path = usePathname();
   return (
     <div className="lg:hidden">
-      <button aria-label="Menu" onClick={() => setOpen(!open)} className="grid h-10 w-10 place-items-center rounded-full border border-stone-200"><Icon name={open ? "x" : "menu"} /></button>
+      <button aria-label="Menu" onClick={() => setOpen(!open)} className="grid h-10 w-10 place-items-center rounded-full border border-white/40 text-white"><Icon name={open ? "x" : "menu"} /></button>
       {open && (
-        <div className="absolute inset-x-0 top-full border-b border-stone-200 bg-white p-4 shadow-xl">
+        <div className="absolute inset-x-0 top-full border-b border-slate-200 bg-white p-4 text-ink shadow-xl">
           <div className="mx-auto grid max-w-6xl gap-1">
             {NAV.map(([href, label]) => (
               <Link key={href} href={href} onClick={() => setOpen(false)} className={`rounded-xl px-3 py-2.5 font-semibold ${active(path, href) ? "bg-brand-soft text-brand" : ""}`}>{label}</Link>
@@ -52,9 +52,9 @@ export function BottomNav() {
   const path = usePathname();
   if (path.startsWith("/thi/") || path.startsWith("/admin")) return null;
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-stone-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
       {TABS.map(([href, icon, label]) => (
-        <Link key={href} href={href} className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold ${active(path, href) ? "text-brand" : "text-stone-500"}`}>
+        <Link key={href} href={href} className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold ${active(path, href) ? "text-brand" : "text-slate-500"}`}>
           <Icon name={icon} className="h-5 w-5" />{label}
         </Link>
       ))}

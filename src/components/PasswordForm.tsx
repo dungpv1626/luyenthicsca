@@ -13,18 +13,18 @@ export function PasswordForm({ title, intro, fields, action, submit, footer }: {
   return (
     <form action={formAction} className="card mx-auto max-w-md space-y-4 !p-7 shadow-soft">
       <h1 className="text-2xl font-extrabold">{title}</h1>
-      {intro && <p className="text-sm text-stone-600">{intro}</p>}
+      {intro && <p className="text-sm text-slate-600">{intro}</p>}
       {fields.map((f) => (
         <div key={f.name}>
           <label className="label" htmlFor={f.name}>{f.label}</label>
           <input id={f.name} name={f.name} type={f.type === "email" ? "email" : show ? "text" : "password"} autoComplete={f.autoComplete} required className="input" />
         </div>
       ))}
-      {hasPw && <label className="flex items-center gap-2 text-sm text-stone-600"><input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} />Hiện mật khẩu</label>}
+      {hasPw && <label className="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} />Hiện mật khẩu</label>}
       {state?.error && <p role="alert" className="rounded-lg bg-red-50 p-2.5 text-sm text-red-700">{state.error}</p>}
       {state?.ok && <p role="status" className="rounded-lg bg-emerald-50 p-2.5 text-sm text-emerald-800">{state.ok}</p>}
       <button disabled={pending} className="btn w-full">{pending ? "Đang xử lý…" : submit}</button>
-      {footer && <div className="text-center text-sm text-stone-600">{footer}</div>}
+      {footer && <div className="text-center text-sm text-slate-600">{footer}</div>}
     </form>
   );
 }

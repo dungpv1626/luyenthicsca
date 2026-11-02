@@ -19,8 +19,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   return (
     <div className="card mx-auto max-w-xl space-y-3 !p-7 shadow-soft">
       <h1 className="text-2xl font-bold">{t.title}</h1>
-      <p className="text-stone-600">{t.description}</p>
-      <ul className="text-sm text-stone-600"><li>{count ?? 0} câu hỏi</li><li>{t.duration_min} phút</li><li>Giá: <b className="text-ink">{vnd(t.price_vnd)}</b></li></ul>
+      <p className="text-slate-600">{t.description}</p>
+      <ul className="text-sm text-slate-600"><li>{count ?? 0} câu hỏi</li><li>{t.duration_min} phút</li><li>Giá: <b className="text-ink">{vnd(t.price_vnd)}</b></li></ul>
       {!me ? (
         <Link href={`/dang-nhap?next=/thi-thu/${id}`} className="btn">Đăng nhập để làm bài</Link>
       ) : access ? (

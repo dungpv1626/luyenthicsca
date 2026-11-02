@@ -29,8 +29,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <PageHeader en={c.title} vi={c.level ?? "Khóa học"}>{c.description}</PageHeader>
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <section className="card !p-0">
-          <h2 className="border-b border-stone-100 p-5 font-bold">Nội dung ({total} bài)</h2>
-          <ol className="divide-y divide-stone-100">
+          <h2 className="border-b border-slate-100 p-5 font-bold">Nội dung ({total} bài)</h2>
+          <ol className="divide-y divide-slate-100">
             {(lessons ?? []).map((l, i) => {
               const open = access || l.is_free_preview;
               return (
@@ -41,25 +41,25 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                       <span className="flex-1 font-medium">{l.title}</span>{!access && <span className="chip">Học thử</span>}
                     </Link>
                   ) : (
-                    <div className="flex items-center gap-3 p-4 text-stone-400"><span className="grid h-8 w-8 place-items-center rounded-full bg-stone-100"><Icon name="lock" className="h-4 w-4" /></span><span className="flex-1">{l.title}</span></div>
+                    <div className="flex items-center gap-3 p-4 text-slate-400"><span className="grid h-8 w-8 place-items-center rounded-full bg-slate-100"><Icon name="lock" className="h-4 w-4" /></span><span className="flex-1">{l.title}</span></div>
                   )}
                 </li>
               );
             })}
           </ol>
-          {!total && <p className="p-5 text-sm text-stone-500">Khóa học đang được cập nhật bài giảng.</p>}
+          {!total && <p className="p-5 text-sm text-slate-500">Khóa học đang được cập nhật bài giảng.</p>}
         </section>
         <aside className="space-y-4">
           <div className="card">
             <p className="text-3xl font-black text-brand">{vnd(c.price_vnd)}</p>
             {access && me ? (<>
-              <div className="mt-3 h-2.5 rounded-full bg-stone-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div><p className="mt-1 text-xs text-stone-500">Tiến độ {pct}% ({doneSet.size}/{total})</p>
+              <div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div><p className="mt-1 text-xs text-slate-500">Tiến độ {pct}% ({doneSet.size}/{total})</p>
               {first && <Link href={`/academy/${id}/hoc/${first.id}`} className="btn mt-4 w-full">{doneSet.size ? "Tiếp tục học" : "Bắt đầu học"}</Link>}
             </>) : me ? (
               <form action={buyCourseAction.bind(null, id)}><button className="btn mt-4 w-full">Đăng ký khóa học</button></form>
             ) : <Link href={`/dang-nhap?next=/academy/${id}`} className="btn mt-4 w-full">Đăng nhập để đăng ký</Link>}
           </div>
-          {t && <div className="card"><p className="eyebrow">Giáo viên</p><p className="mt-1 font-bold">{t.name}</p><p className="text-sm text-brand">{t.title}</p><p className="mt-2 text-sm text-stone-600">{t.bio}</p></div>}
+          {t && <div className="card"><p className="eyebrow">Giáo viên</p><p className="mt-1 font-bold">{t.name}</p><p className="text-sm text-brand">{t.title}</p><p className="mt-2 text-sm text-slate-600">{t.bio}</p></div>}
         </aside>
       </div>
     </div>

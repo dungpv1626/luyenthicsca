@@ -35,7 +35,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
               : f.type === "ref" ? <select name={f.name} defaultValue={(val(f.name) as string) ?? ""} className="input" required={f.required}><option value="">—</option>{refs[f.name]?.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}</select>
               : f.type === "tags" ? <input name={f.name} defaultValue={((val(f.name) as string[]) ?? []).join(", ")} className="input" />
               : <input name={f.name} type={f.type === "number" ? "number" : f.type === "date" ? "date" : "text"} min={f.min} max={f.max} defaultValue={(val(f.name) as string | number) ?? (f.type === "number" && !f.nullable ? 0 : "")} required={f.required} className="input" />}
-            {f.help && <p className="mt-1 text-xs text-stone-500">{f.help}</p>}
+            {f.help && <p className="mt-1 text-xs text-slate-500">{f.help}</p>}
           </div>
         ))}
         <button className="btn">Lưu</button>

@@ -11,7 +11,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ i
     db.from("scholarships").select("school_id").eq("is_active", true),
   ]);
   const cols = list.map((id) => schools?.find((s) => s.id === id)).filter(Boolean) as NonNullable<typeof schools>;
-  const pct = (v: number | null) => (v === null ? <span className="text-stone-400">Đang cập nhật</span> : <b>{v}%</b>);
+  const pct = (v: number | null) => (v === null ? <span className="text-slate-400">Đang cập nhật</span> : <b>{v}%</b>);
   const rows: [string, (s: (typeof cols)[number]) => React.ReactNode][] = [
     ["Thành phố", (s) => s.city ?? "—"], ["Loại hình", (s) => s.kind ?? "—"],
     ["Yêu cầu CSCA", (s) => (s.csca_required ? "Có" : "Không")],
@@ -28,12 +28,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ i
       ) : (
         <div className="card overflow-x-auto !p-0">
           <table className="w-full min-w-[32rem] text-sm">
-            <thead><tr className="bg-brand-soft"><th className="p-4 text-left" />{cols.map((s) => <th key={s.id} className="p-4 text-left"><Link href={`/truong/${s.id}`} className="font-bold text-brand hover:underline">{s.name}</Link><div className="text-xs font-normal text-stone-500">{s.name_zh}</div></th>)}</tr></thead>
-            <tbody>{rows.map(([label, f]) => <tr key={label} className="border-t border-stone-100"><th className="p-4 text-left font-semibold text-stone-500">{label}</th>{cols.map((s) => <td key={s.id} className="p-4">{f(s)}</td>)}</tr>)}</tbody>
+            <thead><tr className="bg-brand-soft"><th className="p-4 text-left" />{cols.map((s) => <th key={s.id} className="p-4 text-left"><Link href={`/truong/${s.id}`} className="font-bold text-brand hover:underline">{s.name}</Link><div className="text-xs font-normal text-slate-500">{s.name_zh}</div></th>)}</tr></thead>
+            <tbody>{rows.map(([label, f]) => <tr key={label} className="border-t border-slate-100"><th className="p-4 text-left font-semibold text-slate-500">{label}</th>{cols.map((s) => <td key={s.id} className="p-4">{f(s)}</td>)}</tr>)}</tbody>
           </table>
         </div>
       )}
-      <p className="mt-3 text-xs text-stone-500">Mức chuẩn là % số câu đúng tham khảo do đội ngũ tổng hợp, không phải điểm CSCA chính thức. Luôn đối chiếu thông báo tuyển sinh của trường.</p>
+      <p className="mt-3 text-xs text-slate-500">Mức chuẩn là % số câu đúng tham khảo do đội ngũ tổng hợp, không phải điểm CSCA chính thức. Luôn đối chiếu thông báo tuyển sinh của trường.</p>
     </div>
   );
 }

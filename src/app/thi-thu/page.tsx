@@ -32,10 +32,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
     const b = best.get(t.id);
     return (
       <Link href={`/thi-thu/${t.id}`} className="card card-hover flex flex-col">
-        <div className="flex flex-wrap gap-1.5"><span className="chip">{t.scope === "full" ? "Tổng hợp" : (SUBJECTS[t.subject as keyof typeof SUBJECTS] ?? "").split(" (")[0] || "Đề thi"}</span>{t.price_vnd === 0 && <span className="chip !bg-emerald-50 !text-emerald-700">Miễn phí</span>}{b !== undefined && <span className="chip !bg-stone-100 !text-stone-600">Đã làm</span>}</div>
+        <div className="flex flex-wrap gap-1.5"><span className="chip">{t.scope === "full" ? "Tổng hợp" : (SUBJECTS[t.subject as keyof typeof SUBJECTS] ?? "").split(" (")[0] || "Đề thi"}</span>{t.price_vnd === 0 && <span className="chip !bg-emerald-50 !text-emerald-700">Miễn phí</span>}{b !== undefined && <span className="chip !bg-slate-100 !text-slate-600">Đã làm</span>}</div>
         <h3 className="mt-2 font-bold">{t.title}</h3>
-        <p className="mt-1 line-clamp-2 text-sm text-stone-600">{t.description}</p>
-        <p className="mt-auto flex items-center justify-between pt-4 text-sm"><span className="flex items-center gap-1 text-stone-500"><Icon name="clock" className="h-4 w-4" />{count(t)} câu · {t.duration_min}′</span><b>{t.price_vnd ? vnd(t.price_vnd) : b !== undefined ? `Cao nhất ${b}/100` : "Miễn phí"}</b></p>
+        <p className="mt-1 line-clamp-2 text-sm text-slate-600">{t.description}</p>
+        <p className="mt-auto flex items-center justify-between pt-4 text-sm"><span className="flex items-center gap-1 text-slate-500"><Icon name="clock" className="h-4 w-4" />{count(t)} câu · {t.duration_min}′</span><b>{t.price_vnd ? vnd(t.price_vnd) : b !== undefined ? `Cao nhất ${b}/100` : "Miễn phí"}</b></p>
       </Link>
     );
   };
@@ -51,23 +51,23 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 text-sm">{FILTERS.map(([k, label]) => <Link key={k} href={k ? `?mon=${k}` : "?"} className={`rounded-full px-4 py-1.5 font-semibold ${mon === k ? "bg-brand text-white" : "border border-stone-200 hover:border-brand hover:text-brand"}`}>{label}</Link>)}</div>
+      <div className="flex flex-wrap gap-2 text-sm">{FILTERS.map(([k, label]) => <Link key={k} href={k ? `?mon=${k}` : "?"} className={`rounded-full px-4 py-1.5 font-semibold ${mon === k ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand"}`}>{label}</Link>)}</div>
 
       <section>
-        <div className="grid gap-4 md:grid-cols-3"><Link href="/quick-test" className="card card-hover !border-brand/30 bg-gradient-to-br from-brand-soft to-white"><span className="chip">MIỄN PHÍ</span><h3 className="mt-2 font-bold">Quick Test</h3><p className="mt-1 text-sm text-stone-600">{QUICK_TEST.questions} câu · {QUICK_TEST.minutes} phút · AI phân tích ngay. Bắt đầu từ đây để biết cấp của bạn.</p></Link></div>
+        <div className="grid gap-4 md:grid-cols-3"><Link href="/quick-test" className="card card-hover !border-brand/30 bg-gradient-to-br from-brand-soft to-white"><span className="chip">MIỄN PHÍ</span><h3 className="mt-2 font-bold">Quick Test</h3><p className="mt-1 text-sm text-slate-600">{QUICK_TEST.questions} câu · {QUICK_TEST.minutes} phút · AI phân tích ngay. Bắt đầu từ đây để biết cấp của bạn.</p></Link></div>
       </section>
 
       {leveled.map(({ l, list }) => (
         <section key={l.level} id={`cap-${l.level}`}>
           <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-            <div><p className="eyebrow">Cấp {l.level} {rec === l.level && me ? "· Gợi ý cho bạn" : ""}</p><h2 className="text-xl font-extrabold">{l.name}</h2><p className="text-sm text-stone-500">{l.tagline} · {mixText(l.mix)} · điểm gợi ý: {l.range}</p></div>
+            <div><p className="eyebrow">Cấp {l.level} {rec === l.level && me ? "· Gợi ý cho bạn" : ""}</p><h2 className="text-xl font-extrabold">{l.name}</h2><p className="text-sm text-slate-500">{l.tagline} · {mixText(l.mix)} · điểm gợi ý: {l.range}</p></div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{list.map((t) => <Card key={t.id} t={t} />)}</div>
         </section>
       ))}
 
       {others.length > 0 && <section><h2 className="mb-3 text-xl font-extrabold">Đề khác</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{others.map((t) => <Card key={t.id} t={t} />)}</div></section>}
-      {!tests.length && <p className="text-stone-500">Chưa có đề thi nào được công bố {mon ? "cho lựa chọn này" : ""}.</p>}
+      {!tests.length && <p className="text-slate-500">Chưa có đề thi nào được công bố {mon ? "cho lựa chọn này" : ""}.</p>}
     </div>
   );
 }

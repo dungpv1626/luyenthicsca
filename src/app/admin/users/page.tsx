@@ -12,13 +12,13 @@ export default async function Page() {
       <div className="card divide-y p-0">
         {data?.map((u) => (
           <div key={u.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">
-            <div className="flex-1"><p className="font-medium">{u.full_name || "(chưa có tên)"}</p><p className="text-stone-500">{u.phone ?? "—"} · {AUDIENCES[u.audience as keyof typeof AUDIENCES] ?? "—"} · {u.target ?? "—"}</p></div>
+            <div className="flex-1"><p className="font-medium">{u.full_name || "(chưa có tên)"}</p><p className="text-slate-500">{u.phone ?? "—"} · {AUDIENCES[u.audience as keyof typeof AUDIENCES] ?? "—"} · {u.target ?? "—"}</p></div>
             {me.role === "super_admin" && u.id !== me.id ? (
               <form action={setUserRole.bind(null, u.id)} className="flex gap-1">
                 <select name="role" defaultValue={u.role} className="input w-auto py-1">{Object.entries(ROLES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
                 <button className="btn-outline py-1">Lưu</button>
               </form>
-            ) : <span className="rounded bg-stone-100 px-2 py-0.5">{ROLES[u.role as keyof typeof ROLES]}</span>}
+            ) : <span className="rounded bg-slate-100 px-2 py-0.5">{ROLES[u.role as keyof typeof ROLES]}</span>}
           </div>
         ))}
       </div>

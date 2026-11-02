@@ -18,7 +18,7 @@ export default async function Page() {
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Dashboard</h1>
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {cards.map(([l, v]) => <div key={l as string} className="card"><p className="text-sm text-stone-500">{l}</p><p className="text-2xl font-bold">{v}</p></div>)}
+        {cards.map(([l, v]) => <div key={l as string} className="card"><p className="text-sm text-slate-500">{l}</p><p className="text-2xl font-bold">{v}</p></div>)}
       </div>
     </div>
   );

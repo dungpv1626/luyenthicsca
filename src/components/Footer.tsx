@@ -9,7 +9,7 @@ const COLS = [
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-brand-dark pb-20 text-white lg:pb-0">
+    <footer className="mt-16 bg-navy pb-20 text-white lg:pb-0">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
           <Logo light />

@@ -13,7 +13,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   return (
     <div className="grid gap-6 md:grid-cols-[180px_1fr]">
       <nav className="card h-fit space-y-1 text-sm">
-        {LINKS.filter(([, , a]) => (ADMIN_AREAS[a] as readonly string[]).includes(me.role)).map(([h, l]) => <Link key={h} href={h} className="block rounded px-2 py-1 hover:bg-stone-100">{l}</Link>)}
+        {LINKS.filter(([, , a]) => (ADMIN_AREAS[a] as readonly string[]).includes(me.role)).map(([h, l]) => <Link key={h} href={h} className="block rounded px-2 py-1 hover:bg-slate-100">{l}</Link>)}
       </nav>
       <div>{children}</div>
     </div>

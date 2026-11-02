@@ -26,15 +26,15 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
           <div key={x.id} className="flex items-center gap-3 p-3 text-sm">
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{x.body}</p>
-              <p className="text-stone-500">{SUBJECTS[x.subject as Subject]} · {x.topic} · {DIFFICULTY[x.difficulty as keyof typeof DIFFICULTY]}</p>
+              <p className="text-slate-500">{SUBJECTS[x.subject as Subject]} · {x.topic} · {DIFFICULTY[x.difficulty as keyof typeof DIFFICULTY]}</p>
             </div>
-            <span className="rounded bg-stone-100 px-2 py-0.5">{STATUS_LABEL[x.status as keyof typeof STATUS_LABEL]}</span>
+            <span className="rounded bg-slate-100 px-2 py-0.5">{STATUS_LABEL[x.status as keyof typeof STATUS_LABEL]}</span>
             {canApprove && x.status !== "approved" && <form action={setQuestionStatus.bind(null, x.id, "approved")}><button className="text-green-700 hover:underline">Duyệt</button></form>}
             {x.status === "draft" && <form action={setQuestionStatus.bind(null, x.id, "review")}><button className="text-amber-700 hover:underline">Gửi duyệt</button></form>}
             <Link href={`/admin/questions/${x.id}`} className="text-brand hover:underline">Sửa</Link>
           </div>
         ))}
-        {!data?.length && <p className="p-4 text-stone-500">Chưa có câu hỏi.</p>}
+        {!data?.length && <p className="p-4 text-slate-500">Chưa có câu hỏi.</p>}
       </div>
     </div>
   );

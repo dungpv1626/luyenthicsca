@@ -12,14 +12,14 @@ export default async function Page() {
       <div className="card divide-y p-0">
         {data?.map((o) => (
           <div key={o.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">
-            <div className="flex-1"><p className="font-medium">{(o.tests as unknown as { title: string } | null)?.title ?? (o.courses as unknown as { title: string } | null)?.title} <span className="font-mono text-stone-400">{o.code}</span></p><p className="text-stone-500">{(o.profiles as unknown as { full_name: string } | null)?.full_name} · {new Date(o.created_at).toLocaleString("vi-VN")}</p></div>
+            <div className="flex-1"><p className="font-medium">{(o.tests as unknown as { title: string } | null)?.title ?? (o.courses as unknown as { title: string } | null)?.title} <span className="font-mono text-slate-400">{o.code}</span></p><p className="text-slate-500">{(o.profiles as unknown as { full_name: string } | null)?.full_name} · {new Date(o.created_at).toLocaleString("vi-VN")}</p></div>
             <b>{vnd(o.amount_vnd)}</b>
-            <span className="rounded bg-stone-100 px-2 py-0.5">{o.status}</span>
+            <span className="rounded bg-slate-100 px-2 py-0.5">{o.status}</span>
             {o.status === "pending" && <><form action={confirmOrder.bind(null, o.id)}><button className="text-green-700 hover:underline">Xác nhận đã thu</button></form><form action={setOrderStatus.bind(null, o.id, "cancelled")}><button className="text-red-700 hover:underline">Hủy</button></form></>}
             {o.status === "paid" && <form action={setOrderStatus.bind(null, o.id, "refunded")}><button className="text-red-700 hover:underline">Hoàn tiền</button></form>}
           </div>
         ))}
-        {!data?.length && <p className="p-4 text-stone-500">Chưa có đơn hàng.</p>}
+        {!data?.length && <p className="p-4 text-slate-500">Chưa có đơn hàng.</p>}
       </div>
     </div>
   );

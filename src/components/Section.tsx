@@ -9,7 +9,7 @@ export function SectionTitle({ en, vi, center = false, light = false }: { en: st
 
 export function PageHeader({ en, vi, children }: { en: string; vi: string; children?: React.ReactNode }) {
   return (
-    <header className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-brand to-brand-dark px-6 py-9 text-white md:px-10">
+    <header className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-navy to-brand px-6 py-9 text-white md:px-10">
       <div className="pointer-events-none absolute -right-10 -top-10 h-56 w-56 rounded-full bg-white/10" />
       <div className="pointer-events-none absolute -bottom-16 right-24 h-40 w-40 rounded-full bg-white/10" />
       <p className="eyebrow !text-white/70">{vi}</p>

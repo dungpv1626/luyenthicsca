@@ -5,7 +5,7 @@ import { DIFFICULTY, SUBJECTS, type Subject } from "@/lib/constants";
 import { Rich } from "@/components/Rich";
 import { reviewQuestionAction } from "../actions";
 
-const VERIFY = { pass: ["Giải độc lập: ĐẠT", "bg-emerald-50 text-emerald-700"], mismatch: ["Giải độc lập: LỆCH ĐÁP ÁN", "bg-red-50 text-red-700"], invalid: ["Lỗi cấu trúc", "bg-red-50 text-red-700"], unchecked: ["Chưa kiểm tra", "bg-stone-100 text-stone-600"] } as const;
+const VERIFY = { pass: ["Giải độc lập: ĐẠT", "bg-emerald-50 text-emerald-700"], mismatch: ["Giải độc lập: LỆCH ĐÁP ÁN", "bg-red-50 text-red-700"], invalid: ["Lỗi cấu trúc", "bg-red-50 text-red-700"], unchecked: ["Chưa kiểm tra", "bg-slate-100 text-slate-600"] } as const;
 type L = { body: string; options: Record<string, string>; explanation: string };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ subject?: string; verify?: string; skip?: string; need_note?: string }> }) {
@@ -27,7 +27,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">Duyệt câu hỏi <span className="text-sm font-normal text-stone-500">{count ?? 0} câu đang chờ</span></h1>
+        <h1 className="text-2xl font-bold">Duyệt câu hỏi <span className="text-sm font-normal text-slate-500">{count ?? 0} câu đang chờ</span></h1>
         <form className="flex gap-2 text-sm">
           <select name="subject" defaultValue={subject ?? ""} className="input w-auto"><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
           <select name="verify" defaultValue={verify ?? ""} className="input w-auto"><option value="">Mọi kết quả kiểm tra</option><option value="mismatch">Lệch đáp án</option><option value="invalid">Lỗi cấu trúc</option><option value="pass">Đạt</option><option value="unchecked">Chưa kiểm tra</option></select>
@@ -36,12 +36,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
       </div>
       {!canApprove && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Tài khoản của bạn có thể xem và loại câu, nhưng chỉ Academic Reviewer hoặc Super Admin mới được duyệt.</p>}
 
-      {!q ? <div className="card text-center text-stone-600">Hàng chờ trống. 🎉</div> : (
+      {!q ? <div className="card text-center text-slate-600">Hàng chờ trống. 🎉</div> : (
         <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
           <div className="space-y-3">
             <div className="card flex flex-wrap items-center gap-2 text-sm">
               <span className="chip">{SUBJECTS[q.subject as Subject]}</span><span className="chip">{q.topic}</span><span className="chip">{DIFFICULTY[q.difficulty as keyof typeof DIFFICULTY]}</span>
-              {q.skill && <span className="text-stone-500">Kỹ năng: {q.skill}</span>}<span className="text-stone-500">~{q.est_time_sec}s</span>
+              {q.skill && <span className="text-slate-500">Kỹ năng: {q.skill}</span>}<span className="text-slate-500">~{q.est_time_sec}s</span>
               {verifyInfo && <span className={`ml-auto rounded-full px-3 py-1 text-xs font-bold ${verifyInfo[1]}`}>{verifyInfo[0]}</span>}
             </div>
             {q.verify_note && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900"><b>Ghi chú tự động:</b> {q.verify_note}</p>}
@@ -50,13 +50,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
                 <p className="eyebrow mb-2">{label}</p>
                 <p className="font-medium"><Rich text={l.body} /></p>
                 <ul className="mt-2 space-y-1 text-sm">{(["A", "B", "C", "D"] as const).map((o) => <li key={o} className={o === q.correct_answer ? "rounded-lg bg-emerald-50 px-2 py-1 font-bold text-emerald-800" : "px-2 py-1"}>{o}. <Rich text={l.options[o]} /></li>)}</ul>
-                <p className="mt-2 text-sm text-stone-600">💡 <Rich text={l.explanation} /></p>
+                <p className="mt-2 text-sm text-slate-600">💡 <Rich text={l.explanation} /></p>
               </div>
             ))}
           </div>
 
           <aside className="card h-fit space-y-3 lg:sticky lg:top-24">
-            <p className="text-sm text-stone-600">Đáp án soạn: <b className="text-emerald-700">{q.correct_answer}</b>. Kiểm tra cả 3 ngôn ngữ có tương đương và đúng khoa học không.</p>
+            <p className="text-sm text-slate-600">Đáp án soạn: <b className="text-emerald-700">{q.correct_answer}</b>. Kiểm tra cả 3 ngôn ngữ có tương đương và đúng khoa học không.</p>
             {need_note && <p className="rounded-lg bg-red-50 p-2 text-sm text-red-700">Cần nhập lý do khi loại câu.</p>}
             <form action={reviewQuestionAction.bind(null, q.id, `/admin/review${qs ? `?${qs}` : ""}`)} className="space-y-3">
               <textarea name="note" rows={3} placeholder="Ghi chú / lý do loại (bắt buộc khi loại)" className="input" />
@@ -65,8 +65,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
                 <button name="decision" value="reject" className="btn-outline !border-red-300 !text-red-700">Loại</button>
               </div>
             </form>
-            <div className="flex justify-between text-sm"><Link href={`/admin/questions/${q.id}`} className="font-semibold text-brand hover:underline">Sửa câu hỏi</Link><Link href={`/admin/review?${new URLSearchParams({ ...(subject ? { subject } : {}), ...(verify ? { verify } : {}), skip: q.id })}`} className="text-stone-500 hover:underline">Bỏ qua</Link></div>
-            <p className="border-t border-stone-100 pt-2 text-xs text-stone-400">Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
+            <div className="flex justify-between text-sm"><Link href={`/admin/questions/${q.id}`} className="font-semibold text-brand hover:underline">Sửa câu hỏi</Link><Link href={`/admin/review?${new URLSearchParams({ ...(subject ? { subject } : {}), ...(verify ? { verify } : {}), skip: q.id })}`} className="text-slate-500 hover:underline">Bỏ qua</Link></div>
+            <p className="border-t border-slate-100 pt-2 text-xs text-slate-400">Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
           </aside>
         </div>
       )}

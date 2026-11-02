@@ -17,7 +17,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
         <form action={startQuickTestAction}><button className="btn w-full">Bắt đầu làm bài</button></form>
       ) : (
         <>
-          <p className="text-sm text-stone-600">Tạo tài khoản miễn phí (30 giây) để lưu kết quả và nhận báo cáo AI.</p>
+          <p className="text-sm text-slate-600">Tạo tài khoản miễn phí (30 giây) để lưu kết quả và nhận báo cáo AI.</p>
           <div className="flex justify-center gap-3">
             <Link href="/dang-ky?next=/quick-test" className="btn">Đăng ký</Link>
             <Link href="/dang-nhap?next=/quick-test" className="btn-outline">Đăng nhập</Link>

@@ -29,10 +29,10 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   return (
     <div className="space-y-6">
       <div className="card flex flex-col items-center text-center shadow-soft">
-        <p className="text-sm text-stone-500">{att.title}</p>
+        <p className="text-sm text-slate-500">{att.title}</p>
         <p className="eyebrow mt-1">CSCA Readiness Score</p>
         <ScoreRing value={att.readiness ?? 0} size={150} />
-        <p className="mt-2 text-stone-600">Đúng {att.score}/{b.total} câu · Chính xác {b.accuracy}% · Tốc độ {b.speed}%</p>
+        <p className="mt-2 text-slate-600">Đúng {att.score}/{b.total} câu · Chính xác {b.accuracy}% · Tốc độ {b.speed}%</p>
       </div>
 
       <div className="card">
@@ -41,23 +41,23 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           {Object.entries(b.bySubject).map(([s, v]) => (
             <div key={s}>
               <div className="flex justify-between text-sm"><span>{SUBJECTS[s as Subject]}</span><span>{v.correct}/{v.total} ({v.pct}%)</span></div>
-              <div className="h-2 rounded bg-stone-100"><div className="h-2 rounded bg-brand" style={{ width: `${v.pct}%` }} /></div>
+              <div className="h-2 rounded bg-slate-100"><div className="h-2 rounded bg-brand" style={{ width: `${v.pct}%` }} /></div>
             </div>
           ))}
         </div>
       </div>
 
       <div className="card space-y-3">
-        <h2 className="text-lg font-bold">Phân tích AI {ai.source === "claude" ? "" : <span className="text-xs font-normal text-stone-400">(tự động)</span>}</h2>
+        <h2 className="text-lg font-bold">Phân tích AI {ai.source === "claude" ? "" : <span className="text-xs font-normal text-slate-400">(tự động)</span>}</h2>
         <p>{ai.summary}</p>
         {ai.strengths.length > 0 && <div><h3 className="font-semibold text-green-700">Điểm mạnh</h3><ul className="list-disc pl-6">{ai.strengths.map((s) => <li key={s}>{s}</li>)}</ul></div>}
         {ai.weaknesses.length > 0 && <div><h3 className="font-semibold text-red-700">Cần cải thiện</h3><ul className="list-disc pl-6">{ai.weaknesses.map((w) => <li key={w.topic}><b>{w.topic}:</b> {w.advice}</li>)}</ul></div>}
         <div><h3 className="font-semibold">Việc nên làm tiếp</h3><ol className="list-decimal pl-6">{ai.next_steps.map((s) => <li key={s}>{s}</li>)}</ol></div>
-        {b.weaknesses.length > 0 && <p className="text-sm text-stone-500">Chủ đề yếu: {b.weaknesses.map(topicLabel).join(" · ")}</p>}
+        {b.weaknesses.length > 0 && <p className="text-sm text-slate-500">Chủ đề yếu: {b.weaknesses.map(topicLabel).join(" · ")}</p>}
       </div>
 
       <div className="card">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-bold">Xem lại từng câu</h2><div className="flex rounded-full border border-stone-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={`?lang=${k}`} className={`rounded-full px-3 py-1 ${lang === k ? "bg-brand text-white" : "text-stone-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-bold">Xem lại từng câu</h2><div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={`?lang=${k}`} className={`rounded-full px-3 py-1 ${lang === k ? "bg-brand text-white" : "text-slate-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
         <div className="space-y-4">
           {review.map((q, i) => {
             const mine = ans[q.id];
@@ -73,8 +73,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                   ))}
                 </ul>
                 <p className="mt-1 text-sm">Bạn chọn: <b>{mine ?? "—"}</b> · Đáp án: <b>{q.correct_answer}</b></p>
-                {view.explanation && <p className="mt-1 text-sm text-stone-700">💡 <Rich text={view.explanation} /></p>}
-                <details className="mt-2"><summary className="cursor-pointer text-sm font-bold text-brand">Hỏi Gia sư AI về câu này</summary><div className="mt-2 rounded-xl border border-stone-200 bg-white"><TutorChat compact ctx={{ attemptId, questionId: q.id }} suggestions={["Giải thích chi tiết từng bước", "Vì sao các đáp án còn lại sai?", "Cho mình một câu tương tự"]} /></div></details>
+                {view.explanation && <p className="mt-1 text-sm text-slate-700">💡 <Rich text={view.explanation} /></p>}
+                <details className="mt-2"><summary className="cursor-pointer text-sm font-bold text-brand">Hỏi Gia sư AI về câu này</summary><div className="mt-2 rounded-xl border border-slate-200 bg-white"><TutorChat compact ctx={{ attemptId, questionId: q.id }} suggestions={["Giải thích chi tiết từng bước", "Vì sao các đáp án còn lại sai?", "Cho mình một câu tương tự"]} /></div></details>
               </div>
             );
           })}

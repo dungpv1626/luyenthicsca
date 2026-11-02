@@ -27,11 +27,11 @@ export default async function Page({ params }: { params: Promise<{ orderId: stri
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={vietQrUrl(o.amount_vnd, o.code)} alt="Mã VietQR" className="mx-auto w-64" />
           <p className="text-sm">Quét mã QR hoặc chuyển khoản với nội dung chính xác:</p>
-          <p className="rounded bg-stone-100 p-2 font-mono text-lg font-bold">{o.code}</p>
-          <p className="text-sm text-stone-500">Hệ thống tự mở khóa sau khi nhận được tiền (thường trong vài phút). Tải lại trang để kiểm tra.</p>
+          <p className="rounded bg-slate-100 p-2 font-mono text-lg font-bold">{o.code}</p>
+          <p className="text-sm text-slate-500">Hệ thống tự mở khóa sau khi nhận được tiền (thường trong vài phút). Tải lại trang để kiểm tra.</p>
         </>
       ) : (
-        <p className="text-stone-500">Đơn hàng đã {o.status === "cancelled" ? "bị hủy" : "được hoàn tiền"}.</p>
+        <p className="text-slate-500">Đơn hàng đã {o.status === "cancelled" ? "bị hủy" : "được hoàn tiền"}.</p>
       )}
     </div>
   );

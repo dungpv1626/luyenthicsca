@@ -16,9 +16,9 @@ export default async function Page({ params }: { params: Promise<{ resource: str
     <div className="space-y-4">
       <div className="flex items-center justify-between"><h1 className="text-2xl font-bold">{r.title}</h1><Link href={`/admin/data/${resource}/new`} className="btn">+ Thêm</Link></div>
       <div className="card overflow-x-auto !p-0">
-        <table className="w-full text-sm"><thead><tr className="bg-stone-50 text-left">{r.columns.map((c) => <th key={c} className="p-3 font-semibold">{label(c)}</th>)}<th /></tr></thead>
-          <tbody>{(data ?? []).map((row) => <tr key={row.id} className="border-t border-stone-100">{r.columns.map((c) => <td key={c} className="p-3">{show(row[c])}</td>)}<td className="p-3 text-right"><Link href={`/admin/data/${resource}/${row.id}`} className="font-semibold text-brand hover:underline">Sửa</Link></td></tr>)}</tbody></table>
-        {!data?.length && <p className="p-5 text-stone-500">Chưa có dữ liệu.</p>}
+        <table className="w-full text-sm"><thead><tr className="bg-slate-50 text-left">{r.columns.map((c) => <th key={c} className="p-3 font-semibold">{label(c)}</th>)}<th /></tr></thead>
+          <tbody>{(data ?? []).map((row) => <tr key={row.id} className="border-t border-slate-100">{r.columns.map((c) => <td key={c} className="p-3">{show(row[c])}</td>)}<td className="p-3 text-right"><Link href={`/admin/data/${resource}/${row.id}`} className="font-semibold text-brand hover:underline">Sửa</Link></td></tr>)}</tbody></table>
+        {!data?.length && <p className="p-5 text-slate-500">Chưa có dữ liệu.</p>}
       </div>
     </div>
   );

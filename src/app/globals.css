@@ -1,43 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #c8102e;
-  --color-brand-dark: #8f0a22;
-  --color-brand-soft: #fdeff1;
-  --color-ink: #1a1517;
-  --color-mist: #f6f3f3;
+  /* Bảng màu: nền #F8FAFC · chữ #1E293B · menu/tiêu đề #1E3A8A · nút #2563EB */
+  --color-brand: #2563eb;        /* nút hành động, liên kết */
+  --color-brand-dark: #1d4ed8;   /* hover */
+  --color-brand-soft: #eff6ff;   /* nền nhạt cho chip, hàng đang chọn */
+  --color-navy: #1e3a8a;         /* thanh menu, tiêu đề, chân trang */
+  --color-ink: #1e293b;          /* chữ chính */
+  --color-canvas: #f8fafc;       /* nền chính */
+  --color-mist: #f1f5f9;
   --font-sans: "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --shadow-soft: 0 10px 30px -12px rgb(143 10 34 / 0.25);
+  --shadow-soft: 0 10px 30px -12px rgb(30 58 138 / 0.28);
 }
 
 html { scroll-behavior: smooth; }
-body { @apply bg-white text-ink antialiased; font-family: var(--font-sans); }
-::selection { background: #c8102e; color: white; }
+body { @apply bg-canvas text-ink antialiased; font-family: var(--font-sans); }
+::selection { background: #2563eb; color: white; }
 
 @layer components {
 /* nút */
 .btn { @apply inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-brand-dark disabled:opacity-50 disabled:hover:translate-y-0; }
-.btn-outline { @apply inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-full border border-stone-300 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand; }
-.btn-light { @apply inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-brand shadow-lg transition hover:-translate-y-0.5 hover:bg-brand-soft; }
+.btn-outline { @apply inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand; }
+.btn-light { @apply inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-navy shadow-lg transition hover:-translate-y-0.5 hover:bg-brand-soft; }
 .btn-ghost-light { @apply inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-full border border-white/60 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white/10; }
 
 /* thẻ & form */
-.card { @apply rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm; }
+.card { @apply rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm; }
 .card-hover { @apply transition duration-200 hover:-translate-y-1 hover:border-brand/40 hover:shadow-soft; }
-.input { @apply w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10; }
-.label { @apply mb-1.5 block text-sm font-medium text-stone-700; }
+.input { @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10; }
+.label { @apply mb-1.5 block text-sm font-medium text-slate-700; }
 .chip { @apply inline-flex items-center rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-semibold text-brand; }
 }
 
 @layer components {
 /* tiêu đề kiểu cổng thông tin: tiếng Anh in hoa lớn + phụ đề tiếng Việt giãn chữ */
 .eyebrow { @apply text-xs font-bold uppercase tracking-[0.2em] text-brand; }
-.display { @apply text-3xl font-extrabold uppercase leading-[1.05] tracking-tight text-brand md:text-5xl; }
-.subtitle { @apply mt-2 text-sm font-medium uppercase tracking-[0.35em] text-stone-500; }
+.display { @apply text-3xl font-extrabold uppercase leading-[1.05] tracking-tight text-navy md:text-5xl; }
+.subtitle { @apply mt-2 text-sm font-medium uppercase tracking-[0.35em] text-slate-500; }
 }
 
 /* nền chấm bi và hình khối trang trí */
-.dots { background-image: radial-gradient(#c8102e22 1.2px, transparent 1.2px); background-size: 18px 18px; }
+.dots { background-image: radial-gradient(#2563eb26 1.2px, transparent 1.2px); background-size: 18px 18px; }
 .hero-diagonal { clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%); }
 @media (max-width: 767px) { .hero-diagonal { clip-path: none; } }
 

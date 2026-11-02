@@ -35,29 +35,29 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="card flex items-center gap-5"><ScoreRing value={sk.latestReadiness ?? 0} size={110} /><div><p className="eyebrow">Readiness</p><p className="text-sm text-stone-600">{sk.latestReadiness === null ? "Chưa có bài thi" : plan && gap !== null ? (gap > 0 ? `Còn ${gap} điểm tới mục tiêu ${plan.target_readiness}` : "Đã đạt mục tiêu 🎉") : "Điểm sẵn sàng gần nhất"}</p></div></div>
-        <div className="card"><p className="eyebrow">Mục tiêu & kỳ thi</p><p className="mt-2 font-bold">{prof?.target || "Chưa đặt mục tiêu"}</p><p className="text-sm text-stone-600">{prof?.exam_date ? `${new Date(prof.exam_date).toLocaleDateString("vi-VN")}${days !== null && days >= 0 ? ` · còn ${days} ngày` : ""}` : "Chưa đặt ngày thi"}</p><Link href="/don-hang" className="mt-3 inline-block text-sm font-semibold text-brand">Đơn hàng của tôi →</Link></div>
-        <div className="card"><p className="eyebrow">Điểm yếu hàng đầu</p>{sk.weak.length ? <ol className="mt-2 space-y-1 text-sm">{sk.weak.slice(0, 3).map((t, i) => <li key={t.subject + t.topic} className="flex justify-between"><span><b className="text-brand">{i + 1}.</b> {t.topic}</span><span className="text-stone-500">{t.pct}%</span></li>)}</ol> : <p className="mt-2 text-sm text-stone-500">Chưa đủ dữ liệu.</p>}<Link href="/ai" className="mt-3 inline-block text-sm font-semibold text-brand">Xem hồ sơ AI →</Link></div>
+        <div className="card flex items-center gap-5"><ScoreRing value={sk.latestReadiness ?? 0} size={110} /><div><p className="eyebrow">Readiness</p><p className="text-sm text-slate-600">{sk.latestReadiness === null ? "Chưa có bài thi" : plan && gap !== null ? (gap > 0 ? `Còn ${gap} điểm tới mục tiêu ${plan.target_readiness}` : "Đã đạt mục tiêu 🎉") : "Điểm sẵn sàng gần nhất"}</p></div></div>
+        <div className="card"><p className="eyebrow">Mục tiêu & kỳ thi</p><p className="mt-2 font-bold">{prof?.target || "Chưa đặt mục tiêu"}</p><p className="text-sm text-slate-600">{prof?.exam_date ? `${new Date(prof.exam_date).toLocaleDateString("vi-VN")}${days !== null && days >= 0 ? ` · còn ${days} ngày` : ""}` : "Chưa đặt ngày thi"}</p><Link href="/don-hang" className="mt-3 inline-block text-sm font-semibold text-brand">Đơn hàng của tôi →</Link></div>
+        <div className="card"><p className="eyebrow">Điểm yếu hàng đầu</p>{sk.weak.length ? <ol className="mt-2 space-y-1 text-sm">{sk.weak.slice(0, 3).map((t, i) => <li key={t.subject + t.topic} className="flex justify-between"><span><b className="text-brand">{i + 1}.</b> {t.topic}</span><span className="text-slate-500">{t.pct}%</span></li>)}</ol> : <p className="mt-2 text-sm text-slate-500">Chưa đủ dữ liệu.</p>}<Link href="/ai" className="mt-3 inline-block text-sm font-semibold text-brand">Xem hồ sơ AI →</Link></div>
       </div>
 
       <section className="card">
         <div className="mb-3 flex items-center justify-between"><h2 className="font-bold">Nhiệm vụ hôm nay</h2><Link href="/lo-trinh" className="text-sm font-semibold text-brand">Lộ trình →</Link></div>
         {!plan ? <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-brand-soft p-4"><p className="text-sm">Chưa có lộ trình học. Để AI lên kế hoạch theo điểm yếu của bạn.</p><Link href="/lo-trinh" className="btn"><Icon name="sparkles" className="h-4 w-4" />Tạo lộ trình</Link></div>
-          : todo.length === 0 ? <p className="text-sm text-stone-600">Bạn đã hoàn thành nhiệm vụ hôm nay. 🎉</p>
-          : <ul className="divide-y divide-stone-100">{todo.slice(0, 6).map((t) => (
+          : todo.length === 0 ? <p className="text-sm text-slate-600">Bạn đã hoàn thành nhiệm vụ hôm nay. 🎉</p>
+          : <ul className="divide-y divide-slate-100">{todo.slice(0, 6).map((t) => (
               <li key={t.id} className="flex items-center gap-3 py-2.5">
-                <form action={toggleTaskAction.bind(null, t.id, true)}><button className="grid h-6 w-6 place-items-center rounded-full border border-stone-300 text-transparent hover:border-brand hover:text-brand" aria-label="Hoàn thành"><Icon name="check" className="h-3.5 w-3.5" /></button></form>
-                <div className="min-w-0 flex-1"><p className="truncate font-medium">{t.title}</p><p className="text-xs text-stone-500">{subjectName(t.subject)}{t.due_date < today && <span className="ml-2 font-semibold text-brand">Quá hạn</span>}</p></div>
+                <form action={toggleTaskAction.bind(null, t.id, true)}><button className="grid h-6 w-6 place-items-center rounded-full border border-slate-300 text-transparent hover:border-brand hover:text-brand" aria-label="Hoàn thành"><Icon name="check" className="h-3.5 w-3.5" /></button></form>
+                <div className="min-w-0 flex-1"><p className="truncate font-medium">{t.title}</p><p className="text-xs text-slate-500">{subjectName(t.subject)}{t.due_date < today && <span className="ml-2 font-semibold text-red-600">Quá hạn</span>}</p></div>
                 <form action={startTaskAction.bind(null, t.id)}><button className="btn !px-4 !py-1.5">Làm ngay</button></form>
               </li>))}</ul>}
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="card"><h2 className="mb-2 font-bold">Tiến bộ</h2>{sk.attempts.length ? <LineChart points={sk.attempts.slice(-6).map((a, i, arr) => ({ label: `#${sk.attempts.length - arr.length + i + 1}`, value: a.readiness }))} /> : <p className="text-sm text-stone-500">Làm Quick Test để bắt đầu theo dõi tiến bộ.</p>}</section>
+        <section className="card"><h2 className="mb-2 font-bold">Tiến bộ</h2>{sk.attempts.length ? <LineChart points={sk.attempts.slice(-6).map((a, i, arr) => ({ label: `#${sk.attempts.length - arr.length + i + 1}`, value: a.readiness }))} /> : <p className="text-sm text-slate-500">Làm Quick Test để bắt đầu theo dõi tiến bộ.</p>}</section>
         <section className="card"><h2 className="mb-3 font-bold">Kết quả theo môn</h2><SubjectBars profile={sk} /></section>
       </div>
 
-      {!!recent?.length && <section className="card"><h2 className="mb-2 font-bold">Bài làm gần đây</h2><ul className="divide-y divide-stone-100">{recent.map((a) => <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex justify-between py-2.5 hover:text-brand"><span>{a.title} <span className="text-xs text-stone-400">{new Date(a.submitted_at!).toLocaleDateString("vi-VN")}</span></span><b>{a.readiness}/100</b></Link></li>)}</ul></section>}
+      {!!recent?.length && <section className="card"><h2 className="mb-2 font-bold">Bài làm gần đây</h2><ul className="divide-y divide-slate-100">{recent.map((a) => <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex justify-between py-2.5 hover:text-brand"><span>{a.title} <span className="text-xs text-slate-400">{new Date(a.submitted_at!).toLocaleDateString("vi-VN")}</span></span><b>{a.readiness}/100</b></Link></li>)}</ul></section>}
     </div>
   );
 }
