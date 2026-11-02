@@ -118,15 +118,18 @@ export default async function Home() {
       </section>
 
       {/* ===== QUY TRÌNH ===== */}
-      <section>
-        <Reveal><SectionTitle en="How it works" vi="Quy trình học thông minh" center /></Reveal>
-        <ol className="relative mt-10 grid gap-3 sm:gap-6 md:grid-cols-5">
+      <section className="mesh-navy relative isolate overflow-hidden rounded-[1.75rem] px-5 py-10 text-white sm:rounded-[2.25rem] sm:px-10 sm:py-14">
+        <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-50" />
+        <div className="drift pointer-events-none absolute -right-16 -top-16 -z-10 h-64 w-64 rounded-full bg-cyan-300/25 blur-3xl" />
+        <Reveal><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="eyebrow !text-sky-200">How it works</p><h2 className="mt-2 max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl">Từ bài thi đầu tiên đến ngày bạn sẵn sàng</h2></div><Link href="/quick-test" className="btn-light">Bắt đầu ngay <Icon name="arrow" className="h-4 w-4" /></Link></div></Reveal>
+        <ol className="relative mt-12 grid gap-x-4 gap-y-9 md:grid-cols-5">
+          <span className="pointer-events-none absolute left-[10%] right-[10%] top-6 hidden h-0.5 bg-gradient-to-r from-sky-300/0 via-sky-300/70 to-sky-300/0 md:block" aria-hidden="true" />
           {STEPS.map(([icon, t, d], i) => (
             <Reveal key={t} as="li" delay={i * 110} className="relative">
-              {i < STEPS.length - 1 && <span className="absolute left-[calc(50%+2.75rem)] top-8 hidden h-px w-[calc(100%-5.5rem)] border-t-2 border-dashed border-brand/30 md:block" />}
-              <div className="flex items-center gap-4 rounded-2xl border border-slate-200/70 bg-white p-3.5 shadow-sm md:flex-col md:border-0 md:bg-transparent md:p-0 md:text-center md:shadow-none">
-                <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand to-indigo text-white shadow-[var(--shadow-glow)] md:mx-auto md:h-16 md:w-16 md:rounded-full"><Icon name={icon} className="h-6 w-6 md:h-7 md:w-7" /><span className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-gold text-xs font-extrabold text-white shadow">{i + 1}</span></span>
-                <div className="md:mt-1"><h3 className="font-bold">{t}</h3><p className="text-sm text-slate-500">{d}</p></div>
+              <div className="glass-dark group relative h-full rounded-2xl p-4 pt-12 transition duration-300 hover:-translate-y-1.5 hover:bg-white/20 sm:p-5 sm:pt-14">
+                <span className="absolute left-4 top-0 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-2xl bg-white text-brand shadow-[0_10px_30px_-8px_rgb(125_211_252/0.9)] transition group-hover:rotate-6 sm:left-5"><Icon name={icon} className="h-6 w-6" /></span>
+                <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden="true"><span className="absolute -bottom-4 right-2 select-none text-[5.5rem] font-black leading-none text-white/[0.09] transition group-hover:text-white/20">{i + 1}</span></span>
+                <h3 className="relative text-lg font-extrabold">{t}</h3><p className="relative mt-1 text-sm text-white/75">{d}</p>
               </div>
             </Reveal>
           ))}
@@ -135,8 +138,8 @@ export default async function Home() {
 
       {/* ===== TÍNH NĂNG (BENTO) ===== */}
       <section>
-        <Reveal><SectionTitle en="Welcome CSCA" vi="Một nền tảng, trọn hành trình ôn thi" center /></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-4 md:auto-rows-[11.5rem]">
+        <Reveal><p className="eyebrow">Welcome CSCA</p><h2 className="mt-2 max-w-2xl text-3xl font-extrabold leading-tight text-navy sm:text-4xl">Một nền tảng, trọn hành trình ôn thi</h2></Reveal>
+        <div className="mt-8 grid gap-4 md:grid-cols-4 md:auto-rows-[11.5rem]">
           <Reveal className="md:col-span-2 md:row-span-2"><Link href="/quick-test" className="mesh-navy group relative flex h-full min-h-[22rem] flex-col justify-between overflow-hidden rounded-3xl p-6 text-white shadow-[var(--shadow-glow)] transition duration-300 hover:-translate-y-1">
             <div><p className="eyebrow !text-sky-200">Readiness Score</p><h3 className="mt-2 text-2xl font-extrabold sm:text-3xl">Biết mình đang ở đâu<br />chỉ sau 15 phút</h3></div>
             <div className="flex items-center gap-6">
