@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubmitButton } from "@/components/SubmitButton";
 import { requireMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { getSkillProfile } from "@/lib/skills";
@@ -74,7 +75,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
               <li key={t.id} className="flex items-center gap-3 py-2.5">
                 <form action={toggleTaskAction.bind(null, t.id, true)}><button className="grid h-6 w-6 place-items-center rounded-full border border-slate-300 text-transparent hover:border-brand hover:text-brand" aria-label="Hoàn thành"><Icon name="check" className="h-3.5 w-3.5" /></button></form>
                 <div className="min-w-0 flex-1"><p className="truncate font-medium">{t.title}</p><p className="text-xs text-slate-500">{subjectName(t.subject)}{t.due_date < today && <span className="ml-2 font-semibold text-red-600">Quá hạn</span>}</p></div>
-                <form action={startTaskAction.bind(null, t.id)}><button className="btn !px-4 !py-1.5">Làm ngay</button></form>
+                <form action={startTaskAction.bind(null, t.id)}><SubmitButton className="btn !px-4 !py-1.5" pendingText="Đang mở…">Làm ngay</SubmitButton></form>
               </li>))}</ul>}
       </section>
 

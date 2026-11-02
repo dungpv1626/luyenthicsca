@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubmitButton } from "@/components/SubmitButton";
 import { requireMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { getSkillProfile } from "@/lib/skills";
@@ -84,7 +85,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
                     <p className={`mt-1 font-semibold leading-snug ${t.done_at ? "line-through" : ""}`}>{t.title}</p>
                     {t.subject && <p className="text-[11px] text-slate-500">{subjectName(t.subject)}</p>}
                     <div className="mt-2 flex items-center gap-1.5">
-                      {!t.done_at && <form action={startTaskAction.bind(null, t.id)}><button className="inline-flex min-h-[2.5rem] items-center rounded-full bg-brand px-4 text-xs font-bold text-white hover:bg-brand-dark">Làm ngay</button></form>}
+                      {!t.done_at && <form action={startTaskAction.bind(null, t.id)}><SubmitButton className="inline-flex min-h-[2.5rem] items-center rounded-full bg-brand px-4 text-xs font-bold text-white hover:bg-brand-dark" pendingText="Đang mở…">Làm ngay</SubmitButton></form>}
                       <form action={toggleTaskAction.bind(null, t.id, !t.done_at)}><button title={t.done_at ? "Bỏ đánh dấu" : "Đánh dấu xong"} className={`grid h-6 w-6 place-items-center rounded-full border ${t.done_at ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-300 text-transparent hover:text-slate-400"}`}><Icon name="check" className="h-3.5 w-3.5" /></button></form>
                     </div>
                   </div>

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { SubmitButton } from "@/components/SubmitButton";
 import Link from "next/link";
 import { getMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
@@ -56,8 +57,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
         <div className="border-t border-slate-100 pt-4">
           {!me ? <Link href={`/dang-nhap?next=/thi-thu/${id}`} className="btn w-full sm:w-auto">Đăng nhập để làm bài</Link>
-            : access ? <form action={startMockAction.bind(null, id)} className="flex flex-wrap items-center gap-3"><button className="btn w-full sm:w-auto">{open ? "Tiếp tục làm bài" : done.some((a) => !(a.breakdown as Breakdown | null)?.insufficient) ? "Làm lại bài này" : "Bắt đầu làm bài"}</button>{open && <p className="text-sm text-amber-800">Bạn đang làm dở, còn <b className="font-mono">{String(Math.floor(leftSec / 60)).padStart(2, "0")}:{String(leftSec % 60).padStart(2, "0")}</b>. Đồng hồ vẫn chạy.</p>}</form>
-            : <form action={buyTestAction.bind(null, id)}><button className="btn w-full sm:w-auto">Mua đề – {vnd(t.price_vnd)}</button></form>}
+            : access ? <form action={startMockAction.bind(null, id)} className="flex flex-wrap items-center gap-3"><SubmitButton className="btn w-full sm:w-auto" pendingText="Đang mở bài thi…">{open ? "Tiếp tục làm bài" : done.some((a) => !(a.breakdown as Breakdown | null)?.insufficient) ? "Làm lại bài này" : "Bắt đầu làm bài"}</SubmitButton>{open && <p className="text-sm text-amber-800">Bạn đang làm dở, còn <b className="font-mono">{String(Math.floor(leftSec / 60)).padStart(2, "0")}:{String(leftSec % 60).padStart(2, "0")}</b>. Đồng hồ vẫn chạy.</p>}</form>
+            : <form action={buyTestAction.bind(null, id)}><SubmitButton className="btn w-full sm:w-auto" pendingText="Đang tạo đơn hàng…">Mua đề – {vnd(t.price_vnd)}</SubmitButton></form>}
         </div>
       </div>
 

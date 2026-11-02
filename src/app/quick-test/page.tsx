@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubmitButton } from "@/components/SubmitButton";
 import { Icon } from "@/components/Icon";
 import { getMe } from "@/lib/auth";
 import { QUICK_TEST } from "@/lib/constants";
@@ -16,7 +17,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
       <p>{QUICK_TEST.questions} câu hỏi · {QUICK_TEST.minutes} phút · chấm điểm tự động · AI phân tích ngay sau khi nộp bài.</p>
       {error && <p className="rounded bg-amber-50 p-2 text-sm text-amber-800">Ngân hàng câu hỏi chưa có câu đã duyệt. Vui lòng quay lại sau.</p>}
       {me ? (
-        <form action={startQuickTestAction}><button className="btn w-full">Bắt đầu làm bài</button></form>
+        <form action={startQuickTestAction}><SubmitButton className="btn w-full" pendingText="Đang tạo bài thi…">Bắt đầu làm bài</SubmitButton></form>
       ) : (
         <>
           <p className="text-sm text-slate-600">Tạo tài khoản miễn phí (30 giây) để lưu kết quả và nhận báo cáo AI.</p>

@@ -1,4 +1,5 @@
 import { requireMe } from "@/lib/auth";
+import { SubmitButton } from "@/components/SubmitButton";
 import { adminDb } from "@/lib/supabase/admin";
 import { wrongQuestionIds } from "@/lib/exam";
 import { getSkillProfile } from "@/lib/skills";
@@ -33,12 +34,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <form action={startPracticeAction} className="card space-y-4">
           <PracticeFilters bySubject={bySubject} subjects={SUBJECTS} difficulties={DIFFICULTY} />
-          <button className="btn w-full">Bắt đầu luyện tập</button>
+          <SubmitButton className="btn w-full" pendingText="Đang chọn câu hỏi…">Bắt đầu luyện tập</SubmitButton>
         </form>
         <form action={startPracticeAction} className="card flex flex-col justify-between gap-4 bg-gradient-to-br from-brand-soft to-white">
           <input type="hidden" name="mode" value="wrong" /><input type="hidden" name="count" value="20" />
           <div><span className="grid h-12 w-12 place-items-center rounded-full bg-brand text-white"><Icon name="pencil" /></span><h2 className="mt-3 text-lg font-bold">Câu đã sai</h2><p className="mt-1 text-sm text-slate-600">{wrong.length ? `Bạn có ${wrong.length} câu từng làm sai. Làm lại để biến chỗ hổng thành điểm mạnh.` : "Chưa có câu sai nào. Hãy làm một bài thi để bắt đầu."}</p></div>
-          <button disabled={!wrong.length} className="btn w-full">Luyện lại tối đa 20 câu</button>
+          <SubmitButton disabled={!wrong.length} className="btn w-full" pendingText="Đang chọn câu hỏi…">Luyện lại tối đa 20 câu</SubmitButton>
         </form>
       </div>
     </div>

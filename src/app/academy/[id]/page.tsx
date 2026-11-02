@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { SubmitButton } from "@/components/SubmitButton";
 import Link from "next/link";
 import { adminDb } from "@/lib/supabase/admin";
 import { getMe } from "@/lib/auth";
@@ -58,7 +59,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div><p className="mt-1 text-xs text-slate-500">Tiến độ {pct}% ({doneSet.size}/{total})</p>
               {first && <Link href={`/academy/${id}/hoc/${first.id}`} className="btn mt-4 w-full">{doneSet.size ? "Tiếp tục học" : "Bắt đầu học"}</Link>}
             </>) : me ? (
-              <form action={buyCourseAction.bind(null, id)}><button className="btn mt-4 w-full">Đăng ký khóa học</button></form>
+              <form action={buyCourseAction.bind(null, id)}><SubmitButton className="btn mt-4 w-full" pendingText="Đang xử lý…">Đăng ký khóa học</SubmitButton></form>
             ) : <Link href={`/dang-nhap?next=/academy/${id}`} className="btn mt-4 w-full">Đăng nhập để đăng ký</Link>}
           </div>
           {t && <div className="card"><p className="eyebrow">Giáo viên</p><p className="mt-1 font-bold">{t.name}</p><p className="text-sm text-brand">{t.title}</p><p className="mt-2 text-sm text-slate-600">{t.bio}</p></div>}
