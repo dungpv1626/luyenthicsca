@@ -86,6 +86,23 @@ const jaccard = (a, b) => { if (!a.size || !b.size) return 0; let n = 0; for (co
 const KW = /(?:[Đđ]áp án|[Pp]hương án|[Ll]ựa chọn|[Oo]ption|[Aa]nswer|[Cc]hoice|选项|答案)\s*[ABCD](?![\p{L}\p{N}])/u;
 const SUB = /(?:^|[\s(（,;])[ABCD]\s*(?:sai|đúng|nhầm|là|do|vì|is|are|was|wrong|correct|错|对|是)(?![\p{L}\p{N}])/u;
 const bareLetters = (t) => { const x = String(t ?? "").replace(/\$[^$]*\$/g, " "); return KW.test(x) || SUB.test(x); };
+const FIX_TOOL = {
+  name: "fix_explanations",
+  description: "Nộp lại lời giải 3 ngôn ngữ, không dùng chữ cái đáp án.",
+  input_schema: { type: "object", properties: { vi: { type: "string" }, en: { type: "string" }, zh: { type: "string" } }, required: ["vi", "en", "zh"] },
+};
+/** Viết lại lời giải: bỏ mọi chữ cái A/B/C/D, mô tả lựa chọn bằng nội dung. Trả về null nếu vẫn còn chữ cái. */
+async function rewriteExplanations(vi, en, zh, correct) {
+  const r = await call({
+    max_tokens: 3500,
+    system: "Bạn là giáo viên. Viết lại lời giải của câu trắc nghiệm ở 3 ngôn ngữ (vi/en/zh). TUYỆT ĐỐI không dùng chữ cái A, B, C, D để chỉ lựa chọn (cả khi viết 'đáp án B', 'C sai'…); thay bằng mô tả NỘI DUNG lựa chọn (vd: 'kết quả 0,40 M sai vì…', 'phương án nói rằng… sai vì…'). Giữ nguyên nội dung khoa học, số liệu, LaTeX, pinyin của từ khóa tiếng Trung; ba bản tương đương nhau; ngắn gọn. Nộp bằng công cụ fix_explanations.",
+    tools: [FIX_TOOL],
+    messages: [{ role: "user", content: JSON.stringify({ cau_hoi: asText(vi), dap_an_dung_la_lua_chon_so: correct, loi_giai_hien_tai: { vi: vi.explanation, en: en.explanation, zh: zh.explanation } }) }],
+  });
+  const fx = tool(r, "fix_explanations");
+  if (!fx || ![fx.vi, fx.en, fx.zh].every((t) => String(t ?? "").trim())) return null;
+  return [fx.vi, fx.en, fx.zh].some(bareLetters) ? null : fx;
+}
 const asText = (l) => `${l.body}\n${["A", "B", "C", "D"].map((k) => `${k}. ${l.options[k]}`).join("\n")}`;
 
 // ---------- một "ô" blueprint: sinh → xáo trộn → kiểm tra → lưu ----------
@@ -114,6 +131,7 @@ async function runTask({ subject, topic, difficulty, count, hints }) {
   const rows = [];
   for (const q of out) {
     stats.gen++;
+    if (!["A", "B", "C", "D"].includes(q.correct)) { stats.invalid++; continue; } // không có đáp án đúng hợp lệ
     // xáo trộn thứ tự đáp án (cùng một hoán vị cho cả 3 ngôn ngữ) để tránh thiên lệch vị trí
     const perm = shuffle(["A", "B", "C", "D"]); // perm[i] = chữ cái gốc đặt vào vị trí mới i
     const EMPTY = { body: "", options: { A: "", B: "", C: "", D: "" }, explanation: "" };
@@ -131,7 +149,12 @@ async function runTask({ subject, topic, difficulty, count, hints }) {
     for (const [k, l] of [["en", en], ["zh", zh]]) if (!l.body?.trim() || Object.values(l.options).some((v) => !String(v).trim())) issues.push(`thiếu bản ${k}`);
     if (!vi.explanation?.trim()) issues.push("thiếu giải thích");
     // còn sót chữ cái đáp án "trần" trong lời giải (ngoài công thức LaTeX) → sau xáo trộn sẽ sai
-    if ([vi, en, zh].some((l) => bareLetters(l.explanation))) issues.push("lời giải còn nhắc chữ cái đáp án (sẽ sai sau khi xáo trộn)");
+    if ([vi, en, zh].some((l) => bareLetters(l.explanation))) {
+      let fixed = null;
+      if (!issues.length) { try { fixed = await rewriteExplanations(vi, en, zh, correct); } catch { /* giữ cờ */ } }
+      if (fixed) { vi.explanation = fixed.vi; en.explanation = fixed.en; zh.explanation = fixed.zh; }
+      else issues.push("lời giải còn nhắc chữ cái đáp án (sẽ sai sau khi xáo trộn)");
+    }
 
     // chống trùng lặp
     const sh = shingles(vi.body);
@@ -163,7 +186,7 @@ async function runTask({ subject, topic, difficulty, count, hints }) {
       skill: String(q.skill).slice(0, 80), est_time_sec: Math.min(300, Math.max(15, q.est_time_sec | 0)),
       source: "Soạn bởi AI (Claude) – câu gốc, chờ giáo viên duyệt",
       origin: "ai_generated", batch_id: BATCH, status: "review",
-      verify_status: verify, verify_note: note || null, similar_to: best.s >= 0.5 ? best.id : null,
+      verify_status: verify, verify_note: note || null, similar_to: best.s >= 0.5 && best.id !== "pending" ? best.id : null,
     });
     pool.push({ id: "pending", sh });
   }
@@ -197,7 +220,13 @@ async function reverify() {
     const en = q.translations?.en, zh = q.translations?.zh;
     if (!q.explanation?.trim()) issues.push("thiếu giải thích");
     if (!en?.body || !zh?.body) issues.push("thiếu bản dịch");
-    if ([q.explanation, en?.explanation, zh?.explanation].some(bareLetters)) issues.push("lời giải còn nhắc chữ cái đáp án (sẽ sai sau khi xáo trộn)");
+    let textPatch = {};
+    if ([q.explanation, en?.explanation, zh?.explanation].some(bareLetters)) {
+      let fixed = null;
+      if (!issues.length) { try { fixed = await rewriteExplanations({ body: q.body, options: q.options, explanation: q.explanation }, en, zh, q.correct_answer); } catch { /* giữ cờ */ } }
+      if (fixed) { q.explanation = fixed.vi; textPatch = { explanation: fixed.vi, translations: { ...q.translations, en: { ...en, explanation: fixed.en }, zh: { ...zh, explanation: fixed.zh } } }; }
+      else issues.push("lời giải còn nhắc chữ cái đáp án (sẽ sai sau khi xáo trộn)");
+    }
     let patch;
     if (issues.length) { still++; patch = { verify_status: "invalid", verify_note: issues.join("; ") }; }
     else {
@@ -205,7 +234,7 @@ async function reverify() {
       if (ans?.choice === q.correct_answer) { fixed++; patch = { verify_status: "pass", verify_note: null }; }
       else { mism++; patch = { verify_status: "mismatch", verify_note: `Người giải độc lập chọn ${ans?.choice}, đáp án soạn là ${q.correct_answer}. ${String(ans?.reasoning ?? "").slice(0, 300)}` }; }
     }
-    if (!DRY) await sb.from("questions").update(patch).eq("id", q.id);
+    if (!DRY) await sb.from("questions").update({ ...patch, ...textPatch }).eq("id", q.id);
     return { gen: 0, pass: 0, mismatch: 0, invalid: 0, dupSkipped: 0, saved: 0 };
   });
   console.log(`Sau kiểm tra lại: đạt ${fixed} · lệch ${mism} · vẫn lỗi ${still}`);
