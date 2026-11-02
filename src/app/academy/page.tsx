@@ -4,12 +4,14 @@ import { PageHeader } from "@/components/Section";
 import { Icon } from "@/components/Icon";
 import { vnd } from "@/lib/constants";
 
+export const metadata = { title: "Academy – Khóa học" };
+
 export default async function Page() {
   const { data } = await adminDb().from("courses").select("id, title, description, level, price_vnd, teachers(name), lessons(count)").eq("is_published", true).order("created_at", { ascending: false });
   return (
     <div>
       <PageHeader en="Academy" vi="Khóa học CSCA">Học theo bài bản với giáo viên: video, nội dung, quiz cuối bài và theo dõi tiến độ.</PageHeader>
-      <div className="mb-6 flex flex-wrap gap-2 text-sm"><Link href="/academy" className="chip !px-4 !py-1.5">Khóa học</Link><Link href="/giao-vien" className="rounded-full border border-slate-200 px-4 py-1.5 font-semibold hover:border-brand hover:text-brand">Giáo viên</Link><Link href="/khoa-hoc-cua-toi" className="rounded-full border border-slate-200 px-4 py-1.5 font-semibold hover:border-brand hover:text-brand">Khóa học của tôi</Link></div>
+      <div className="mb-6 flex flex-wrap gap-2 text-sm"><Link href="/academy" className="chip !min-h-[2.75rem] !px-4">Khóa học</Link><Link href="/giao-vien" className="inline-flex min-h-[2.75rem] items-center rounded-full border border-slate-200 px-4 font-semibold hover:border-brand hover:text-brand">Giáo viên</Link><Link href="/khoa-hoc-cua-toi" className="inline-flex min-h-[2.75rem] items-center rounded-full border border-slate-200 px-4 font-semibold hover:border-brand hover:text-brand">Khóa học của tôi</Link></div>
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {(data ?? []).map((c) => {
           const t = c.teachers as unknown as { name: string } | null;

@@ -95,13 +95,18 @@ export async function submitAttempt(attemptId: string, userId: string, answers: 
   if (!late) for (const q of ordered) if (["A", "B", "C", "D"].includes(answers[q.id])) clean[q.id] = answers[q.id];
   const { correct, readiness, breakdown } = scoreAttempt(ordered, clean, timeSpent);
 
-  const wrong_ids = ordered.filter((q) => clean[q.id] !== q.correct_answer).map((q) => q.id);
-  const { data: prof } = await db.from("profiles").select("target").eq("id", userId).single();
-  const ai_report = await generateReport(breakdown, readiness, { goal: prof?.target });
+  // Làm dưới 20% số câu: không đủ dữ liệu để chấm Readiness hay phân tích (không gọi AI)
+  const answered = Object.keys(clean).length;
+  const insufficient = ordered.length > 0 && answered < Math.ceil(ordered.length * 0.2);
+  const wrong_ids = ordered.filter((q) => (insufficient ? clean[q.id] !== undefined : true) && clean[q.id] !== q.correct_answer).map((q) => q.id);
+  const { data: prof } = insufficient ? { data: null } : await db.from("profiles").select("target").eq("id", userId).single();
+  const ai_report = insufficient
+    ? { source: "rule" as const, summary: `Bạn mới trả lời ${answered}/${ordered.length} câu nên chưa đủ dữ liệu để đánh giá. Bài này không được tính vào Readiness và tiến bộ của bạn.`, strengths: [], weaknesses: [], next_steps: ["Làm lại bài và cố gắng trả lời hết các câu (câu chưa chắc có thể đánh dấu để xem lại).", "Nếu bạn chưa quen dạng đề, hãy luyện tập theo chủ đề trước khi thi thử."] }
+    : await generateReport(breakdown, readiness, { goal: prof?.target });
 
   await db
     .from("attempts")
-    .update({ answers: clean, time_spent: timeSpent, submitted_at: new Date().toISOString(), score: correct, readiness, breakdown, ai_report, wrong_ids })
+    .update({ answers: clean, time_spent: timeSpent, submitted_at: new Date().toISOString(), score: correct, readiness, breakdown: insufficient ? { ...breakdown, insufficient: true } : breakdown, ai_report, wrong_ids })
     .eq("id", attemptId)
     .is("submitted_at", null);
   // Hoàn thành nhiệm vụ trong lộ trình nếu bài làm bắt đầu từ nhiệm vụ đó

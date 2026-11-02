@@ -8,6 +8,12 @@ import { SchoolPhoto } from "@/components/SchoolPhoto";
 import { Icon } from "@/components/Icon";
 import { consultAction } from "../../school-actions";
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const { data } = await adminDb().from("schools").select("name, name_zh").eq("id", id).maybeSingle();
+  return { title: data ? `${data.name}${data.name_zh ? ` (${data.name_zh})` : ""}` : "Thông tin trường" };
+}
+
 export default async function Page({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ consult?: string }> }) {
   const { id } = await params;
   const { consult } = await searchParams;

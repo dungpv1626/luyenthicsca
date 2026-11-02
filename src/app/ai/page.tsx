@@ -7,6 +7,8 @@ import { LineChart } from "@/components/LineChart";
 import { SubjectBars, TopicHeat } from "@/components/SkillBars";
 import { Icon } from "@/components/Icon";
 
+export const metadata = { title: "AI CSCA – Hồ sơ năng lực" };
+
 export default async function Page() {
   const me = await requireMe("/ai");
   const p = await getSkillProfile(me.id);
@@ -25,7 +27,7 @@ export default async function Page() {
             <p className="eyebrow">Readiness Score</p>
             <ScoreRing value={p.latestReadiness ?? 0} size={170} />
             {delta !== null && <span className={`chip ${delta < 0 ? "!bg-slate-100 !text-slate-600" : "!bg-emerald-50 !text-emerald-700"}`}>{delta >= 0 ? "▲" : "▼"} {Math.abs(delta)} điểm so với lần trước</span>}
-            {last && <Link href={`/ket-qua/${last.id}`} className="text-sm font-semibold text-brand hover:underline">Xem báo cáo gần nhất →</Link>}
+            {last && <Link href={`/ket-qua/${last.id}`} className="inline-flex min-h-[2.75rem] items-center text-sm font-semibold text-brand hover:underline">Xem báo cáo gần nhất →</Link>}
           </section>
 
           <section className="card lg:col-span-2">

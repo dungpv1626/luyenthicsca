@@ -5,6 +5,8 @@ import { adminDb } from "@/lib/supabase/admin";
 import { vietQrUrl } from "@/lib/vietqr";
 import { vnd } from "@/lib/constants";
 
+export const metadata = { title: "Thanh toán" };
+
 export default async function Page({ params }: { params: Promise<{ orderId: string }> }) {
   const { orderId } = await params;
   const me = await requireMe(`/thanh-toan/${orderId}`);

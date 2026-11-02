@@ -1,28 +1,38 @@
 import { requireMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { wrongQuestionIds } from "@/lib/exam";
+import { getSkillProfile } from "@/lib/skills";
+import { PracticeFilters } from "@/components/PracticeFilters";
 import { DIFFICULTY, SUBJECTS } from "@/lib/constants";
 import { PageHeader } from "@/components/Section";
 import { Icon } from "@/components/Icon";
 import { startPracticeAction } from "../exam-actions";
 
+export const metadata = { title: "Luyện tập theo chủ đề" };
+
 export default async function Page({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const me = await requireMe("/luyen-tap");
   const { error } = await searchParams;
-  const [{ data: topics }, wrong] = await Promise.all([adminDb().from("questions").select("subject, topic").eq("status", "approved"), wrongQuestionIds(me.id)]);
-  const topicList = [...new Set((topics ?? []).map((t) => t.topic))].sort();
+  const [{ data: topics }, wrong, sk] = await Promise.all([adminDb().from("questions").select("subject, topic").eq("status", "approved").limit(20000), wrongQuestionIds(me.id), getSkillProfile(me.id)]);
+  const bySubject: Record<string, string[]> = {};
+  for (const t of topics ?? []) { const a = (bySubject[t.subject] ??= []); if (!a.includes(t.topic)) a.push(t.topic); }
+  for (const k of Object.keys(bySubject)) bySubject[k].sort((a, b) => a.localeCompare(b, "vi"));
   return (
     <div>
       <PageHeader en="Practice" vi="Ngân hàng câu hỏi">Chọn môn, chủ đề, độ khó và số câu. Mỗi câu có giải thích; câu sai được lưu để luyện lại.</PageHeader>
       {error && <p className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Chưa có câu hỏi phù hợp với lựa chọn này. Hãy thử bộ lọc khác.</p>}
+      {sk.weak.length > 0 && (
+        <section className="card mb-6 !p-4" aria-label="Chủ đề nên ôn">
+          <p className="text-sm font-extrabold text-navy">Chủ đề nên ôn <span className="font-normal text-slate-500">· dựa trên các bài bạn đã làm, bấm để luyện 10 câu</span></p>
+          <div className="mt-2 flex flex-wrap gap-2">{sk.weak.map((t) => (
+            <form key={t.subject + t.topic} action={startPracticeAction}><input type="hidden" name="subject" value={t.subject} /><input type="hidden" name="topic" value={t.topic} /><input type="hidden" name="count" value="10" />
+              <button className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-800 transition hover:-translate-y-0.5 hover:border-rose-400">{t.topic}<span className="text-xs font-bold text-rose-600">{t.pct}%</span></button></form>))}
+          </div>
+        </section>
+      )}
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <form action={startPracticeAction} className="card space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><label className="label">Môn</label><select name="subject" className="input"><option value="">Tất cả các môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
-            <div><label className="label">Chủ đề</label><input name="topic" list="topics" className="input" placeholder="Tất cả" /><datalist id="topics">{topicList.map((t) => <option key={t} value={t} />)}</datalist></div>
-            <div><label className="label">Độ khó</label><select name="difficulty" className="input"><option value="">Tất cả</option>{Object.entries(DIFFICULTY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
-            <div><label className="label">Số câu</label><select name="count" className="input" defaultValue="10"><option>10</option><option>20</option><option>50</option></select></div>
-          </div>
+          <PracticeFilters bySubject={bySubject} subjects={SUBJECTS} difficulties={DIFFICULTY} />
           <button className="btn w-full">Bắt đầu luyện tập</button>
         </form>
         <form action={startPracticeAction} className="card flex flex-col justify-between gap-4 bg-gradient-to-br from-brand-soft to-white">

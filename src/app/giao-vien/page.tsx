@@ -1,6 +1,8 @@
 import { adminDb } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/Section";
 
+export const metadata = { title: "Giáo viên" };
+
 export default async function Page() {
   const { data } = await adminDb().from("teachers").select("*").order("created_at");
   return (

@@ -3,13 +3,15 @@ import { adminDb } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/Section";
 import { Icon } from "@/components/Icon";
 
+export const metadata = { title: "Học bổng" };
+
 export default async function Page() {
   const { data } = await adminDb().from("scholarships").select("*, schools(id, name)").eq("is_active", true).order("deadline", { nullsFirst: false });
   const today = new Date().toISOString().slice(0, 10);
   return (
     <div>
       <PageHeader en="Scholarships" vi="Học bổng Trung Quốc">Các chương trình học bổng. Điều kiện và hạn nộp thay đổi theo năm, luôn đối chiếu thông báo chính thức.</PageHeader>
-      <div className="mb-6 flex flex-wrap gap-2 text-sm"><Link href="/truong" className="rounded-full border border-slate-200 px-4 py-1.5 font-semibold hover:border-brand hover:text-brand">Trường</Link><Link href="/hoc-bong" className="chip !px-4 !py-1.5">Học bổng</Link></div>
+      <div className="mb-6 flex flex-wrap gap-2 text-sm"><Link href="/truong" className="inline-flex min-h-[2.75rem] items-center rounded-full border border-slate-200 px-4 font-semibold hover:border-brand hover:text-brand">Trường</Link><Link href="/hoc-bong" className="chip !min-h-[2.75rem] !px-4">Học bổng</Link></div>
       <div className="grid gap-4 md:grid-cols-2">
         {(data ?? []).map((s) => {
           const school = s.schools as unknown as { id: string; name: string } | null;

@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { PasswordForm } from "@/components/PasswordForm";
 import { resetPassword } from "../password-actions";
 
+export const metadata = { title: "Đặt lại mật khẩu" };
+
 export default async function Page() {
   const { data: { user } } = await (await createClient()).auth.getUser();
   if (!user) redirect("/quen-mat-khau?error=invalid");

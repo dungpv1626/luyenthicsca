@@ -10,6 +10,8 @@ const FAQ = [
   ["Cách tính điểm?", "Mỗi môn được chấm riêng. Readiness Score trên website là chỉ số ước lượng mức sẵn sàng, không phải điểm thi chính thức."],
 ];
 
+export const metadata = { title: "CSCA là gì?" };
+
 export default function Page() {
   return (
     <div className="space-y-10">

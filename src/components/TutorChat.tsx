@@ -32,7 +32,7 @@ export function TutorChat({ ctx, suggestions = [], compact = false }: { ctx?: { 
           <div className="py-4 text-center text-sm text-slate-500">
             <span className="mx-auto mb-2 grid h-11 w-11 place-items-center rounded-full bg-brand text-white"><Icon name="sparkles" /></span>
             {ctx ? "Hỏi mình bất cứ điều gì về câu này." : "Mình là Gia sư AI. Hỏi mình về Toán, Vật lý, Hóa học hoặc tiếng Trung chuyên ngành."}
-            {suggestions.length > 0 && <div className="mt-3 flex flex-wrap justify-center gap-2">{suggestions.map((s) => <button key={s} onClick={() => send(s)} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-ink hover:border-brand hover:text-brand">{s}</button>)}</div>}
+            {suggestions.length > 0 && <div className="mt-3 flex flex-wrap justify-center gap-2">{suggestions.map((s) => <button key={s} onClick={() => send(s)} className="inline-flex min-h-[2.75rem] items-center rounded-full border border-slate-200 bg-white px-4 text-xs font-semibold text-ink hover:border-brand hover:text-brand">{s}</button>)}</div>}
           </div>
         )}
         {msgs.map((m, i) => (

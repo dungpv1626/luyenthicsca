@@ -21,7 +21,7 @@ export async function getSkillProfile(userId: string): Promise<SkillProfile> {
     .eq("user_id", userId)
     .not("submitted_at", "is", null)
     .order("submitted_at", { ascending: true });
-  const rows = data ?? [];
+  const rows = (data ?? []).filter((r) => !(r.breakdown as Breakdown | null)?.insufficient); // bỏ bài làm quá ít câu
   const subj = Object.fromEntries(SUBJECT_KEYS.map((s) => [s, { total: 0, correct: 0, pct: 0 }])) as SkillProfile["bySubject"];
   const topic: Record<string, TopicSkill> = {};
   for (const r of rows) {

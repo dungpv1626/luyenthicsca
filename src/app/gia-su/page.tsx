@@ -3,6 +3,8 @@ import { PageHeader } from "@/components/Section";
 import { TutorChat } from "@/components/TutorChat";
 import { TUTOR_DAILY_LIMIT } from "@/lib/constants";
 
+export const metadata = { title: "Gia sư AI" };
+
 export default async function Page() {
   await requireMe("/gia-su");
   return (

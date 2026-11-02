@@ -19,6 +19,7 @@ export type Breakdown = {
   byTopic: Record<string, Bucket & { subject: Subject; topic: string }>;
   strengths: string[]; // "subject|topic"
   weaknesses: string[];
+  insufficient?: boolean; // làm quá ít câu: không đủ dữ liệu để đánh giá
 };
 
 const WEIGHT: Record<Difficulty, number> = { easy: 1, medium: 1.5, hard: 2 };

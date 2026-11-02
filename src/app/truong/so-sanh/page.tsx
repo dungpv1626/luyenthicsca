@@ -2,6 +2,8 @@ import Link from "next/link";
 import { adminDb } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/Section";
 
+export const metadata = { title: "So sánh trường" };
+
 export default async function Page({ searchParams }: { searchParams: Promise<{ ids?: string | string[] }> }) {
   const { ids } = await searchParams;
   const list = (Array.isArray(ids) ? ids : ids ? [ids] : []).filter((x) => /^[0-9a-f-]{36}$/.test(x)).slice(0, 3);

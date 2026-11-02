@@ -3,30 +3,84 @@ import Link from "next/link";
 import { getMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { canAccessTest } from "@/lib/exam";
-import { vnd } from "@/lib/constants";
+import { DIFFICULTY, SUBJECTS, vnd, type Subject } from "@/lib/constants";
+import { LEVELS, mixText } from "@/lib/levels";
+import type { Breakdown } from "@/lib/scoring";
 import { buyTestAction } from "../../order-actions";
 import { startMockAction } from "../../exam-actions";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const { data } = await adminDb().from("tests").select("title").eq("id", id).eq("is_published", true).maybeSingle();
+  return { title: data?.title ?? "Chi tiết đề thi thử" };
+}
+
+const fmtDate = (d: string) => new Date(d).toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short", timeZone: "Asia/Ho_Chi_Minh" });
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const db = adminDb();
   const { data: t } = await db.from("tests").select("*").eq("id", id).eq("is_published", true).single();
   if (!t) notFound();
-  const { count } = await db.from("test_questions").select("*", { count: "exact", head: true }).eq("test_id", id);
   const me = await getMe();
-  const access = me ? await canAccessTest(me.id, t) : t.price_vnd === 0;
+  const [{ data: tq }, access, { data: hist }] = await Promise.all([
+    db.from("test_questions").select("questions(subject, difficulty)").eq("test_id", id),
+    me ? canAccessTest(me.id, t) : Promise.resolve(t.price_vnd === 0),
+    me ? db.from("attempts").select("id, started_at, submitted_at, duration_sec, score, readiness, breakdown").eq("user_id", me.id).eq("test_id", id).order("started_at", { ascending: false }).limit(8) : Promise.resolve({ data: [] }),
+  ]);
+  const qs = (tq ?? []).map((r) => r.questions as unknown as { subject: string; difficulty: string } | null).filter(Boolean) as { subject: string; difficulty: string }[];
+  const bySub: Record<string, number> = {}, byDiff: Record<string, number> = {};
+  for (const q of qs) { bySub[q.subject] = (bySub[q.subject] ?? 0) + 1; byDiff[q.difficulty] = (byDiff[q.difficulty] ?? 0) + 1; }
+  const level = LEVELS.find((l) => l.level === t.level);
+  const open = (hist ?? []).find((a) => !a.submitted_at && Date.now() < new Date(a.started_at).getTime() + a.duration_sec * 1000);
+  const leftSec = open ? Math.max(0, Math.round((new Date(open.started_at).getTime() + open.duration_sec * 1000 - Date.now()) / 1000)) : 0;
+  const done = (hist ?? []).filter((a) => a.submitted_at);
 
   return (
-    <div className="card mx-auto max-w-xl space-y-3 !p-7 shadow-soft">
-      <h1 className="text-2xl font-bold">{t.title}</h1>
-      <p className="text-slate-600">{t.description}</p>
-      <ul className="text-sm text-slate-600"><li>{count ?? 0} câu hỏi</li><li>{t.duration_min} phút</li><li>Giá: <b className="text-ink">{vnd(t.price_vnd)}</b></li></ul>
-      {!me ? (
-        <Link href={`/dang-nhap?next=/thi-thu/${id}`} className="btn">Đăng nhập để làm bài</Link>
-      ) : access ? (
-        <form action={startMockAction.bind(null, id)}><button className="btn">Bắt đầu / tiếp tục làm bài</button></form>
-      ) : (
-        <form action={buyTestAction.bind(null, id)}><button className="btn">Mua đề – {vnd(t.price_vnd)}</button></form>
+    <div className="mx-auto grid max-w-3xl gap-4">
+      <div className="card space-y-4 !p-6 shadow-soft sm:!p-7">
+        <div>
+          <p className="eyebrow">{level ? `Cấp ${level.level} · ${level.name}` : "Đề thi thử"}</p>
+          <h1 className="mt-1 text-2xl font-extrabold text-navy">{t.title}</h1>
+          {t.description && <p className="mt-1 text-slate-600">{t.description}</p>}
+        </div>
+        <dl className="grid grid-cols-3 gap-2 text-center text-sm">
+          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-slate-500">Số câu</dt><dd className="text-xl font-black text-navy">{qs.length}</dd></div>
+          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-slate-500">Thời gian</dt><dd className="text-xl font-black text-navy">{t.duration_min}′</dd></div>
+          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-slate-500">Giá</dt><dd className={`text-xl font-black ${t.price_vnd ? "text-navy" : "text-emerald-600"}`}>{t.price_vnd ? vnd(t.price_vnd) : "Miễn phí"}</dd></div>
+        </dl>
+        <div className="grid gap-4 text-sm sm:grid-cols-2">
+          <div><p className="font-bold">Cơ cấu theo môn</p><ul className="mt-1.5 space-y-1">{Object.entries(bySub).map(([k, n]) => <li key={k} className="flex justify-between text-slate-600"><span>{SUBJECTS[k as Subject]?.split(" (")[0] ?? k}</span><b className="text-ink">{n} câu</b></li>)}</ul></div>
+          <div><p className="font-bold">Cơ cấu độ khó</p><ul className="mt-1.5 space-y-1">{(["easy", "medium", "hard"] as const).filter((k) => byDiff[k]).map((k) => <li key={k} className="flex justify-between text-slate-600"><span>{DIFFICULTY[k]}</span><b className="text-ink">{byDiff[k]} câu</b></li>)}</ul>{level && <p className="mt-1 text-xs text-slate-500">Mục tiêu của cấp: {mixText(level.mix)}</p>}</div>
+        </div>
+
+        <div className="border-t border-slate-100 pt-4">
+          {!me ? <Link href={`/dang-nhap?next=/thi-thu/${id}`} className="btn w-full sm:w-auto">Đăng nhập để làm bài</Link>
+            : access ? <form action={startMockAction.bind(null, id)} className="flex flex-wrap items-center gap-3"><button className="btn w-full sm:w-auto">{open ? "Tiếp tục làm bài" : done.some((a) => !(a.breakdown as Breakdown | null)?.insufficient) ? "Làm lại bài này" : "Bắt đầu làm bài"}</button>{open && <p className="text-sm text-amber-800">Bạn đang làm dở, còn <b className="font-mono">{String(Math.floor(leftSec / 60)).padStart(2, "0")}:{String(leftSec % 60).padStart(2, "0")}</b>. Đồng hồ vẫn chạy.</p>}</form>
+            : <form action={buyTestAction.bind(null, id)}><button className="btn w-full sm:w-auto">Mua đề – {vnd(t.price_vnd)}</button></form>}
+        </div>
+      </div>
+
+      <div className="card !p-5">
+        <h2 className="font-extrabold text-navy">Trước khi bắt đầu</h2>
+        <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-slate-600">
+          <li>Đồng hồ chạy ngay khi bạn bấm bắt đầu và <b>không dừng</b> nếu bạn thoát. Hết giờ, bài tự nộp.</li>
+          <li>Đáp án được lưu tự động; bạn có thể tiếp tục trên thiết bị khác trong thời gian làm bài.</li>
+          <li>Có thể đổi ngôn ngữ Việt – Anh – Trung và đánh dấu câu cần xem lại.</li>
+          <li>Làm dưới 20% số câu thì bài không được chấm Readiness và không tính vào tiến bộ.</li>
+          <li>Sau khi nộp bạn nhận điểm Readiness, phân tích AI và lời giải từng câu.</li>
+        </ul>
+      </div>
+
+      {done.length > 0 && (
+        <div className="card !p-5">
+          <h2 className="font-extrabold text-navy">Lịch sử làm bài</h2>
+          <ul className="mt-2 divide-y divide-slate-100 text-sm">
+            {done.map((a) => { const b = a.breakdown as Breakdown | null; return (
+              <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex min-h-[2.75rem] items-center justify-between gap-3 py-2 hover:text-brand"><span className="text-slate-600">{fmtDate(a.submitted_at!)}</span><span className="font-semibold">{b?.insufficient ? <span className="text-amber-700">Chưa đủ câu để chấm</span> : `Readiness ${a.readiness ?? 0}/100 · đúng ${a.score ?? 0}/${b?.total ?? qs.length}`} →</span></Link></li>
+            ); })}
+          </ul>
+        </div>
       )}
     </div>
   );

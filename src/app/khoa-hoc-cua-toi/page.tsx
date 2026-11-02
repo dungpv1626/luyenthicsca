@@ -3,6 +3,8 @@ import { requireMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/Section";
 
+export const metadata = { title: "Khóa học của tôi" };
+
 export default async function Page() {
   const me = await requireMe("/khoa-hoc-cua-toi");
   const db = adminDb();

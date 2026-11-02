@@ -7,6 +7,8 @@ import { Icon } from "@/components/Icon";
 import { startPracticeAction } from "../../../../exam-actions";
 import { toggleLessonAction } from "../../../../academy-actions";
 
+export const metadata = { title: "Bài học" };
+
 export default async function Page({ params }: { params: Promise<{ id: string; lessonId: string }> }) {
   const { id, lessonId } = await params;
   if (![id, lessonId].every((x) => /^[0-9a-f-]{36}$/.test(x))) notFound();

@@ -10,6 +10,8 @@ import { createPlanAction, endPlanAction, startTaskAction, toggleTaskAction } fr
 const KIND = { practice: "Luyện tập", review: "Câu đã sai", mini_test: "Mini Test", mock: "Mock Test" } as const;
 const DOW = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
 
+export const metadata = { title: "Lộ trình học cá nhân" };
+
 export default async function Page({ searchParams }: { searchParams: Promise<{ w?: string; error?: string }> }) {
   const me = await requireMe("/lo-trinh");
   const { w, error } = await searchParams;
@@ -26,12 +28,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
         <PageHeader en="Study Plan" vi="Lộ trình học cá nhân">AI dựng kế hoạch theo ngày dựa trên điểm yếu của bạn. {sk.topics.length ? "" : "Bạn chưa có dữ liệu thi nên lộ trình sẽ bắt đầu từ nền tảng, hãy làm Quick Test để cá nhân hóa hơn."}</PageHeader>
         {error && <p className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Không tạo được lộ trình. Hãy thử lại.</p>}
         <form action={createPlanAction} className="card mx-auto max-w-xl space-y-4">
-          <div><label className="label">Mục tiêu</label><input name="goal" defaultValue={prof?.target ?? ""} placeholder="vd: Toán ≥ 80, vào Đại học Chiết Giang" className="input" /></div>
+          <div><label className="label" htmlFor="f-goal">Mục tiêu</label><input id="f-goal" name="goal" defaultValue={prof?.target ?? ""} placeholder="vd: Toán ≥ 80, vào Đại học Chiết Giang" className="input" /></div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div><label className="label">Thời gian</label><select name="weeks" className="input" defaultValue="4"><option value="4">1 tháng (4 tuần)</option><option value="12">3 tháng (12 tuần)</option><option value="24">6 tháng (24 tuần)</option></select></div>
-            <div><label className="label">Phút học mỗi ngày</label><select name="minutes" className="input" defaultValue="60"><option>30</option><option>60</option><option>90</option><option>120</option></select></div>
-            <div><label className="label">Readiness mục tiêu</label><input type="number" name="target" min={40} max={100} defaultValue={80} className="input" /></div>
-            <div><label className="label">Ngày thi dự kiến</label><input type="date" name="exam_date" defaultValue={prof?.exam_date ?? ""} className="input" /></div>
+            <div><label className="label" htmlFor="f-weeks">Thời gian</label><select id="f-weeks" name="weeks" className="input" defaultValue="4"><option value="4">1 tháng (4 tuần)</option><option value="12">3 tháng (12 tuần)</option><option value="24">6 tháng (24 tuần)</option></select></div>
+            <div><label className="label" htmlFor="f-minutes">Phút học mỗi ngày</label><select id="f-minutes" name="minutes" className="input" defaultValue="60"><option>30</option><option>60</option><option>90</option><option>120</option></select></div>
+            <div><label className="label" htmlFor="f-target">Readiness mục tiêu</label><input id="f-target" type="number" name="target" min={40} max={100} defaultValue={80} className="input" /></div>
+            <div><label className="label" htmlFor="f-exam-date">Ngày thi dự kiến</label><input id="f-exam-date" type="date" name="exam_date" defaultValue={prof?.exam_date ?? ""} className="input" /></div>
           </div>
           {sk.weak.length > 0 && <p className="rounded-xl bg-brand-soft p-3 text-sm"><b className="text-brand">Điểm yếu AI sẽ ưu tiên:</b> {sk.weak.slice(0, 4).map((t) => t.topic).join(", ")}</p>}
           <button className="btn w-full"><Icon name="sparkles" className="h-4 w-4" />Tạo lộ trình bằng AI</button>
@@ -82,7 +84,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
                     <p className={`mt-1 font-semibold leading-snug ${t.done_at ? "line-through" : ""}`}>{t.title}</p>
                     {t.subject && <p className="text-[11px] text-slate-500">{subjectName(t.subject)}</p>}
                     <div className="mt-2 flex items-center gap-1.5">
-                      {!t.done_at && <form action={startTaskAction.bind(null, t.id)}><button className="rounded-full bg-brand px-3 py-1 text-xs font-bold text-white hover:bg-brand-dark">Làm ngay</button></form>}
+                      {!t.done_at && <form action={startTaskAction.bind(null, t.id)}><button className="inline-flex min-h-[2.5rem] items-center rounded-full bg-brand px-4 text-xs font-bold text-white hover:bg-brand-dark">Làm ngay</button></form>}
                       <form action={toggleTaskAction.bind(null, t.id, !t.done_at)}><button title={t.done_at ? "Bỏ đánh dấu" : "Đánh dấu xong"} className={`grid h-6 w-6 place-items-center rounded-full border ${t.done_at ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-300 text-transparent hover:text-slate-400"}`}><Icon name="check" className="h-3.5 w-3.5" /></button></form>
                     </div>
                   </div>

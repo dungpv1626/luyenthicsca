@@ -41,3 +41,24 @@ Trang thật: thời gian chờ byte đầu 0,7–1,6 giây; HTML trang chủ 21
 1. **Tuần này (≈ 1–2 ngày):** #2 tiêu đề trang, #3 hộp thoại nộp bài, #6 chặn phân tích bài trống, nhãn biểu mẫu, vùng bấm.
 2. **Tiếp theo (≈ 3–5 ngày):** #4 lưu nháp lên máy chủ, #5 kết quả gọn và có bộ lọc, #9 chế độ tập trung trong phòng thi.
 3. **Sau đó:** #7, #8, #10, #11; thử với 5 học sinh thật, đo trên điện thoại cũ và mạng 4G.
+
+---
+## Tình trạng xử lý (cập nhật sau khi làm theo lộ trình đề xuất)
+
+| # | Hạng mục | Trạng thái | Ghi chú |
+|---|---|---|---|
+| 1 | Công thức thô ở lựa chọn trên trang kết quả | Xong | |
+| 2 | Tiêu đề từng trang | Xong | Mẫu "Tên trang · CSCA Việt Nam"; trang trường và đề lấy theo tên |
+| 3 | Hộp thoại nộp bài | Xong | Hộp riêng: số câu đã làm/chưa/đánh dấu, thời gian còn lại, bấm số câu để nhảy tới |
+| 4 | Lưu nháp lên máy chủ | Xong | Lưu sau mỗi lần chọn (~1,2 giây), mỗi 20 giây và khi rời tab; thử mở bài ở trình duyệt khác thấy đúng số câu đã làm. Đánh dấu "xem lại" vẫn chỉ lưu trên máy |
+| 5 | Kết quả gọn | Xong | Lọc "Cần xem lại / Đúng / Tất cả", thu gọn từng câu, hành động tiếp theo đặt dưới điểm. Bài luyện 10 câu: ~5.000px trên điện thoại |
+| 6 | Bài làm quá ít câu | Xong | Dưới 20% số câu: không chấm Readiness, không gọi AI, không tính vào tiến bộ; bài cũ đã được đánh dấu bằng migration 0010 |
+| 7 | Trang chọn đề | Xong | Gom theo môn, trạng thái ngay trên nút (✓ điểm / ▶ đang làm / giá), thẻ "Nên làm tiếp". Trang giảm từ ~6.600px còn ~3.200px trên điện thoại |
+| 8 | Dashboard người mới | Xong | Danh sách 3 bước; ô mục tiêu dẫn tới trang lộ trình |
+| 9 | Phòng thi tập trung | Xong | Ẩn menu/chân trang; thanh dưới cố định trên điện thoại; bảng câu dạng cửa sổ trượt lên; nút đánh dấu xem lại; cảnh báo khi đóng tab nếu chưa lưu; nút Thoát |
+| 10 | Chi tiết đề | Xong | Cơ cấu môn/độ khó, quy chế, lịch sử làm bài, nút Bắt đầu / Tiếp tục (còn mm:ss) / Làm lại |
+| 11 | Luyện tập | Xong | Chủ đề là danh sách theo môn đã chọn; thẻ "Chủ đề nên ôn" từ điểm yếu |
+| 12 | Nhãn biểu mẫu, vùng bấm | Xong | 16 ô gắn nhãn; nút/liên kết trên điện thoại ≥ 44px. Đo lại: không còn ô thiếu nhãn |
+| – | Trang 404 | Xong (thêm) | Trang riêng bằng tiếng Việt |
+
+**Còn lại / chưa kiểm chứng:** Gia sư AI trên điện thoại (ô nhập có bị thanh dưới che không), trình duyệt nhúng Zalo/Facebook, trình đọc màn hình, thiết bị thật, 5 học sinh thật. Một số chữ nhỏ hơn 12px (nhãn trang trí, chú thích) trên trang chủ và dashboard chưa đổi.

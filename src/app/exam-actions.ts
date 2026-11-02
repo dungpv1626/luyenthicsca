@@ -63,3 +63,18 @@ export async function submitExamAction(attemptId: string, answers: Record<string
   await submitAttempt(attemptId, me.id, answers, timeSpent);
   redirect(`/ket-qua/${attemptId}`);
 }
+
+/** Lưu nháp đáp án khi đang làm (để tiếp tục ở thiết bị khác / sau khi tải lại). Không chấm điểm. */
+export async function saveDraftAction(attemptId: string, answers: Record<string, string>, timeSpent: Record<string, number>) {
+  const me = await requireMe();
+  const db = adminDb();
+  const { data: att } = await db.from("attempts").select("question_ids, started_at, duration_sec, submitted_at").eq("id", attemptId).eq("user_id", me.id).single();
+  if (!att || att.submitted_at) return;
+  if ((Date.now() - new Date(att.started_at).getTime()) / 1000 > att.duration_sec + 60) return; // quá hạn: bỏ qua
+  const ids = new Set(att.question_ids as string[]);
+  const clean: Record<string, string> = {};
+  for (const [k, v] of Object.entries(answers ?? {})) if (ids.has(k) && ["A", "B", "C", "D"].includes(v)) clean[k] = v;
+  const spent: Record<string, number> = {};
+  for (const [k, v] of Object.entries(timeSpent ?? {})) if (ids.has(k) && Number.isFinite(v)) spent[k] = Math.min(3600, Math.max(0, Math.round(v)));
+  await db.from("attempts").update({ answers: clean, time_spent: spent }).eq("id", attemptId).is("submitted_at", null);
+}

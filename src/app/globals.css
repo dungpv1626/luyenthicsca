@@ -127,3 +127,8 @@ img, svg, video { max-width: 100%; }
 .marquee:hover { animation-play-state: paused; }
 .outline-text { color: transparent; -webkit-text-stroke: 1.5px rgb(30 58 138 / 0.38); }
 @media (prefers-reduced-motion: reduce) { .marquee { animation: none; } }
+
+/* chế độ tập trung khi đang thi: ẩn menu, chân trang, thanh điều hướng dưới của trang web */
+[data-chrome] { display: contents; }
+html[data-exam] [data-chrome] { display: none; }
+input[type="checkbox"], input[type="radio"] { width: 1.15rem; height: 1.15rem; accent-color: var(--color-brand); }

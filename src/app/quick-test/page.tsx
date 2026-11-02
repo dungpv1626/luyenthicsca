@@ -4,6 +4,8 @@ import { getMe } from "@/lib/auth";
 import { QUICK_TEST } from "@/lib/constants";
 import { startQuickTestAction } from "../exam-actions";
 
+export const metadata = { title: "Quick Test 15 phút" };
+
 export default async function Page({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
   const me = await getMe();

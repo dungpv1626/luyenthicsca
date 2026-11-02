@@ -3,6 +3,8 @@ import { requireMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { ExamRunner } from "@/components/ExamRunner";
 
+export const metadata = { title: "Đang làm bài" };
+
 export default async function Page({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = await params;
   const me = await requireMe(`/thi/${attemptId}`);
@@ -22,5 +24,5 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
   }));
   const deadline = new Date(att.started_at).getTime() + att.duration_sec * 1000;
 
-  return <ExamRunner attemptId={attemptId} title={att.title} questions={questions} deadline={deadline} />;
+  return <ExamRunner attemptId={attemptId} title={att.title} questions={questions} deadline={deadline} draft={(att.answers ?? {}) as Record<string, string>} draftSpent={(att.time_spent ?? {}) as Record<string, number>} />;
 }

@@ -5,6 +5,8 @@ import { vnd } from "@/lib/constants";
 
 const ST = { pending: "Chờ thanh toán", paid: "Đã thanh toán", cancelled: "Đã hủy", refunded: "Đã hoàn tiền" } as const;
 
+export const metadata = { title: "Đơn hàng của tôi" };
+
 export default async function Page() {
   const me = await requireMe("/don-hang");
   const { data } = await adminDb().from("orders").select("id, code, amount_vnd, status, created_at, tests(title), courses(title)").eq("user_id", me.id).order("created_at", { ascending: false });
