@@ -229,13 +229,22 @@ async function main() {
     const { data: prog, error: e2 } = await sb.rpc("admin_blueprint_progress");
     if (e2) throw new Error(e2.message);
     const only = arg("subject", null);
-    for (const p of prog) {
-      if (only && p.subject !== only) continue;
-      const want = Math.ceil(p.target * overshoot) - (p.approved + p.in_review + p.drafted);
-      for (let left = want; left > 0; left -= 5) tasks.push({ subject: p.subject, topic: p.topic, difficulty: p.difficulty, count: Math.min(5, left), hints: hintsOf(p.subject, p.topic) });
-    }
+    // Lấp đều: luôn chọn ô blueprint đang có tỉ lệ (đã có + dự kiến) / mục tiêu thấp nhất.
+    const cells = prog.filter((p) => !only || p.subject === only).map((p) => {
+      const goal = Math.ceil(p.target * overshoot);
+      return { p, goal, have: p.approved + p.in_review + p.drafted, planned: 0 };
+    }).filter((c) => c.goal > c.have);
     const max = Number(arg("max", 60));
-    let total = 0; tasks = tasks.filter((t) => (total += t.count) <= max);
+    let total = 0;
+    while (total < max) {
+      const open = cells.filter((c) => c.have + c.planned < c.goal);
+      if (!open.length) break;
+      open.sort((x, y) => (x.have + x.planned) / x.goal - (y.have + y.planned) / y.goal);
+      const c = open[0];
+      const n = Math.min(5, c.goal - c.have - c.planned, max - total);
+      tasks.push({ subject: c.p.subject, topic: c.p.topic, difficulty: c.p.difficulty, count: n, hints: hintsOf(c.p.subject, c.p.topic) });
+      c.planned += n; total += n;
+    }
   } else {
     const subject = arg("subject", null), topic = arg("topic", null), difficulty = arg("difficulty", "medium");
     if (!SUBJECTS[subject] || !topic || !DIFF[difficulty]) { console.error("Thiếu/không hợp lệ: --subject math|physics|chemistry|chinese --topic \"...\" --difficulty easy|medium|hard --count N"); process.exit(1); }

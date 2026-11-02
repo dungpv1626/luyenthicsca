@@ -74,3 +74,13 @@ node --env-file=.env.local scripts/generate-questions.mjs --reverify            
 Mỗi câu: 3 ngôn ngữ tương đương → xáo trộn đáp án (đổi `[[X]]` trong lời giải) → giải độc lập → chống trùng → hàng chờ.
 Giáo viên duyệt tại **Admin → Duyệt câu hỏi** (xem đủ 3 ngôn ngữ, duyệt/loại kèm lý do). Tiến độ: **Admin → Blueprint**.
 Công thức dùng LaTeX `$...$` (KaTeX). Giải độc lập bằng cùng một model chỉ là bước sàng lọc, KHÔNG thay giáo viên.
+
+
+## Bộ đề theo cấp
+4 cấp (`src/lib/levels.ts`): **1 Nền tảng** (dễ 70/TB 30/khó 0) · **2 Cơ bản** (40/50/10) · **3 Nâng cao** (15/50/35) · **4 Mô phỏng thi** (35/45/20).
+Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration: `0004_levels.sql`.
+- Admin → **Đề theo cấp**: chọn cấp, phạm vi, số đề, số câu, thời gian, giá → hệ thống lắp đề từ câu **Đã duyệt**
+  (đúng cơ cấu độ khó, dàn đều chủ đề, không trùng câu giữa các đề cùng cấp). Đề tạo ở trạng thái ẩn, kiểm tra rồi **Công bố**.
+- Thiếu câu → báo rõ môn nào thiếu bao nhiêu; có tùy chọn "nới lỏng" (bù độ khó/dùng lại câu) khi ngân hàng còn nhỏ.
+- Học sinh: `/thi-thu` nhóm theo cấp, lọc theo môn, gợi ý cấp theo Readiness gần nhất, hiện điểm cao nhất đã đạt.
+- Kích thước đề mặc định (30 câu/45′ theo môn; 15 câu mỗi môn/90′ tổng hợp) chỉ là gợi ý, cần chỉnh theo đặc tả chính thức.

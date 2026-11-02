@@ -162,3 +162,60 @@ export async function reviewQuestionAction(id: string, next: string, fd: FormDat
   revalidatePath("/admin/review");
   redirect(next.startsWith("/admin/review") ? next : "/admin/review");
 }
+
+// ===== Bộ đề theo cấp =====
+import { buildSets, type Q } from "@/lib/assemble";
+import { LEVELS, SCOPE_LABEL, SET_DEFAULTS } from "@/lib/levels";
+
+export async function createLevelSets(fd: FormData) {
+  await requireAdmin("tests");
+  const level = Math.min(4, Math.max(1, Math.round(Number(fd.get("level")) || 1)));
+  const info = LEVELS[level - 1];
+  const scope = fd.get("scope") === "subject" ? "subject" : "full";
+  const subject = scope === "subject" ? pick(fd.get("subject"), SUBJECT_KEYS, "math") : null;
+  const count = Math.min(10, Math.max(1, Math.round(Number(fd.get("count")) || 1)));
+  const perSubject = Math.min(60, Math.max(3, Math.round(Number(fd.get("per_subject")) || SET_DEFAULTS[scope].perSubject)));
+  const minutes = Math.min(300, Math.max(5, Math.round(Number(fd.get("minutes")) || SET_DEFAULTS[scope].minutes)));
+  const price = Math.max(0, Math.round(Number(fd.get("price")) || 0));
+  const publish = fd.get("publish") === "on";
+  const relaxed = fd.get("relaxed") === "on";
+  const back = (q: string) => redirect(`/admin/levels?${q}`);
+
+  const db = adminDb();
+  const subjects = scope === "full" ? [...SUBJECT_KEYS] : [subject as Subject];
+  const { data: qs } = await db.from("questions").select("id, subject, topic, difficulty").eq("status", "approved").in("subject", subjects);
+  const pools: Record<string, Q[]> = {};
+  for (const q of (qs ?? []) as Q[]) (pools[q.subject] ??= []).push(q);
+
+  // các câu đã nằm trong đề cùng cấp / phạm vi / môn → tránh trùng
+  let tq = db.from("tests").select("id, set_no").eq("level", level).eq("scope", scope);
+  tq = subject ? tq.eq("subject", subject) : tq.is("subject", null);
+  const { data: existing } = await tq;
+  const ids = (existing ?? []).map((t) => t.id);
+  const { data: usedRows } = ids.length ? await db.from("test_questions").select("question_id").in("test_id", ids) : { data: [] as { question_id: string }[] };
+  const usedSet = new Set((usedRows ?? []).map((r) => r.question_id));
+
+  const built = buildSets(pools, subjects, count, perSubject, info.mix, usedSet, { relaxed });
+  if (!built.sets.length) {
+    const miss = built.shortages.map((s) => `${SUBJECTS_VI[s.subject] ?? s.subject}: thiếu ${s.missing} câu`).join("; ");
+    back(`error=${encodeURIComponent(`Không đủ câu đã duyệt đúng cơ cấu cho Cấp ${level}. ${miss || "Chưa có câu hỏi đã duyệt."} Hãy duyệt thêm câu hỏi hoặc bật "cho phép bù độ khó/trùng câu".`)}`);
+  }
+
+  let no = Math.max(0, ...(existing ?? []).map((t) => t.set_no ?? 0));
+  let warn = 0;
+  for (const s of built.sets) {
+    no++;
+    const title = `Cấp ${level} · ${info.name} · ${scope === "full" ? "Tổng hợp" : SUBJECTS_VI[subject as string]} · Đề ${no}`;
+    const { data: t, error } = await db.from("tests").insert({
+      title, kind: "mock", level, scope, subject, set_no: no, duration_min: minutes, price_vnd: price, is_published: publish,
+      description: `${s.ids.length} câu · ${info.tagline}.`,
+    }).select("id").single();
+    if (error) back(`error=${encodeURIComponent("Lỗi tạo đề: " + error.message)}`);
+    await db.from("test_questions").insert(s.ids.map((question_id, i) => ({ test_id: t!.id, question_id, position: i })));
+    warn += s.shifted + s.overlapped;
+  }
+  revalidatePath("/admin/levels"); revalidatePath("/thi-thu");
+  const short = built.sets.length < count ? `&partial=${built.sets.length}of${count}` : "";
+  back(`ok=${built.sets.length}${short}${warn ? `&warn=${warn}` : ""}`);
+}
+const SUBJECTS_VI: Record<string, string> = { math: "Toán", physics: "Vật lý", chemistry: "Hóa học", chinese: "Professional Chinese" };

@@ -1,0 +1,57 @@
+import { requireAdmin } from "@/lib/auth";
+import { adminDb } from "@/lib/supabase/admin";
+import { SUBJECTS, vnd, type Subject } from "@/lib/constants";
+import { LEVELS, SCOPE_LABEL, SET_DEFAULTS, mixText } from "@/lib/levels";
+import { maxStrictSets, quota } from "@/lib/assemble";
+import { createLevelSets, togglePublish } from "../actions";
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string; partial?: string; warn?: string }> }) {
+  await requireAdmin("tests");
+  const { ok, error, partial, warn } = await searchParams;
+  const db = adminDb();
+  const [{ data: qs }, { data: sets }] = await Promise.all([
+    db.from("questions").select("subject, difficulty").eq("status", "approved"),
+    db.from("tests").select("id, title, level, scope, subject, set_no, duration_min, price_vnd, is_published, test_questions(count)").not("level", "is", null).order("level").order("scope").order("subject").order("set_no"),
+  ]);
+  const cnt: Record<string, { easy: number; medium: number; hard: number }> = {};
+  for (const s of Object.keys(SUBJECTS)) cnt[s] = { easy: 0, medium: 0, hard: 0 };
+  for (const q of qs ?? []) cnt[q.subject][q.difficulty as "easy"]++;
+  const total = Object.values(cnt).reduce((a, c) => a + c.easy + c.medium + c.hard, 0);
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Bộ đề theo cấp</h1>
+      {ok && <p className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">Đã tạo {ok}{partial ? ` đề (yêu cầu ${partial.split("of")[1]}, không đủ câu cho các đề còn lại)` : " đề"}. {warn ? `Có ${warn} câu được bù độ khó/trùng lại.` : "Đúng cơ cấu, không trùng câu."} Đề được tạo ở trạng thái ${"ẩn"} nếu chưa chọn công bố, hãy kiểm tra rồi bấm Công bố bên dưới.</p>}
+      {error && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{error}</p>}
+
+      <section className="card">
+        <h2 className="mb-1 font-bold">Nguyên liệu: câu hỏi đã duyệt ({total})</h2>
+        <p className="mb-3 text-sm text-stone-500">Chỉ câu <b>Đã duyệt</b> mới được đưa vào đề. Số đề tối đa không trùng câu (đề theo môn, {SET_DEFAULTS.subject.perSubject} câu):</p>
+        <div className="overflow-x-auto"><table className="w-full min-w-[34rem] text-sm"><thead><tr className="text-left text-stone-500"><th className="py-2">Môn</th><th>Dễ</th><th>TB</th><th>Khó</th>{LEVELS.map((l) => <th key={l.level}>Cấp {l.level}</th>)}</tr></thead>
+          <tbody>{(Object.keys(SUBJECTS) as Subject[]).map((s) => <tr key={s} className="border-t border-stone-100"><td className="py-2 font-medium">{SUBJECTS[s]}</td><td>{cnt[s].easy}</td><td>{cnt[s].medium}</td><td>{cnt[s].hard}</td>{LEVELS.map((l) => { const n = maxStrictSets(cnt[s], SET_DEFAULTS.subject.perSubject, l.mix); return <td key={l.level} className={n === 0 ? "text-stone-300" : "font-bold"}>{n}</td>; })}</tr>)}</tbody></table></div>
+        <ul className="mt-3 space-y-1 text-xs text-stone-500">{LEVELS.map((l) => <li key={l.level}><b>Cấp {l.level} · {l.name}</b> — {mixText(l.mix)} (đề {SET_DEFAULTS.subject.perSubject} câu: {(() => { const q = quota(SET_DEFAULTS.subject.perSubject, l.mix); return `${q.easy}/${q.medium}/${q.hard} câu dễ/TB/khó`; })()}) · mặc định {vnd(l.price)}</li>)}</ul>
+      </section>
+
+      <form action={createLevelSets} className="card max-w-2xl space-y-4">
+        <h2 className="font-bold">Tạo đề</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div><label className="label">Cấp</label><select name="level" className="input">{LEVELS.map((l) => <option key={l.level} value={l.level}>Cấp {l.level} · {l.name}</option>)}</select></div>
+          <div><label className="label">Phạm vi</label><select name="scope" className="input"><option value="subject">{SCOPE_LABEL.subject}</option><option value="full">{SCOPE_LABEL.full}</option></select></div>
+          <div><label className="label">Môn (nếu theo môn)</label><select name="subject" className="input">{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
+          <div><label className="label">Số đề cần tạo (1–10)</label><input type="number" name="count" min={1} max={10} defaultValue={3} className="input" /></div>
+          <div><label className="label">Số câu mỗi môn</label><input type="number" name="per_subject" min={3} max={60} defaultValue={SET_DEFAULTS.subject.perSubject} className="input" /><p className="mt-1 text-xs text-stone-500">Gợi ý: {SET_DEFAULTS.subject.perSubject} cho đề theo môn, {SET_DEFAULTS.full.perSubject} cho đề tổng hợp (theo đặc tả chính thức nếu có).</p></div>
+          <div><label className="label">Thời gian (phút)</label><input type="number" name="minutes" min={5} max={300} defaultValue={SET_DEFAULTS.subject.minutes} className="input" /><p className="mt-1 text-xs text-stone-500">Gợi ý: {SET_DEFAULTS.subject.minutes} phút (theo môn), {SET_DEFAULTS.full.minutes} phút (tổng hợp).</p></div>
+          <div><label className="label">Giá (VNĐ, 0 = miễn phí)</label><input type="number" name="price" min={0} step={1000} defaultValue={0} className="input" /><p className="mt-1 text-xs text-stone-500">Gợi ý: {LEVELS.map((l) => `Cấp ${l.level}: ${vnd(l.price)}`).join(" · ")}</p></div>
+        </div>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="publish" />Công bố ngay (mặc định tạo ở trạng thái ẩn để kiểm tra trước)</label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="relaxed" />Cho phép bù độ khó / dùng lại câu khi thiếu <span className="text-stone-400">(chất lượng thấp hơn, chỉ dùng khi ngân hàng còn nhỏ)</span></label>
+        <button className="btn">Tạo đề theo cấp</button>
+      </form>
+
+      <section className="card overflow-x-auto !p-0"><h2 className="border-b border-stone-100 p-4 font-bold">Các đề theo cấp ({sets?.length ?? 0})</h2>
+        <table className="w-full min-w-[36rem] text-sm"><tbody>{(sets ?? []).map((t) => <tr key={t.id} className="border-t border-stone-100"><td className="p-3 font-medium">{t.title}</td><td className="text-stone-500">{(t.test_questions as unknown as { count: number }[])[0]?.count ?? 0} câu · {t.duration_min}′</td><td>{vnd(t.price_vnd)}</td><td><span className={`chip ${t.is_published ? "!bg-emerald-50 !text-emerald-700" : "!bg-stone-100 !text-stone-500"}`}>{t.is_published ? "Đang công bố" : "Ẩn"}</span></td><td className="pr-3 text-right"><form action={togglePublish.bind(null, t.id, !t.is_published)}><button className={t.is_published ? "text-amber-700 hover:underline" : "font-semibold text-brand hover:underline"}>{t.is_published ? "Gỡ" : "Công bố"}</button></form></td></tr>)}</tbody></table>
+        {!sets?.length && <p className="p-5 text-sm text-stone-500">Chưa có đề theo cấp.</p>}
+      </section>
+    </div>
+  );
+}

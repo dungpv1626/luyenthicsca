@@ -6,7 +6,7 @@ import { createTest, togglePublish } from "../actions";
 export default async function Page({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   await requireAdmin("tests");
   const { error } = await searchParams;
-  const { data } = await adminDb().from("tests").select("id, title, duration_min, price_vnd, is_published, test_questions(count)").order("created_at", { ascending: false });
+  const { data } = await adminDb().from("tests").select("id, title, duration_min, price_vnd, is_published, level, test_questions(count)").order("created_at", { ascending: false });
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Mock Test</h1>
@@ -25,7 +25,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
       <div className="card divide-y p-0">
         {data?.map((t) => (
           <div key={t.id} className="flex items-center gap-3 p-3 text-sm">
-            <div className="flex-1"><p className="font-medium">{t.title}</p><p className="text-stone-500">{(t.test_questions as unknown as { count: number }[])[0]?.count ?? 0} câu · {t.duration_min} phút · {vnd(t.price_vnd)}</p></div>
+            <div className="flex-1"><p className="font-medium">{t.title}{(t as { level?: number | null }).level ? <span className="chip ml-2">Cấp {(t as { level?: number | null }).level}</span> : null}</p><p className="text-stone-500">{(t.test_questions as unknown as { count: number }[])[0]?.count ?? 0} câu · {t.duration_min} phút · {vnd(t.price_vnd)}</p></div>
             <form action={togglePublish.bind(null, t.id, !t.is_published)}><button className={t.is_published ? "text-amber-700 hover:underline" : "text-green-700 hover:underline"}>{t.is_published ? "Gỡ" : "Publish"}</button></form>
           </div>
         ))}
