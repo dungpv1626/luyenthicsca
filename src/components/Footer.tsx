@@ -9,7 +9,8 @@ const COLS = [
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-navy pb-20 text-white lg:pb-0">
+    <footer className="relative mt-20 bg-navy pb-20 text-white lg:pb-0">
+      <svg viewBox="0 0 1440 48" preserveAspectRatio="none" className="absolute inset-x-0 -top-[47px] h-[48px] w-full text-navy" aria-hidden="true"><path fill="currentColor" d="M0 48V22C160 2 320 0 480 12s320 30 480 22 320-26 480-12v26z" /></svg>
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
           <Logo light />
@@ -18,7 +19,7 @@ export function Footer() {
         {COLS.map(([title, links]) => (
           <div key={title}>
             <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">{title}</h4>
-            <ul className="mt-3 space-y-2 text-sm">{links.map(([h, l]) => <li key={h}><Link href={h} className="text-white/90 hover:text-white hover:underline">{l}</Link></li>)}</ul>
+            <ul className="mt-2 text-sm">{links.map(([h, l]) => <li key={h}><Link href={h} className="-mx-2 block rounded-lg px-2 py-2 text-white/85 transition hover:bg-white/10 hover:text-white">{l}</Link></li>)}</ul>
           </div>
         ))}
       </div>

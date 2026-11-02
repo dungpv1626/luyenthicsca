@@ -60,7 +60,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </div>
 
       <div className="card">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-bold">Xem lại từng câu</h2><p className="text-xs text-slate-500">Ngân hàng câu hỏi đang được mở rộng và rà soát liên tục. Nếu thấy câu nào sai hoặc khó hiểu, hãy bấm “Báo lỗi câu hỏi”.</p></div><div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={`?lang=${k}`} className={`rounded-full px-3 py-1 ${lang === k ? "bg-brand text-white" : "text-slate-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-bold">Xem lại từng câu</h2><p className="text-xs text-slate-500">Ngân hàng câu hỏi đang được mở rộng và rà soát liên tục. Nếu thấy câu nào sai hoặc khó hiểu, hãy bấm “Báo lỗi câu hỏi”.</p></div><div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={`?lang=${k}`} className={`rounded-full px-3.5 py-2 transition sm:px-3 sm:py-1 ${lang === k ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
         <div className="space-y-4">
           {review.map((q, i) => {
             const mine = ans[q.id];

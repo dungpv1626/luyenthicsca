@@ -31,7 +31,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((s) => (
             <div key={s.id} className="card card-hover relative flex flex-col">
-              <label className="absolute right-4 top-4 flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-slate-500"><input type="checkbox" name="ids" value={s.id} />So sánh</label>
+              <label className="absolute right-2 top-2 flex min-h-[2.25rem] cursor-pointer items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-slate-500 hover:bg-brand-soft"><input type="checkbox" name="ids" value={s.id} />So sánh</label>
               <p className="text-3xl font-black text-brand/25">{s.name_zh}</p>
               <Link href={`/truong/${s.id}`} className="mt-1 text-lg font-bold hover:text-brand">{s.name}</Link>
               <p className="mt-1 flex items-center gap-1 text-sm text-slate-500"><Icon name="map" className="h-4 w-4" />{s.city}{s.kind ? ` · ${s.kind}` : ""}</p>

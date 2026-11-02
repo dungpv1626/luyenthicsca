@@ -148,7 +148,10 @@ async function runTask({ subject, topic, subtopic, difficulty, count, hints }) {
       cac_de_bai_da_co_can_tranh_trung: (prior ?? []).map((p) => p.body.slice(0, 90)),
     }) }],
   });
-  const out = tool(res, "submit_questions")?.questions ?? [];
+  // phản hồi đôi khi trả "questions" dạng chuỗi JSON: phải parse, không được lặp từng ký tự
+  let out = tool(res, "submit_questions")?.questions ?? [];
+  if (typeof out === "string") { try { out = JSON.parse(out); } catch { out = []; } }
+  if (!Array.isArray(out)) out = [];
   const rows = [];
   for (const q of out) {
     stats.gen++;
@@ -209,7 +212,7 @@ async function runTask({ subject, topic, subtopic, difficulty, count, hints }) {
       origin: "ai_generated", batch_id: BATCH,
       ...(PUBLISH && verify === "pass" && !note
         ? { status: "approved", auto_published: true, review_note: "Công bố tự động (AI kiểm tra đạt), chờ giáo viên xác nhận" }
-        : { status: "review" }),
+        : { status: "review", auto_published: false }),
       verify_status: verify, verify_note: note || null, similar_to: best.s >= 0.5 && best.id !== "pending" ? best.id : null,
     });
     pool.push({ id: "pending", sh });

@@ -45,10 +45,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ v
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Duyệt câu hỏi</h1>
-        <form className="flex gap-2 text-sm">
+        <form className="flex w-full flex-wrap gap-2 text-sm sm:w-auto">
           <input type="hidden" name="view" value={view} />
-          <select name="subject" defaultValue={subject ?? ""} className="input w-auto"><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
-          <select name="verify" defaultValue={verify ?? ""} className="input w-auto"><option value="">Mọi kết quả kiểm tra</option><option value="mismatch">Lệch đáp án</option><option value="invalid">Lỗi cấu trúc</option><option value="pass">Đạt</option><option value="unchecked">Chưa kiểm tra</option></select>
+          <select name="subject" defaultValue={subject ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+          <select name="verify" defaultValue={verify ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi kết quả kiểm tra</option><option value="mismatch">Lệch đáp án</option><option value="invalid">Lỗi cấu trúc</option><option value="pass">Đạt</option><option value="unchecked">Chưa kiểm tra</option></select>
           <button className="btn-outline">Lọc</button>
         </form>
       </div>

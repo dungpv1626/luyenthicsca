@@ -3,11 +3,12 @@ import { signOut } from "@/app/actions";
 import type { Me } from "@/lib/auth";
 import { AccountMenu } from "./AccountMenu";
 import { Logo } from "./Logo";
+import { HeaderShell } from "./HeaderShell";
 import { DesktopNav, MobileMenu } from "./NavLinks";
 
 export function Header({ me }: { me: Me | null }) {
   return (
-    <header className="sticky top-0 z-30 bg-navy text-white shadow-md">
+    <HeaderShell>
       <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
         <Link href="/" className="mr-1 shrink-0"><Logo light /></Link>
         <DesktopNav />
@@ -23,6 +24,6 @@ export function Header({ me }: { me: Me | null }) {
           <MobileMenu />
         </div>
       </div>
-    </header>
+    </HeaderShell>
   );
 }

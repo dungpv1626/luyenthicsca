@@ -63,9 +63,9 @@ export function ExamRunner({ attemptId, title, questions, deadline }: { attemptI
 
   return (
     <div className="space-y-4">
-      <div className="card flex flex-wrap items-center justify-between gap-3">
+      <div className="card sticky top-[4.4rem] z-20 flex flex-wrap items-center justify-between gap-3 !p-3 shadow-md sm:!p-5 lg:static lg:shadow-sm">
         <div><h1 className="font-bold">{title}</h1><p className="text-sm text-slate-500">Đã trả lời {done}/{questions.length}</p></div>
-        {hasTr && <div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{LANGS.map(([k, label]) => <button key={k} onClick={() => pickLang(k)} className={`rounded-full px-3 py-1 ${lang === k ? "bg-brand text-white" : "text-slate-600 hover:text-brand"}`}>{label}</button>)}</div>}
+        {hasTr && <div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{LANGS.map(([k, label]) => <button key={k} onClick={() => pickLang(k)} className={`rounded-full px-3.5 py-2 transition sm:px-3 sm:py-1 ${lang === k ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand"}`}>{label}</button>)}</div>}
         <div className={`rounded-lg px-4 py-2 font-mono text-2xl font-bold ${left < 60 ? "bg-red-100 text-red-700" : "bg-slate-100"}`}>{mm}:{ss}</div>
       </div>
 
@@ -75,7 +75,7 @@ export function ExamRunner({ attemptId, title, questions, deadline }: { attemptI
           <p className="text-lg">Câu {idx + 1}. <Rich text={view.body} /></p>
           <div className="space-y-2">
             {Object.entries(view.options).map(([k, v]) => (
-              <label key={k} className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 ${answers[q.id] === k ? "border-brand bg-brand-soft" : "border-slate-200 hover:bg-slate-50"}`}>
+              <label key={k} className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition active:scale-[.99] ${answers[q.id] === k ? "border-brand bg-brand-soft" : "border-slate-200 hover:bg-slate-50"}`}>
                 <input type="radio" name={q.id} checked={answers[q.id] === k} onChange={() => setAnswers((a) => ({ ...a, [q.id]: k }))} className="mt-1" />
                 <span><b>{k}.</b> <Rich text={v} /></span>
               </label>
@@ -92,7 +92,7 @@ export function ExamRunner({ attemptId, title, questions, deadline }: { attemptI
         <aside className="card h-fit">
           <div className="grid grid-cols-5 gap-2">
             {questions.map((x, i) => (
-              <button key={x.id} onClick={() => setIdx(i)} className={`rounded py-1 text-sm font-medium ${i === idx ? "ring-2 ring-brand" : ""} ${answers[x.id] ? "bg-brand text-white" : "bg-slate-100"}`}>{i + 1}</button>
+              <button key={x.id} onClick={() => setIdx(i)} className={`min-h-[2.5rem] rounded-lg py-2 text-sm font-semibold transition active:scale-95 sm:min-h-0 sm:py-1.5 ${i === idx ? "ring-2 ring-brand ring-offset-2" : ""} ${answers[x.id] ? "bg-brand text-white shadow-sm" : "bg-slate-100 hover:bg-slate-200"}`}>{i + 1}</button>
             ))}
           </div>
           <button className="btn mt-4 w-full" disabled={pending} onClick={() => confirm(`Còn ${questions.length - done} câu chưa trả lời. Nộp bài?`) && submit()}>
