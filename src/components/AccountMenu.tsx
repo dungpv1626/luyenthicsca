@@ -28,6 +28,7 @@ export function AccountMenu({ name, isStaff, children }: { name: string; isStaff
           <Link href="/lo-trinh" className={item}>Lộ trình của tôi</Link>
           <Link href="/khoa-hoc-cua-toi" className={item}>Khóa học của tôi</Link>
           <Link href="/don-hang" className={item}>Đơn hàng</Link>
+          <Link href="/doi-mat-khau" className={item}>Đổi mật khẩu</Link>
           {isStaff && <Link href="/admin" className={item}>Trang quản trị</Link>}
           <div className="mt-1 border-t border-stone-100 pt-1">{children}</div>
         </div>

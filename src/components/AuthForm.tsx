@@ -30,7 +30,7 @@ export function AuthForm({ mode, action, next, audience }: { mode: "login" | "re
         </>
       )}
       <div><label className="label">Email</label><input type="email" name="email" required defaultValue={v.email} className="input" /></div>
-      <div><label className="label">Mật khẩu</label><input type="password" name="password" required minLength={reg ? 8 : 1} className="input" /></div>
+      <div><label className="label">Mật khẩu</label><input type="password" name="password" required minLength={reg ? 8 : 1} autoComplete={reg ? "new-password" : "current-password"} className="input" />{!reg && <Link href="/quen-mat-khau" className="mt-1.5 inline-block text-xs font-semibold text-brand hover:underline">Quên mật khẩu?</Link>}</div>
       {state?.error && <p className="rounded bg-red-50 p-2 text-sm text-red-700">{state.error}</p>}
       <button disabled={pending} className="btn w-full">{pending ? "Đang xử lý…" : reg ? "Đăng ký" : "Đăng nhập"}</button>
       <p className="text-center text-sm text-stone-600">

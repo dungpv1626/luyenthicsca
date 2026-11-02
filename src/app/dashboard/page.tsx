@@ -9,8 +9,9 @@ import { SubjectBars } from "@/components/SkillBars";
 import { Icon } from "@/components/Icon";
 import { toggleTaskAction, startTaskAction } from "../plan-actions";
 
-export default async function Page() {
+export default async function Page({ searchParams }: { searchParams: Promise<{ pw?: string }> }) {
   const me = await requireMe("/dashboard");
+  const { pw } = await searchParams;
   const db = adminDb();
   const today = todayVN();
   const [{ data: prof }, sk, { data: open }, { data: plan }, { data: recent }] = await Promise.all([
@@ -27,6 +28,7 @@ export default async function Page() {
 
   return (
     <div className="space-y-6">
+      {pw === "reset" && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm font-medium text-emerald-800">Đã đặt mật khẩu mới. Các thiết bị khác đã bị đăng xuất.</p>}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div><p className="eyebrow">Dashboard</p><h1 className="text-2xl font-extrabold md:text-3xl">Xin chào, {me.full_name || me.email}</h1></div>
         <div className="flex gap-2"><Link href="/quick-test" className="btn">Quick Test</Link><Link href="/luyen-tap" className="btn-outline">Luyện tập</Link>{open?.[0] && <Link href={`/thi/${open[0].id}`} className="btn-outline">Tiếp tục bài đang làm</Link>}</div>
