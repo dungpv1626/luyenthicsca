@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { adminDb } from "@/lib/supabase/admin";
 import { AUDIENCES, QUICK_TEST, vnd } from "@/lib/constants";
@@ -7,7 +8,7 @@ import { SchoolPhoto } from "@/components/SchoolPhoto";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { SectionTitle } from "@/components/Section";
-import { HeroArt } from "@/components/art/HeroArt";
+import { DailyQuestion, type DailyQ } from "@/components/DailyQuestion";
 import { HeroSlides } from "@/components/HeroSlides";
 import { SubjectArt } from "@/components/art/SubjectArt";
 import { CampusArt } from "@/components/art/CampusArt";
@@ -27,12 +28,6 @@ const SUBJECT_CARDS = [
   ["chinese", "Professional Chinese", "Từ vựng chuyên ngành, đọc hiểu, ngữ pháp…"],
 ] as const;
 
-const FEATURES = [
-  ["book", "Ngân hàng câu hỏi", "Câu hỏi có giải thích chi tiết theo môn, chủ đề, độ khó; công thức hiển thị chuẩn.", "/luyen-tap"],
-  ["sparkles", "AI phân tích & Gia sư", "Báo cáo cá nhân hóa sau mỗi bài thi và gia sư AI giải đáp từng câu.", "/ai"],
-  ["route", "Lộ trình cá nhân", "Kế hoạch học theo ngày, bám sát điểm yếu của chính bạn.", "/lo-trinh"],
-  ["school", "Trường & Học bổng", "Đối chiếu năng lực với yêu cầu của trường, đăng ký tư vấn.", "/truong"],
-] as const;
 
 export default async function Home() {
   const db = adminDb();
@@ -43,6 +38,14 @@ export default async function Home() {
     db.from("schools").select("id, name, name_zh, city, kind, image_url, image_credit").order("created_at").limit(6),
     db.from("scholarships").select("id, name").eq("is_active", true).limit(1),
   ]);
+  // câu hỏi hôm nay: lấy từ câu sinh bằng khuôn (đáp án do mã tính), xoay theo ngày
+  const { count: nDaily } = await db.from("questions").select("*", { count: "exact", head: true }).eq("status", "approved").eq("origin", "template").eq("difficulty", "easy");
+  let daily: DailyQ | null = null;
+  if (nDaily) {
+    const day = Math.floor(Date.now() / 86_400_000);
+    const { data: dq } = await db.from("questions").select("id, subject, topic, body, options, correct_answer, explanation").eq("status", "approved").eq("origin", "template").eq("difficulty", "easy").order("id").range(day % nDaily, day % nDaily);
+    if (dq?.[0]) daily = { id: dq[0].id, subject: dq[0].subject, topic: dq[0].topic, body: dq[0].body, options: dq[0].options as Record<string, string>, correct: dq[0].correct_answer, explanation: dq[0].explanation };
+  }
   const stats = [
     [nQ ?? 0, "+", "Câu hỏi đang công bố"], [4, "", "Môn thi CSCA"], [3, "", "Ngôn ngữ: Việt · Anh · 中文"], [nSchools ?? 0, "", "Trường trong cơ sở dữ liệu"],
   ] as const;
@@ -67,7 +70,7 @@ export default async function Home() {
               {[`${QUICK_TEST.questions} câu`, `${QUICK_TEST.minutes} phút`, "Báo cáo AI ngay"].map((t) => <li key={t} className="flex items-center gap-1.5"><span className="grid h-5 w-5 place-items-center rounded-full bg-white/20"><Icon name="check" className="h-3 w-3" /></span>{t}</li>)}
             </ul>
           </div>
-          <div className="rise rise-3"><HeroArt /></div>
+          <div className="rise rise-3">{daily ? <DailyQuestion q={daily} /> : null}</div>
         </div>
       </section>
 
@@ -79,6 +82,17 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* ===== DẢI TÊN TRƯỜNG ===== */}
+      {(schools?.length ?? 0) > 0 && (
+        <section aria-hidden="true" className="-mx-4 overflow-hidden py-2 sm:-mx-6">
+          <div className="marquee flex w-max items-center gap-10 whitespace-nowrap">
+            {[...Array(2)].flatMap((_, h) => [...Array(3)].flatMap((__, r) => (schools ?? []).map((sc) => (
+              <span key={`${h}-${r}-${sc.id}`} className="flex items-center gap-10"><span className="outline-text text-5xl font-black sm:text-7xl">{sc.name_zh}</span><span className="text-brand/40">✦</span></span>
+            ))))}
+          </div>
+        </section>
+      )}
 
       {/* ===== ĐỐI TƯỢNG ===== */}
       <section>
@@ -119,19 +133,43 @@ export default async function Home() {
         </ol>
       </section>
 
-      {/* ===== TÍNH NĂNG ===== */}
-      <section className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-b from-brand-soft via-white to-white px-5 py-10 sm:rounded-[2.25rem] sm:px-12 sm:py-14">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand/10 blur-3xl" />
-        <div className="grid gap-10 md:grid-cols-[1fr_1.5fr]">
-          <Reveal><SectionTitle en="Welcome CSCA" vi="Nền tảng toàn diện" /><p className="mt-5 max-w-sm text-slate-600">Không chỉ là nơi luyện đề. Mỗi bài thi trở thành dữ liệu để AI hiểu bạn và dẫn bạn đi đúng hướng.</p></Reveal>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {FEATURES.map(([icon, t, d, href], i) => (
-              <Reveal key={t} delay={i * 100}><Link href={href} className="card card-hover group flex h-full flex-col gap-3">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-brand to-indigo text-white shadow-[var(--shadow-glow)] transition duration-300 group-hover:rotate-6 group-hover:scale-110"><Icon name={icon} className="h-6 w-6" /></span>
-                <h3 className="font-bold">{t}</h3><p className="text-sm text-slate-600">{d}</p>
-              </Link></Reveal>
-            ))}
-          </div>
+      {/* ===== TÍNH NĂNG (BENTO) ===== */}
+      <section>
+        <Reveal><SectionTitle en="Welcome CSCA" vi="Một nền tảng, trọn hành trình ôn thi" center /></Reveal>
+        <div className="mt-10 grid gap-4 md:grid-cols-4 md:auto-rows-[11.5rem]">
+          <Reveal className="md:col-span-2 md:row-span-2"><Link href="/quick-test" className="mesh-navy group relative flex h-full min-h-[22rem] flex-col justify-between overflow-hidden rounded-3xl p-6 text-white shadow-[var(--shadow-glow)] transition duration-300 hover:-translate-y-1">
+            <div><p className="eyebrow !text-sky-200">Readiness Score</p><h3 className="mt-2 text-2xl font-extrabold sm:text-3xl">Biết mình đang ở đâu<br />chỉ sau 15 phút</h3></div>
+            <div className="flex items-center gap-6">
+              <svg viewBox="0 0 128 128" className="h-32 w-32 shrink-0 -rotate-90 sm:h-40 sm:w-40" aria-hidden="true"><circle cx="64" cy="64" r="54" fill="none" stroke="rgb(255 255 255 / .18)" strokeWidth="12" /><circle cx="64" cy="64" r="54" fill="none" stroke="#7dd3fc" strokeWidth="12" strokeLinecap="round" strokeDasharray="339.3" strokeDashoffset="95" className="ring-anim" style={{ ["--circ" as string]: 339.3 }} /><text x="64" y="64" textAnchor="middle" dominantBaseline="central" className="rotate-90 fill-white text-[34px] font-black" style={{ transformOrigin: "64px 64px" }}>72</text></svg>
+              <ul className="min-w-0 flex-1 space-y-2.5 text-xs font-semibold">{[["Toán", 78], ["Vật lý", 65], ["Hóa học", 72], ["Tiếng Trung", 81]].map(([n, v]) => <li key={n}><div className="flex justify-between text-white/85"><span>{n}</span><span>{v}%</span></div><div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/20"><span className="bar-anim block h-full rounded-full bg-sky-300" style={{ width: `${v}%` }} /></div></li>)}</ul>
+            </div>
+            <span className="inline-flex items-center gap-1 text-sm font-bold">Thi thử miễn phí <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+          </Link></Reveal>
+
+          <Reveal delay={100} className="md:col-span-2"><Link href="/ai" className="card card-hover group flex h-full flex-col justify-between overflow-hidden !rounded-3xl">
+            <div className="flex items-center gap-2"><span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand to-indigo text-white"><Icon name="sparkles" className="h-5 w-5" /></span><h3 className="font-extrabold text-navy">AI phân tích & Gia sư</h3></div>
+            <div className="space-y-1.5 text-xs"><p className="w-fit max-w-[85%] rounded-2xl rounded-bl-sm bg-mist px-3 py-2">Điểm yếu của bạn: <b>Xác suất</b> — sai 4/6 câu tổ hợp.</p><p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-brand px-3 py-2 text-white">Giải thích giúp mình câu 7?</p></div>
+          </Link></Reveal>
+
+          <Reveal delay={160}><Link href="/lo-trinh" className="card card-hover group flex h-full flex-col justify-between !rounded-3xl">
+            <h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="route" className="h-5 w-5 text-brand" />Lộ trình</h3>
+            <ul className="space-y-1.5 text-xs text-slate-600">{[["20 câu Đại số", true], ["Xem lại câu sai", true], ["Mini Test", false]].map(([t, d]) => <li key={String(t)} className="flex items-center gap-2"><span className={`grid h-4 w-4 place-items-center rounded-full text-[9px] text-white ${d ? "bg-emerald-500" : "border border-slate-300"}`}>{d ? "✓" : ""}</span><span className={d ? "line-through opacity-60" : "font-semibold"}>{t}</span></li>)}</ul>
+          </Link></Reveal>
+
+          <Reveal delay={220}><Link href="/luyen-tap" className="card card-hover group flex h-full flex-col justify-between !rounded-3xl">
+            <h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="book" className="h-5 w-5 text-brand" />Ngân hàng đề</h3>
+            <div><p className="text-3xl font-black text-navy"><CountUp value={nQ ?? 0} suffix="+" /></p><div className="mt-1 flex gap-1 text-[10px] font-bold"><span className="chip">VI</span><span className="chip">EN</span><span className="chip">中文</span></div></div>
+          </Link></Reveal>
+
+          <Reveal delay={120} className="md:col-span-2"><Link href="/truong" className="card card-hover group flex h-full items-center justify-between gap-4 overflow-hidden !rounded-3xl">
+            <div className="min-w-0"><h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="school" className="h-5 w-5 text-brand" />Trường & Học bổng</h3><p className="mt-1 text-sm text-slate-600">Đối chiếu năng lực với yêu cầu của từng trường và đăng ký tư vấn.</p></div>
+            <div className="flex shrink-0 -space-x-3">{(schools ?? []).filter((x) => x.image_url).slice(0, 4).map((x) => <img key={x.id} src={x.image_url as string} alt={x.name} loading="lazy" className="h-12 w-12 rounded-full border-2 border-white object-cover object-top shadow transition group-hover:translate-y-[-3px] sm:h-14 sm:w-14" />)}</div>
+          </Link></Reveal>
+
+          <Reveal delay={180} className="md:col-span-2"><Link href="/dashboard" className="card card-hover group flex h-full items-end justify-between gap-4 !rounded-3xl">
+            <div><h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="chart" className="h-5 w-5 text-brand" />Thi lại & so sánh tiến bộ</h3><p className="mt-1 text-sm text-slate-600">Thấy điểm tăng qua từng lần thi.</p></div>
+            <div className="flex h-16 items-end gap-1.5" aria-hidden="true">{[35, 48, 55, 66, 78].map((h, i) => <span key={h} className="bar-anim w-4 rounded-t-md bg-gradient-to-t from-brand to-sky-300 sm:w-5" style={{ height: `${h}%`, animationDelay: `${0.2 + i * 0.12}s` }} />)}</div>
+          </Link></Reveal>
         </div>
       </section>
 

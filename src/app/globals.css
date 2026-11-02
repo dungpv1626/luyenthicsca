@@ -120,3 +120,10 @@ img, svg, video { max-width: 100%; }
 @keyframes hero-slide { 0% { opacity: 0; transform: scale(1.07); } 4% { opacity: 1; } 16.67% { opacity: 1; } 21% { opacity: 0; transform: scale(1); } 100% { opacity: 0; transform: scale(1); } }
 .hero-slide { opacity: 0; animation: hero-slide 30s linear infinite both; will-change: opacity, transform; }
 @media (prefers-reduced-motion: reduce) { .hero-slide { animation: none; } .hero-slide:first-child { opacity: 1; } }
+
+/* ===== dải tên trường chạy ngang ===== */
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee { animation: marquee 48s linear infinite; }
+.marquee:hover { animation-play-state: paused; }
+.outline-text { color: transparent; -webkit-text-stroke: 1.5px rgb(30 58 138 / 0.38); }
+@media (prefers-reduced-motion: reduce) { .marquee { animation: none; } }
