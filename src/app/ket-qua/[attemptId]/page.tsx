@@ -7,6 +7,7 @@ import type { Breakdown } from "@/lib/scoring";
 import type { AiReport } from "@/lib/ai";
 import { TutorChat } from "@/components/TutorChat";
 import { Rich } from "@/components/Rich";
+import { reportQuestionAction } from "../../report-actions";
 import { ScoreRing } from "@/components/ScoreRing";
 
 export default async function Page({ params, searchParams }: { params: Promise<{ attemptId: string }>; searchParams: Promise<{ lang?: string }> }) {
@@ -24,6 +25,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const byId = new Map((qs ?? []).map((q) => [q.id, q]));
   const review = (att.question_ids as string[]).map((id) => byId.get(id)).filter(Boolean) as NonNullable<ReturnType<typeof byId.get>>[];
   const ans = att.answers as Record<string, string>;
+  const { data: myReps } = await db.from("question_reports").select("question_id").eq("user_id", me.id).in("question_id", att.question_ids as string[]);
+  const reported = new Set((myReps ?? []).map((r) => r.question_id));
   const topicLabel = (k: string) => `${SUBJECTS[k.split("|")[0] as Subject]} – ${k.split("|")[1]}`;
 
   return (
@@ -57,7 +60,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </div>
 
       <div className="card">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-bold">Xem lại từng câu</h2><div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={`?lang=${k}`} className={`rounded-full px-3 py-1 ${lang === k ? "bg-brand text-white" : "text-slate-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-bold">Xem lại từng câu</h2><p className="text-xs text-slate-500">Ngân hàng câu hỏi đang được mở rộng và rà soát liên tục. Nếu thấy câu nào sai hoặc khó hiểu, hãy bấm “Báo lỗi câu hỏi”.</p></div><div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={`?lang=${k}`} className={`rounded-full px-3 py-1 ${lang === k ? "bg-brand text-white" : "text-slate-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
         <div className="space-y-4">
           {review.map((q, i) => {
             const mine = ans[q.id];
@@ -74,6 +77,9 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                 </ul>
                 <p className="mt-1 text-sm">Bạn chọn: <b>{mine ?? "—"}</b> · Đáp án: <b>{q.correct_answer}</b></p>
                 {view.explanation && <p className="mt-1 text-sm text-slate-700">💡 <Rich text={view.explanation} /></p>}
+                <details className="mt-2"><summary className="cursor-pointer text-xs font-semibold text-slate-500 hover:text-red-600">{reported.has(q.id) ? "✓ Đã báo lỗi câu này, cảm ơn bạn" : "Báo lỗi câu hỏi"}</summary>
+                  {!reported.has(q.id) && <form action={reportQuestionAction.bind(null, attemptId, q.id)} className="mt-2 flex flex-wrap gap-2"><select name="reason" className="input !w-auto !py-1.5 text-sm"><option value="wrong_answer">Đáp án sai</option><option value="unclear">Đề không rõ</option><option value="bad_translation">Dịch sai</option><option value="other">Khác</option></select><input name="note" maxLength={300} placeholder="Ghi chú (không bắt buộc)" className="input !w-auto min-w-[10rem] flex-1 !py-1.5 text-sm" /><button className="btn-outline !px-4 !py-1.5 text-sm">Gửi</button></form>}
+                </details>
                 <details className="mt-2"><summary className="cursor-pointer text-sm font-bold text-brand">Hỏi Gia sư AI về câu này</summary><div className="mt-2 rounded-xl border border-slate-200 bg-white"><TutorChat compact ctx={{ attemptId, questionId: q.id }} suggestions={["Giải thích chi tiết từng bước", "Vì sao các đáp án còn lại sai?", "Cho mình một câu tương tự"]} /></div></details>
               </div>
             );

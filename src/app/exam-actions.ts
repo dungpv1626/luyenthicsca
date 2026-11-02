@@ -48,7 +48,11 @@ export async function startMockAction(testId: string) {
   if (open?.[0] && Date.now() < new Date(open[0].started_at).getTime() + open[0].duration_sec * 1000) redirect(`/thi/${open[0].id}`);
 
   const { data: tq } = await db.from("test_questions").select("question_id").eq("test_id", testId).order("position");
-  const ids = (tq ?? []).map((r) => r.question_id);
+  const all = (tq ?? []).map((r) => r.question_id);
+  // bỏ qua câu đã bị gỡ/loại sau khi đề được dựng
+  const { data: live } = all.length ? await db.from("questions").select("id").in("id", all).eq("status", "approved") : { data: [] as { id: string }[] };
+  const liveSet = new Set((live ?? []).map((q) => q.id));
+  const ids = all.filter((id) => liveSet.has(id));
   if (!ids.length) redirect(`/thi-thu/${testId}`);
   const id = await createAttempt({ userId: me.id, kind: test.kind, title: test.title, questionIds: ids, durationSec: test.duration_min * 60, testId });
   redirect(`/thi/${id}`);

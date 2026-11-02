@@ -12,7 +12,7 @@ export default async function Page() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Blueprint & tiến độ ngân hàng câu hỏi</h1>
-      <p className="text-sm text-slate-500">Mục tiêu: 300 câu đã duyệt mỗi môn (độ khó 35/45/20). Đây là bản nháp, cần đối chiếu đặc tả chính thức của CSCA.</p>
+      <p className="text-sm text-slate-500">Mục tiêu theo blueprint (độ khó 35/45/20). Câu “công bố tự động” được tính vào cột Đã duyệt cho tới khi giáo viên xác nhận (xem Admin → Duyệt câu hỏi → tab “Đã công bố”). Blueprint là bản nháp, cần đối chiếu đặc tả chính thức của CSCA.</p>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {subjects.map((s) => { const r = rows.filter((x) => x.subject === s); const t = r.reduce((a, x) => a + x.target, 0), ap = r.reduce((a, x) => a + x.approved, 0), rv = r.reduce((a, x) => a + x.in_review, 0);
           return <div key={s} className="card"><p className="text-sm font-semibold">{SUBJECTS[s]}</p><p className="mt-1 text-3xl font-black">{ap}<span className="text-sm font-medium text-slate-400">/{t}</span></p><div className="mt-2 h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-emerald-500" style={{ width: `${t ? (ap / t) * 100 : 0}%` }} /></div><p className="mt-1 text-xs text-slate-500">{rv} đang chờ duyệt</p></div>; })}

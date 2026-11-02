@@ -153,14 +153,24 @@ export async function reviewQuestionAction(id: string, next: string, fd: FormDat
   const note = String(fd.get("note") ?? "").trim().slice(0, 500);
   const canApprove = me.role === "super_admin" || me.role === "academic_reviewer";
   const db = adminDb();
+  const now = new Date().toISOString();
   if (decision === "approve" && canApprove) {
-    await db.from("questions").update({ status: "approved", reviewer: me.id, review_note: note || null, reviewed_at: new Date().toISOString() }).eq("id", id).eq("status", "review");
+    // xác nhận: câu chờ duyệt → công bố; hoặc câu đã công bố tự động → đánh dấu đã có giáo viên xác nhận
+    await db.from("questions").update({ status: "approved", auto_published: false, reviewer: me.id, review_note: note || null, reviewed_at: now }).eq("id", id).or("status.eq.review,auto_published.eq.true");
   } else if (decision === "reject") {
     if (!note) redirect(`${next}${next.includes("?") ? "&" : "?"}need_note=1`);
-    await db.from("questions").update({ status: "rejected", reviewer: me.id, review_note: note, reviewed_at: new Date().toISOString() }).eq("id", id).in("status", ["review", "draft"]);
+    // loại / tắt câu hỏi (kể cả câu đang công bố): học sinh sẽ không thấy nữa
+    await db.from("questions").update({ status: "rejected", auto_published: false, reviewer: me.id, review_note: note, reviewed_at: now }).eq("id", id).neq("status", "rejected");
   }
   revalidatePath("/admin/review");
   redirect(next.startsWith("/admin/review") ? next : "/admin/review");
+}
+
+/** Gỡ cả một lô câu đã công bố tự động nhưng chưa có giáo viên xác nhận (đưa về hàng chờ duyệt). */
+export async function disableBatchAction(batchId: string) {
+  await requireAdmin("questions");
+  await adminDb().from("questions").update({ status: "review", auto_published: false, review_note: "Gỡ cả lô bởi quản trị" }).eq("batch_id", batchId).eq("auto_published", true);
+  revalidatePath("/admin/review");
 }
 
 // ===== Bộ đề theo cấp =====

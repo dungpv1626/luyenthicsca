@@ -5,7 +5,7 @@
 // Cách chạy (cần SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_SUPABASE_URL, ANTHROPIC_API_KEY trong .env.local):
 //   node --env-file=.env.local scripts/generate-questions.mjs --pilot            # lô thử 40 câu (10/môn)
 //   node --env-file=.env.local scripts/generate-questions.mjs --subject math --topic "Đại số" --difficulty easy --count 5
-//   node --env-file=.env.local scripts/generate-questions.mjs --fill --subject math --max 60 [--overshoot 1.3]
+//   node --env-file=.env.local scripts/generate-questions.mjs --fill --subject math --max 60 [--overshoot 1.3] [--publish] [--budget-usd 25]
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 
@@ -25,6 +25,13 @@ const DIFF = {
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const claude = new Anthropic();
 const usage = { in: 0, out: 0, calls: 0 };
+// Giá Claude Sonnet 5.5 (USD / 1M token). Đổi bằng biến môi trường nếu dùng model khác.
+const PRICE_IN = Number(process.env.PRICE_IN ?? 2), PRICE_OUT = Number(process.env.PRICE_OUT ?? 10);
+const BUDGET = Number(arg("budget-usd", Infinity)); // dừng khi chi phí ước tính vượt mức này
+const spent = () => (usage.in * PRICE_IN + usage.out * PRICE_OUT) / 1e6;
+// Trần TỔNG chi tiêu (mọi lần chạy) lưu trong bảng ai_spend; mặc định $50. Đổi bằng AI_TOTAL_CAP_USD.
+const TOTAL_CAP = Number(process.env.AI_TOTAL_CAP_USD ?? 50);
+let LIMIT = BUDGET; // ngân sách hiệu lực của lần chạy này (≤ phần còn lại của trần tổng)
 
 // ---------- schema trả về của Claude (tool use → luôn là JSON hợp lệ) ----------
 const options = { type: "object", properties: Object.fromEntries("ABCD".split("").map((k) => [k, { type: "string" }])), required: ["A", "B", "C", "D"] };
@@ -106,14 +113,26 @@ async function rewriteExplanations(vi, en, zh, correct) {
 const asText = (l) => `${l.body}\n${["A", "B", "C", "D"].map((k) => `${k}. ${l.options[k]}`).join("\n")}`;
 
 // ---------- một "ô" blueprint: sinh → xáo trộn → kiểm tra → lưu ----------
+/** Tải toàn bộ dòng (PostgREST giới hạn 1000 dòng mỗi yêu cầu). */
+async function fetchAll(build) {
+  const out = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await build().range(from, from + 999);
+    if (error) throw new Error(error.message);
+    out.push(...data);
+    if (data.length < 1000) break;
+  }
+  return out;
+}
 const known = {}; // subject -> [{id, sh}]
 async function loadKnown(subject) {
   if (known[subject]) return known[subject];
-  const { data } = await sb.from("questions").select("id, body").eq("subject", subject);
-  return (known[subject] = (data ?? []).map((q) => ({ id: q.id, sh: shingles(q.body) })));
+  const rows = await fetchAll(() => sb.from("questions").select("id, body").eq("subject", subject).order("id"));
+  return (known[subject] = rows.map((q) => ({ id: q.id, sh: shingles(q.body) })));
 }
+const PUBLISH = !!arg("publish", false); // công bố ngay câu đã qua kiểm tra tự động (giáo viên xác nhận sau)
 
-async function runTask({ subject, topic, difficulty, count, hints }) {
+async function runTask({ subject, topic, subtopic, difficulty, count, hints }) {
   const stats = { gen: 0, pass: 0, mismatch: 0, invalid: 0, dupSkipped: 0, saved: 0 };
   const { data: prior } = await sb.from("questions").select("body").eq("subject", subject).eq("topic", topic).order("created_at", { ascending: false }).limit(25);
   const res = await call({
@@ -121,9 +140,11 @@ async function runTask({ subject, topic, difficulty, count, hints }) {
     system: SYSTEM,
     tools: [GEN_TOOL],
     messages: [{ role: "user", content: JSON.stringify({
-      mon: SUBJECTS[subject], chu_de: topic, do_kho: DIFF[difficulty], so_cau: count,
-      goi_y_chu_de_con_de_da_dang: hints || undefined,
-      huong_dan: "Mỗi câu thuộc một chủ đề con KHÁC nhau và ngữ cảnh khác nhau.",
+      mon: SUBJECTS[subject], chu_de: topic, chu_de_con: subtopic || undefined, do_kho: DIFF[difficulty], so_cau: count,
+      goi_y_chu_de_con_de_da_dang: subtopic ? undefined : (hints || undefined),
+      huong_dan: subtopic
+        ? `Mọi câu thuộc chủ đề con "${subtopic}" nhưng mỗi câu dùng DẠNG BÀI, NGỮ CẢNH và SỐ LIỆU khác nhau (vd: tính toán, nhận biết, so sánh, tình huống thực tế, tìm lỗi sai).`
+        : "Mỗi câu thuộc một chủ đề con KHÁC nhau và ngữ cảnh khác nhau.",
       cac_de_bai_da_co_can_tranh_trung: (prior ?? []).map((p) => p.body.slice(0, 90)),
     }) }],
   });
@@ -180,12 +201,15 @@ async function runTask({ subject, topic, difficulty, count, hints }) {
     if (best.s >= 0.5) note = (note ? note + " · " : "") + `Gần giống một câu đã có (${Math.round(best.s * 100)}%)`;
 
     rows.push({
-      subject, topic, difficulty, language: "vi",
+      subject, topic, subtopic: subtopic || null, difficulty, language: "vi",
       body: vi.body, options: vi.options, correct_answer: correct, explanation: vi.explanation,
       translations: { en: { body: en.body, options: en.options, explanation: en.explanation }, zh: { body: zh.body, options: zh.options, explanation: zh.explanation } },
       skill: String(q.skill).slice(0, 80), est_time_sec: Math.min(300, Math.max(15, q.est_time_sec | 0)),
       source: "Soạn bởi AI (Claude) – câu gốc, chờ giáo viên duyệt",
-      origin: "ai_generated", batch_id: BATCH, status: "review",
+      origin: "ai_generated", batch_id: BATCH,
+      ...(PUBLISH && verify === "pass" && !note
+        ? { status: "approved", auto_published: true, review_note: "Công bố tự động (AI kiểm tra đạt), chờ giáo viên xác nhận" }
+        : { status: "review" }),
       verify_status: verify, verify_note: note || null, similar_to: best.s >= 0.5 && best.id !== "pending" ? best.id : null,
     });
     pool.push({ id: "pending", sh });
@@ -202,8 +226,9 @@ async function pool(tasks, n, fn) {
   const results = []; let i = 0;
   await Promise.all(Array.from({ length: n }, async () => {
     while (i < tasks.length) {
+      if (spent() >= LIMIT) { console.log(`⛔ Đã chạm ngân sách lần chạy $${LIMIT.toFixed(2)} (đã dùng ≈ $${spent().toFixed(2)}). Dừng các nhiệm vụ còn lại.`); i = tasks.length; break; }
       const t = tasks[i++];
-      try { const r = await fn(t); results.push({ t, r }); if (t.count !== undefined) console.log(`✓ ${t.subject} · ${t.topic} · ${t.difficulty} ×${t.count}: tạo ${r.gen}, đạt ${r.pass}, lệch ${r.mismatch}, lỗi ${r.invalid}, trùng ${r.dupSkipped}, lưu ${r.saved}`); }
+      try { const r = await fn(t); results.push({ t, r }); if (t.count !== undefined) console.log(`✓ ${t.subject} · ${t.topic}${t.subtopic ? " › " + t.subtopic : ""} · ${t.difficulty} ×${t.count}: tạo ${r.gen}, đạt ${r.pass}, lệch ${r.mismatch}, lỗi ${r.invalid}, trùng ${r.dupSkipped}, lưu ${r.saved}`); }
       catch (e) { console.error(`✗ ${t.subject ?? t.id} · ${t.topic ?? ""}: ${e.message}`); results.push({ t, r: null }); }
     }
   }));
@@ -240,7 +265,7 @@ async function reverify() {
   console.log(`Sau kiểm tra lại: đạt ${fixed} · lệch ${mism} · vẫn lỗi ${still}`);
 }
 
-async function main() {
+async function mainInner() {
   if (arg("reverify", false)) return reverify();
   const { data: bp, error } = await sb.from("blueprint").select("*").order("subject").order("topic");
   if (error) throw new Error(error.message);
@@ -264,6 +289,17 @@ async function main() {
       return { p, goal, have: p.approved + p.in_review + p.drafted, planned: 0 };
     }).filter((c) => c.goal > c.have);
     const max = Number(arg("max", 60));
+    // số câu đã có theo chủ đề con (để lấp đều các chủ đề con)
+    const existing = await fetchAll(() => sb.from("questions").select("subject, topic, subtopic").order("id"));
+    const subCount = new Map();
+    for (const q of existing) if (q.subtopic) { const k = `${q.subject}|${q.topic}|${q.subtopic}`; subCount.set(k, (subCount.get(k) ?? 0) + 1); }
+    const pickSub = (subject, topic) => {
+      const subs = hintsOf(subject, topic).split(/\s*,\s*/).filter(Boolean);
+      if (!subs.length) return undefined;
+      const k = (x) => `${subject}|${topic}|${x}`;
+      const best = subs.reduce((a, b) => ((subCount.get(k(b)) ?? 0) < (subCount.get(k(a)) ?? 0) ? b : a));
+      return best;
+    };
     let total = 0;
     while (total < max) {
       const open = cells.filter((c) => c.have + c.planned < c.goal);
@@ -271,7 +307,9 @@ async function main() {
       open.sort((x, y) => (x.have + x.planned) / x.goal - (y.have + y.planned) / y.goal);
       const c = open[0];
       const n = Math.min(5, c.goal - c.have - c.planned, max - total);
-      tasks.push({ subject: c.p.subject, topic: c.p.topic, difficulty: c.p.difficulty, count: n, hints: hintsOf(c.p.subject, c.p.topic) });
+      const subtopic = pickSub(c.p.subject, c.p.topic);
+      if (subtopic) subCount.set(`${c.p.subject}|${c.p.topic}|${subtopic}`, (subCount.get(`${c.p.subject}|${c.p.topic}|${subtopic}`) ?? 0) + n);
+      tasks.push({ subject: c.p.subject, topic: c.p.topic, subtopic, difficulty: c.p.difficulty, count: n, hints: hintsOf(c.p.subject, c.p.topic) });
       c.planned += n; total += n;
     }
   } else {
@@ -284,6 +322,15 @@ async function main() {
   const res = await pool(tasks, CONCURRENCY, runTask);
   const sum = (k) => res.reduce((s, x) => s + (x.r?.[k] ?? 0), 0);
   console.log(`\n=== TỔNG KẾT lô ${BATCH} ===\nTạo ${sum("gen")} · đạt giải độc lập ${sum("pass")} · lệch đáp án ${sum("mismatch")} · lỗi cấu trúc ${sum("invalid")} · bỏ vì trùng ${sum("dupSkipped")} · đã lưu ${sum("saved")} · nhiệm vụ lỗi ${res.filter((x) => !x.r).length}`);
-  console.log(`Gọi API ${usage.calls} lần · token vào ${usage.in} · ra ${usage.out}`);
+  console.log(`Gọi API ${usage.calls} lần · token vào ${usage.in} · ra ${usage.out} · chi phí ước tính ≈ $${spent().toFixed(2)}`);
+}
+async function main() {
+  const rows = await fetchAll(() => sb.from("ai_spend").select("usd").order("id"));
+  const before = rows.reduce((t, r) => t + Number(r.usd), 0);
+  LIMIT = Math.min(BUDGET, TOTAL_CAP - before);
+  console.log(`Sổ chi tiêu: đã chi ≈ $${before.toFixed(2)} / trần tổng $${TOTAL_CAP} → còn ≈ $${(TOTAL_CAP - before).toFixed(2)}; ngân sách lần chạy này: $${Math.max(0, LIMIT).toFixed(2)}`);
+  if (LIMIT <= 0.05) { console.log("⛔ Hết ngân sách, không chạy."); return; }
+  try { await mainInner(); }
+  finally { if (!DRY && usage.calls) await sb.from("ai_spend").insert({ label: `Lô ${BATCH}`, tokens_in: usage.in, tokens_out: usage.out, usd: Number(spent().toFixed(4)) }); }
 }
 main().catch((e) => { console.error("LỖI:", e.message); process.exit(1); });
