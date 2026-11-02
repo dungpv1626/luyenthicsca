@@ -13,7 +13,7 @@ export function Footer() {
       <svg viewBox="0 0 1440 48" preserveAspectRatio="none" className="absolute inset-x-0 -top-[47px] h-[48px] w-full text-navy" aria-hidden="true"><path fill="currentColor" d="M0 48V22C160 2 320 0 480 12s320 30 480 22 320-26 480-12v26z" /></svg>
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
-          <Logo light />
+          <Logo light className="!h-16 sm:!h-[4.5rem]" />
           <p className="mt-4 max-w-xs text-sm text-white/70">Hệ thống đánh giá và nâng cao năng lực CSCA: thi thử, AI phân tích, lộ trình cá nhân, kết nối trường và học bổng.</p>
         </div>
         {COLS.map(([title, links]) => (
