@@ -123,7 +123,7 @@ export default async function Home() {
         <div className="drift pointer-events-none absolute -right-16 -top-16 -z-10 h-64 w-64 rounded-full bg-cyan-300/25 blur-3xl" />
         <Reveal><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="eyebrow !text-sky-200">How it works</p><h2 className="mt-2 max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl">Từ bài thi đầu tiên đến ngày bạn sẵn sàng</h2></div><Link href="/quick-test" className="btn-light">Bắt đầu ngay <Icon name="arrow" className="h-4 w-4" /></Link></div></Reveal>
         <ol className="relative mt-12 grid gap-x-4 gap-y-9 md:grid-cols-5">
-          <span className="pointer-events-none absolute left-[10%] right-[10%] top-6 hidden h-0.5 bg-gradient-to-r from-sky-300/0 via-sky-300/70 to-sky-300/0 md:block" aria-hidden="true" />
+          <span className="pointer-events-none absolute left-[10%] right-[10%] top-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-sky-300/0 via-sky-300/70 to-sky-300/0 md:block" aria-hidden="true" />
           {STEPS.map(([icon, t, d], i) => (
             <Reveal key={t} as="li" delay={i * 110} className="relative">
               <div className="glass-dark group relative h-full rounded-2xl p-4 pt-12 transition duration-300 hover:-translate-y-1.5 hover:bg-white/20 sm:p-5 sm:pt-14">
