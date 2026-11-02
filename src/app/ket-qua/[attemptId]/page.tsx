@@ -72,7 +72,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                 <p className="font-medium">Câu {i + 1}. <Rich text={view.body} /></p>
                 <ul className="mt-1 text-sm">
                   {Object.entries(view.options).map(([k, v]) => (
-                    <li key={k} className={k === q.correct_answer ? "font-bold text-green-700" : k === mine ? "font-bold text-red-700" : ""}>{k}. {v}</li>
+                    <li key={k} className={k === q.correct_answer ? "font-bold text-green-700" : k === mine ? "font-bold text-red-700" : ""}>{k}. <Rich text={v} /></li>
                   ))}
                 </ul>
                 <p className="mt-1 text-sm">Bạn chọn: <b>{mine ?? "—"}</b> · Đáp án: <b>{q.correct_answer}</b></p>
