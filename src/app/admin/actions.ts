@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { safeImageUrl } from "@/lib/school-image";
 import { adminDb } from "@/lib/supabase/admin";
 import { markOrderPaid } from "@/lib/orders";
 import { pickQuestions } from "@/lib/exam";
@@ -124,6 +125,7 @@ export async function saveResource(key: string, id: string | null, fd: FormData)
     }
     if (f.required && (row[f.name] === null || row[f.name] === "")) redirect(`/admin/data/${key}/${id ?? "new"}?error=1`);
   }
+  if ("image_url" in row) { const u = safeImageUrl(row.image_url as string | null); if (row.image_url && !u) redirect(`/admin/data/${key}/${id ?? "new"}?error=1`); row.image_url = u; }
   const db = adminDb();
   const { error } = id ? await db.from(res.table).update(row).eq("id", id) : await db.from(res.table).insert(row);
   if (error) redirect(`/admin/data/${key}/${id ?? "new"}?error=1`);

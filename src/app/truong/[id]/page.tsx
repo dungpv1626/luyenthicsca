@@ -4,6 +4,7 @@ import { adminDb } from "@/lib/supabase/admin";
 import { getMe } from "@/lib/auth";
 import { getSkillProfile } from "@/lib/skills";
 import { PageHeader } from "@/components/Section";
+import { SchoolPhoto } from "@/components/SchoolPhoto";
 import { Icon } from "@/components/Icon";
 import { consultAction } from "../../school-actions";
 
@@ -24,6 +25,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
 
   return (
     <div className="space-y-6">
+      {s.image_url && <div className="group mb-5 overflow-hidden rounded-2xl"><SchoolPhoto url={s.image_url} credit={s.image_credit} alt={s.name} className="h-48 sm:h-72" /></div>}
       <PageHeader en={s.name} vi={`${s.name_zh ?? ""} · ${s.city ?? ""}`}>{s.description}</PageHeader>
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-6">

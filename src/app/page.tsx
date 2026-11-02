@@ -3,6 +3,7 @@ import { adminDb } from "@/lib/supabase/admin";
 import { AUDIENCES, QUICK_TEST, vnd } from "@/lib/constants";
 import { LEVELS, mixText } from "@/lib/levels";
 import { Icon } from "@/components/Icon";
+import { SchoolPhoto } from "@/components/SchoolPhoto";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { SectionTitle } from "@/components/Section";
@@ -38,7 +39,7 @@ export default async function Home() {
   const [{ count: nQ }, { count: nSchools }, { data: schools }, { data: scholarships }] = await Promise.all([
     head("questions", (q) => q.eq("status", "approved")),
     head("schools"),
-    db.from("schools").select("id, name, name_zh, city, kind").order("created_at").limit(6),
+    db.from("schools").select("id, name, name_zh, city, kind, image_url, image_credit").order("created_at").limit(6),
     db.from("scholarships").select("id, name").eq("is_active", true).limit(1),
   ]);
   const stats = [
@@ -176,9 +177,12 @@ export default async function Home() {
         <div className="flex flex-wrap items-end justify-between gap-3 text-white"><Reveal><SectionTitle en="Universities" vi="Trường & học bổng" light /></Reveal><Reveal><Link href="/truong" className="btn-light">Khám phá trường <Icon name="arrow" className="h-4 w-4" /></Link></Reveal></div>
         <div className="relative z-10 mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
           {(schools ?? []).map((s, i) => (
-            <Reveal key={s.id} delay={i * 80}><Link href={`/truong/${s.id}`} className="glass-dark group block rounded-2xl p-4 transition duration-300 hover:-translate-y-1 hover:bg-white/20 sm:p-5">
+            <Reveal key={s.id} delay={i * 80}><Link href={`/truong/${s.id}`} className="glass-dark group block overflow-hidden rounded-2xl transition duration-300 hover:-translate-y-1 hover:bg-white/20">
+              <SchoolPhoto url={s.image_url} credit={s.image_credit} alt={s.name} className="h-36 sm:h-40" />
+              <div className="p-4 sm:p-5">
               <p className="text-2xl font-black text-white/40 transition group-hover:text-white/70">{s.name_zh}</p><h3 className="mt-1 font-bold">{s.name}</h3>
               <p className="mt-1 flex items-center gap-1 text-sm text-white/75"><Icon name="map" className="h-4 w-4" />{s.city} · {s.kind}</p>
+              </div>
             </Link></Reveal>
           ))}
         </div>

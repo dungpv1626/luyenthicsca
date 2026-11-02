@@ -22,6 +22,7 @@ export const RESOURCES: Record<string, Resource> = {
       { name: "name", label: "Tên trường", type: "text", required: true }, { name: "name_zh", label: "Tên tiếng Trung", type: "text", nullable: true },
       { name: "city", label: "Thành phố", type: "text", nullable: true }, { name: "province", label: "Tỉnh", type: "text", nullable: true },
       { name: "kind", label: "Loại hình", type: "text", nullable: true }, { name: "website", label: "Website", type: "text", nullable: true },
+      { name: "image_url", label: "Ảnh trường (đường dẫn /schools/ten.jpg hoặc https://…)", type: "text", nullable: true }, { name: "image_credit", label: "Nguồn / giấy phép ảnh (hiện dưới ảnh)", type: "text", nullable: true },
       { name: "description", label: "Mô tả", type: "textarea" }, { name: "majors", label: "Ngành (cách nhau bởi dấu phẩy)", type: "tags" },
       { name: "csca_required", label: "Yêu cầu CSCA", type: "checkbox" },
       pct("req_math", "Toán"), pct("req_physics", "Vật lý"), pct("req_chemistry", "Hóa học"), pct("req_chinese", "Professional Chinese"),

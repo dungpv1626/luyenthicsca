@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SchoolPhoto } from "@/components/SchoolPhoto";
 import { adminDb } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/Section";
 import { Icon } from "@/components/Icon";
@@ -30,7 +31,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
       <form action="/truong/so-sanh" method="get">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((s) => (
-            <div key={s.id} className="card card-hover relative flex flex-col">
+            <div key={s.id} className="card card-hover group relative flex flex-col overflow-hidden">
+              {s.image_url && <div className="-mx-5 -mt-5 mb-4"><SchoolPhoto url={s.image_url} credit={s.image_credit} alt={s.name} className="h-36" /></div>}
               <label className="absolute right-2 top-2 flex min-h-[2.25rem] cursor-pointer items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-slate-500 hover:bg-brand-soft"><input type="checkbox" name="ids" value={s.id} />So sánh</label>
               <p className="text-3xl font-black text-brand/25">{s.name_zh}</p>
               <Link href={`/truong/${s.id}`} className="mt-1 text-lg font-bold hover:text-brand">{s.name}</Link>
