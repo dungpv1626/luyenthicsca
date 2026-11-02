@@ -5,7 +5,13 @@
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "workers_dev": true,
+  "preview_urls": false,
   "observability": { "enabled": true },
+  "routes": [
+    { "pattern": "luyenthicsca.edu.vn", "custom_domain": true },
+    { "pattern": "www.luyenthicsca.edu.vn", "custom_domain": true }
+  ],
   "vars": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://gikncgdtbbqtrqjilqvp.supabase.co",
     "ANTHROPIC_MODEL": "claude-sonnet-5-5",
