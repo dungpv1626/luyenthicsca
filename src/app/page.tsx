@@ -8,6 +8,7 @@ import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { SectionTitle } from "@/components/Section";
 import { HeroArt } from "@/components/art/HeroArt";
+import { HeroSlides } from "@/components/HeroSlides";
 import { SubjectArt } from "@/components/art/SubjectArt";
 import { CampusArt } from "@/components/art/CampusArt";
 
@@ -50,7 +51,8 @@ export default async function Home() {
     <div className="space-y-20 sm:space-y-24">
       {/* ===== HERO ===== */}
       <section className="mesh-navy relative isolate overflow-hidden rounded-[1.75rem] text-white shadow-[0_30px_80px_-30px_rgb(30_58_138/0.7)] sm:rounded-[2.25rem]">
-        <div className="grid-lines pointer-events-none absolute inset-0 -z-10" />
+        <HeroSlides />
+        <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-60" />
         <div className="drift pointer-events-none absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl" />
         <div className="grid items-center gap-8 px-5 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.05fr_1fr] lg:gap-6 lg:px-14 lg:py-16">
           <div>
