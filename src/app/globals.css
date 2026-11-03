@@ -136,3 +136,7 @@ input[type="checkbox"], input[type="radio"] { width: 1.15rem; height: 1.15rem; a
 /* vòng xoay nhỏ cho nút đang xử lý */
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner { display: inline-block; width: 1em; height: 1em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 9999px; animation: spin .7s linear infinite; }
+
+/* khu quản trị có khung riêng: ẩn menu/chân trang của web học viên và bỏ giới hạn bề rộng của <main> */
+html[data-admin] [data-chrome] { display: none; }
+html[data-admin] body > main { max-width: none !important; padding: 0 !important; }

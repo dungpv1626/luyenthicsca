@@ -68,3 +68,13 @@
 | Hộp thoại phủ cả màn hình | Xong (lỗi phát hiện khi làm) | Hộp thoại bị hiệu ứng chuyển trang giới hạn trong vùng nội dung; sửa bằng cách hiển thị ngoài khung đó, cả ở hộp thoại nộp bài của học viên |
 
 **Chưa làm (nhóm 2–4):** layout quản trị riêng, menu nhóm có huy hiệu, Question Bank có tìm kiếm/phân trang/hiển thị công thức, Người dùng có email, quy trình duyệt cho giáo viên, nhật ký thao tác, leads/đơn hàng.
+
+## Trạng thái nhóm 2 (đã làm)
+
+| Hạng mục | Kết quả |
+|---|---|
+| Khung quản trị riêng | Thanh trên + menu bên riêng, ẩn header/footer công khai (`data-admin`, `ChromeSync`, middleware gắn `x-pathname`) |
+| Menu nhóm + huy hiệu | 5 nhóm; huy hiệu: câu chờ duyệt, khuôn chờ duyệt, đơn chờ, tư vấn mới; menu điện thoại tự đóng |
+| Ngân hàng câu hỏi | Tìm theo nội dung/chủ đề, lọc môn/mô-đun/độ khó/trạng thái/nguồn, "chờ giáo viên xác nhận", phân trang 30, hiển thị công thức |
+| Người dùng | Có email, lần đăng nhập, tìm kiếm, lọc vai trò, phân trang, xác nhận đổi vai trò |
+| Danh sách đề | Lọc theo nhóm (mô phỏng, Mức 1–4, khác), trạng thái, tìm tên, phân trang |

@@ -3,13 +3,15 @@ import { NextResponse, type NextRequest } from "next/server";
 
 /** Làm mới phiên Supabase trên mỗi request (edge middleware: ổn định hơn proxy.ts trên Cloudflare). */
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll(list) {
         list.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
+        response = NextResponse.next({ request: { headers: requestHeaders } });
         list.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
       },
     },

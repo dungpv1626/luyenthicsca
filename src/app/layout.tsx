@@ -5,6 +5,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BottomNav } from "@/components/NavLinks";
 import { getMe } from "@/lib/auth";
+import { headers } from "next/headers";
+import { ChromeSync } from "@/components/ChromeSync";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -16,9 +18,11 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const me = await getMe();
+  const isAdmin = ((await headers()).get("x-pathname") ?? "").startsWith("/admin");
   return (
-    <html lang="vi">
+    <html lang="vi" data-admin={isAdmin ? "1" : undefined}>
       <body className="flex min-h-screen flex-col">
+        <ChromeSync />
         <div data-chrome><Header me={me} /></div>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-24 lg:pb-8">{children}</main>
         <div data-chrome><Footer /></div>

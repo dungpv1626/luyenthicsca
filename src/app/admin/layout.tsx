@@ -1,21 +1,27 @@
-import Link from "next/link";
 import { ADMIN_AREAS, requireAdmin } from "@/lib/auth";
+import { adminDb } from "@/lib/supabase/admin";
+import { ROLES } from "@/lib/constants";
+import { AdminShell, type NavGroup } from "@/components/admin/AdminShell";
 
-const LINKS = [
-  ["/admin", "Tổng quan", "dashboard"], ["/admin/analytics", "Phân tích", "analytics"], ["/admin/review", "Duyệt câu hỏi", "questions"], ["/admin/templates", "Khuôn câu hỏi", "questions"], ["/admin/blueprint", "Phủ đề cương", "questions"], ["/admin/questions", "Ngân hàng câu hỏi", "questions"], ["/admin/levels", "Đề theo mức", "tests"], ["/admin/tests", "Đề thi", "tests"],
-  ["/admin/data/schools", "Trường", "schools"], ["/admin/data/scholarships", "Học bổng", "schools"], ["/admin/leads", "Tư vấn khách hàng", "leads"],
-  ["/admin/data/courses", "Khóa học", "academy"], ["/admin/data/lessons", "Bài giảng", "academy"], ["/admin/data/teachers", "Giáo viên", "academy"],
-  ["/admin/blog", "Blog SEO", "content"], ["/admin/orders", "Đơn hàng", "orders"], ["/admin/users", "Người dùng", "users"],
-] as const;
+type Area = keyof typeof ADMIN_AREAS;
+type Def = { href: string; label: string; area: Area; badge?: "review" | "templates" | "orders" | "leads" };
+const GROUPS: { title: string; items: Def[] }[] = [
+  { title: "Việc cần làm", items: [{ href: "/admin", label: "Tổng quan", area: "dashboard" }, { href: "/admin/review", label: "Duyệt câu hỏi", area: "questions", badge: "review" }, { href: "/admin/templates", label: "Khuôn câu hỏi", area: "questions", badge: "templates" }] },
+  { title: "Nội dung", items: [{ href: "/admin/questions", label: "Ngân hàng câu hỏi", area: "questions" }, { href: "/admin/blueprint", label: "Phủ đề cương", area: "questions" }, { href: "/admin/blog", label: "Blog SEO", area: "content" }, { href: "/admin/data/schools", label: "Trường", area: "schools" }, { href: "/admin/data/scholarships", label: "Học bổng", area: "schools" }] },
+  { title: "Đề thi & khóa học", items: [{ href: "/admin/levels", label: "Đề theo mức", area: "tests" }, { href: "/admin/tests", label: "Đề thi", area: "tests" }, { href: "/admin/data/courses", label: "Khóa học", area: "academy" }, { href: "/admin/data/lessons", label: "Bài giảng", area: "academy" }, { href: "/admin/data/teachers", label: "Giáo viên", area: "academy" }] },
+  { title: "Kinh doanh", items: [{ href: "/admin/orders", label: "Đơn hàng", area: "orders", badge: "orders" }, { href: "/admin/leads", label: "Tư vấn khách hàng", area: "leads", badge: "leads" }, { href: "/admin/analytics", label: "Phân tích", area: "analytics" }] },
+  { title: "Hệ thống", items: [{ href: "/admin/users", label: "Người dùng", area: "users" }] },
+];
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const me = await requireAdmin("dashboard");
-  return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-[200px_minmax(0,1fr)] md:gap-6">
-      <nav className="card -mx-1 flex h-fit gap-1 overflow-x-auto !p-2 text-sm md:mx-0 md:block md:space-y-1 md:overflow-visible md:!p-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {LINKS.filter(([, , a]) => (ADMIN_AREAS[a] as readonly string[]).includes(me.role)).map(([h, l]) => <Link key={h} href={h} className="block shrink-0 whitespace-nowrap rounded-lg px-3 py-2.5 font-medium transition hover:bg-brand-soft hover:text-brand md:py-1.5">{l}</Link>)}
-      </nav>
-      <div className="min-w-0">{children}</div>
-    </div>
-  );
+  const db = adminDb();
+  const count = async (t: string, f: (q: any) => any) => (await f(db.from(t).select("*", { count: "exact", head: true }))).count ?? 0; // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [review, templates, orders, leads] = await Promise.all([
+    count("questions", (q) => q.eq("status", "review")), count("template_reviews", (q) => q.eq("status", "pending")),
+    count("orders", (q) => q.eq("status", "pending")), count("consultations", (q) => q.eq("status", "new")),
+  ]);
+  const badges = { review, templates, orders, leads };
+  const groups: NavGroup[] = GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => (ADMIN_AREAS[i.area] as readonly string[]).includes(me.role)).map((i) => ({ href: i.href, label: i.label, badge: i.badge ? badges[i.badge] : undefined })) })).filter((g) => g.items.length);
+  return <AdminShell groups={groups} name={me.full_name || me.email} roleLabel={ROLES[me.role]}>{children}</AdminShell>;
 }
