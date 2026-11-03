@@ -6,6 +6,8 @@ import { SIM_FORMAT } from "@/lib/sim";
 
 type Row = { subject: string; topic: string; difficulty: string; target: number; approved: number; in_review: number; rejected: number; drafted: number };
 
+export const metadata = { title: "Phủ đề cương – Quản trị" };
+
 export default async function Page() {
   await requireAdmin("questions");
   const [{ data }, { data: cov }] = await Promise.all([adminDb().rpc("admin_blueprint_progress"), adminDb().rpc("admin_module_coverage")]);
@@ -14,7 +16,7 @@ export default async function Page() {
   const subjects = Object.keys(SUBJECTS) as Subject[];
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Blueprint & tiến độ ngân hàng câu hỏi</h1>
+      <h1 className="text-2xl font-bold">Phủ đề cương & tiến độ ngân hàng câu hỏi</h1>
       <section className="card space-y-4">
         <div><h2 className="font-bold">Phủ đề cương CSCA (theo mô-đun)</h2><p className="text-sm text-slate-500">Mô-đun theo đề cương; <b>tỉ trọng là ước lượng</b> vì đề cương không công bố số câu theo mô-đun (chỉnh trong <code>src/lib/syllabus.ts</code>). “Đủ cho” = số đề mô phỏng không trùng câu dựng được từ câu đang công bố (cần số câu mô-đun/đề).</p></div>
         {(Object.keys(MODULES) as SylSubject[]).map((s) => { const q = moduleQuotas(s, SIM_FORMAT[s].questions); const total = covRows.filter((r) => r.subject === s && r.approved).reduce((a, r) => a + Number(r.approved), 0); return (

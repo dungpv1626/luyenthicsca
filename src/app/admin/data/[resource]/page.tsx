@@ -4,6 +4,11 @@ import { requireAdmin } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { RESOURCES } from "@/lib/admin-resources";
 
+export async function generateMetadata({ params }: { params: Promise<{ resource: string }> }) {
+  const { resource } = await params;
+  return { title: `${RESOURCES[resource]?.title ?? "Dữ liệu"} – Quản trị` };
+}
+
 export default async function Page({ params }: { params: Promise<{ resource: string }> }) {
   const { resource } = await params;
   const r = RESOURCES[resource];

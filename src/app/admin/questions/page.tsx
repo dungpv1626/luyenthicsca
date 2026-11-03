@@ -4,6 +4,8 @@ import { adminDb } from "@/lib/supabase/admin";
 import { DIFFICULTY, STATUS_LABEL, SUBJECTS, type Subject } from "@/lib/constants";
 import { setQuestionStatus } from "../actions";
 
+export const metadata = { title: "Ngân hàng câu hỏi – Quản trị" };
+
 export default async function Page({ searchParams }: { searchParams: Promise<{ status?: string; subject?: string }> }) {
   const me = await requireAdmin("questions");
   const { status, subject } = await searchParams;
@@ -15,10 +17,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between"><h1 className="text-2xl font-bold">Question Bank</h1><Link href="/admin/questions/new" className="btn">+ Câu hỏi mới</Link></div>
+      <div className="flex items-center justify-between"><h1 className="text-2xl font-bold">Ngân hàng câu hỏi</h1><Link href="/admin/questions/new" className="btn">+ Câu hỏi mới</Link></div>
       <form className="flex flex-wrap gap-2 text-sm">
-        <select name="subject" defaultValue={subject ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
-        <select name="status" defaultValue={status ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi trạng thái</option>{Object.entries(STATUS_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+        <select name="subject" aria-label="Lọc theo môn" defaultValue={subject ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+        <select name="status" aria-label="Lọc theo trạng thái" defaultValue={status ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi trạng thái</option>{Object.entries(STATUS_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
         <button className="btn-outline">Lọc</button>
       </form>
       <div className="card divide-y p-0">

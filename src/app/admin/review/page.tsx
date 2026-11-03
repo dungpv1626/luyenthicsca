@@ -4,9 +4,12 @@ import { adminDb } from "@/lib/supabase/admin";
 import { DIFFICULTY, SUBJECTS, type Subject } from "@/lib/constants";
 import { Rich } from "@/components/Rich";
 import { disableBatchAction, reviewQuestionAction } from "../actions";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 const VERIFY = { pass: ["Giải độc lập: ĐẠT", "bg-emerald-50 text-emerald-700"], mismatch: ["Giải độc lập: LỆCH ĐÁP ÁN", "bg-red-50 text-red-700"], invalid: ["Lỗi cấu trúc", "bg-red-50 text-red-700"], unchecked: ["Chưa kiểm tra", "bg-slate-100 text-slate-600"] } as const;
 type L = { body: string; options: Record<string, string>; explanation: string };
+
+export const metadata = { title: "Duyệt câu hỏi – Quản trị" };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ view?: string; subject?: string; verify?: string; skip?: string; need_note?: string }> }) {
   const me = await requireAdmin("questions");
@@ -39,7 +42,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ v
   const langs: [string, string, L][] = q ? [["vi", "Tiếng Việt", { body: q.body, options: q.options, explanation: q.explanation }], ...(["en", "zh"] as const).filter((k) => q.translations?.[k]).map((k) => [k, k === "en" ? "English" : "中文", q.translations[k]] as [string, string, L])] : [];
   const verifyInfo = q ? VERIFY[q.verify_status as keyof typeof VERIFY] : null;
   const myReports = q ? (reps ?? []).filter((r) => r.question_id === q.id) : [];
-  const tab = (v: string, label: string, n: number | null) => <Link href={`/admin/review?view=${v}`} className={`rounded-full px-4 py-1.5 text-sm font-semibold ${view === v || (v === "offline" && !live && view !== "live") ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand"}`}>{label} <span className="opacity-80">({n ?? 0})</span></Link>;
+  const tab = (v: string, label: string, n: number | null) => <Link href={`/admin/review?view=${v}`} className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 text-sm font-semibold ${view === v || (v === "offline" && !live && view !== "live") ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand"}`}>{label} <span className="opacity-80">({n ?? 0})</span></Link>;
 
   return (
     <div className="space-y-4">
@@ -47,8 +50,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ v
         <h1 className="text-2xl font-bold">Duyệt câu hỏi</h1>
         <form className="flex w-full flex-wrap gap-2 text-sm sm:w-auto">
           <input type="hidden" name="view" value={view} />
-          <select name="subject" defaultValue={subject ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
-          <select name="verify" defaultValue={verify ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi kết quả kiểm tra</option><option value="mismatch">Lệch đáp án</option><option value="invalid">Lỗi cấu trúc</option><option value="pass">Đạt</option><option value="unchecked">Chưa kiểm tra</option></select>
+          <select name="subject" aria-label="Lọc theo môn" defaultValue={subject ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+          <select name="verify" aria-label="Lọc theo kết quả kiểm tra AI" defaultValue={verify ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi kết quả kiểm tra</option><option value="mismatch">Lệch đáp án</option><option value="invalid">Lỗi cấu trúc</option><option value="pass">Đạt</option><option value="unchecked">Chưa kiểm tra</option></select>
           <button className="btn-outline">Lọc</button>
         </form>
       </div>
@@ -86,7 +89,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ v
                 <button name="decision" value="reject" className="btn-outline !border-red-300 !text-red-700">{live ? "Loại (tắt ngay)" : "Loại"}</button>
               </div>
             </form>
-            <div className="flex justify-between text-sm"><Link href={`/admin/questions/${q.id}`} className="font-semibold text-brand hover:underline">Sửa câu hỏi</Link><Link href={`/admin/review?${new URLSearchParams({ ...(view ? { view } : {}), ...(subject ? { subject } : {}), ...(verify ? { verify } : {}), skip: q.id })}`} className="text-slate-500 hover:underline">Bỏ qua</Link></div>
+            <div className="flex justify-between text-sm"><Link href={`/admin/questions/${q.id}`} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand hover:underline">Sửa câu hỏi</Link><Link href={`/admin/review?${new URLSearchParams({ ...(view ? { view } : {}), ...(subject ? { subject } : {}), ...(verify ? { verify } : {}), skip: q.id })}`} className="inline-flex min-h-[2.5rem] items-center text-slate-500 hover:underline">Bỏ qua</Link></div>
             <p className="border-t border-slate-100 pt-2 text-xs text-slate-400">Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
           </aside>
         </div>
@@ -94,7 +97,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ v
 
       {live && batchCount.size > 0 && (
         <section className="card"><h2 className="mb-1 font-bold">Gỡ cả lô</h2><p className="mb-3 text-sm text-slate-500">Nếu một lô sinh ra có vấn đề chung, gỡ toàn bộ lô khỏi học sinh (các câu quay về hàng chờ duyệt).</p>
-          <div className="flex flex-wrap gap-2">{[...batchCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([b, n]) => <form key={b} action={disableBatchAction.bind(null, b)}><button className="rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50" title={b}>Gỡ lô {b.slice(-9)} ({n} câu)</button></form>)}</div></section>
+          <div className="flex flex-wrap gap-2">{[...batchCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([b, n]) => <form key={b} action={disableBatchAction.bind(null, b)}><ConfirmButton danger className="inline-flex min-h-[2.5rem] items-center rounded-full border border-red-200 px-4 text-xs font-semibold text-red-700 hover:bg-red-50" title="Gỡ cả lô câu hỏi?" message={`Toàn bộ ${n} câu của lô ${b} sẽ bị gỡ khỏi học viên và quay về hàng chờ duyệt. Các đề đã dựng từ những câu này sẽ thiếu câu.`} confirmText="Gỡ cả lô">Gỡ lô {b.slice(-9)} ({n} câu)</ConfirmButton></form>)}</div></section>
       )}
     </div>
   );

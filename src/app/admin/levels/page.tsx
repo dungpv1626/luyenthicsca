@@ -4,6 +4,9 @@ import { SUBJECTS, vnd, type Subject } from "@/lib/constants";
 import { LEVELS, SCOPE_LABEL, SET_DEFAULTS, mixText } from "@/lib/levels";
 import { maxStrictSets, quota } from "@/lib/assemble";
 import { createLevelSets, togglePublish } from "../actions";
+import { ConfirmButton } from "@/components/ConfirmButton";
+
+export const metadata = { title: "Bộ đề theo mức – Quản trị" };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string; partial?: string; warn?: string }> }) {
   await requireAdmin("tests");
@@ -35,13 +38,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
       <form action={createLevelSets} className="card max-w-2xl space-y-4">
         <h2 className="font-bold">Tạo đề</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div><label className="label">Mức</label><select name="level" className="input">{LEVELS.map((l) => <option key={l.level} value={l.level}>Mức {l.level} · {l.name}</option>)}</select></div>
-          <div><label className="label">Phạm vi</label><select name="scope" className="input"><option value="subject">{SCOPE_LABEL.subject}</option><option value="full">{SCOPE_LABEL.full}</option></select></div>
-          <div><label className="label">Môn (nếu theo môn)</label><select name="subject" className="input">{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
-          <div><label className="label">Số đề cần tạo (1–10)</label><input type="number" name="count" min={1} max={10} defaultValue={3} className="input" /></div>
-          <div><label className="label">Số câu mỗi môn</label><input type="number" name="per_subject" min={3} max={60} defaultValue={SET_DEFAULTS.subject.perSubject} className="input" /><p className="mt-1 text-xs text-slate-500">Gợi ý: {SET_DEFAULTS.subject.perSubject} cho đề theo môn, {SET_DEFAULTS.full.perSubject} cho đề tổng hợp (theo đặc tả chính thức nếu có).</p></div>
-          <div><label className="label">Thời gian (phút)</label><input type="number" name="minutes" min={5} max={300} defaultValue={SET_DEFAULTS.subject.minutes} className="input" /><p className="mt-1 text-xs text-slate-500">Gợi ý: {SET_DEFAULTS.subject.minutes} phút (theo môn), {SET_DEFAULTS.full.minutes} phút (tổng hợp).</p></div>
-          <div><label className="label">Giá (VNĐ, 0 = miễn phí)</label><input type="number" name="price" min={0} step={1000} defaultValue={0} className="input" /><p className="mt-1 text-xs text-slate-500">Gợi ý: {LEVELS.map((l) => `Mức ${l.level}: ${vnd(l.price)}`).join(" · ")}</p></div>
+          <div><label className="label" htmlFor="a-level">Mức</label><select id="a-level" name="level" className="input">{LEVELS.map((l) => <option key={l.level} value={l.level}>Mức {l.level} · {l.name}</option>)}</select></div>
+          <div><label className="label" htmlFor="a-scope">Phạm vi</label><select id="a-scope" name="scope" className="input"><option value="subject">{SCOPE_LABEL.subject}</option><option value="full">{SCOPE_LABEL.full}</option></select></div>
+          <div><label className="label" htmlFor="a-subject">Môn (nếu theo môn)</label><select id="a-subject" name="subject" className="input">{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
+          <div><label className="label" htmlFor="a-count">Số đề cần tạo (1–10)</label><input id="a-count" type="number" name="count" min={1} max={10} defaultValue={3} className="input" /></div>
+          <div><label className="label" htmlFor="a-per-subject">Số câu mỗi môn</label><input id="a-per-subject" type="number" name="per_subject" min={3} max={60} defaultValue={SET_DEFAULTS.subject.perSubject} className="input" /><p className="mt-1 text-xs text-slate-500">Gợi ý: {SET_DEFAULTS.subject.perSubject} cho đề theo môn, {SET_DEFAULTS.full.perSubject} cho đề tổng hợp (theo đặc tả chính thức nếu có).</p></div>
+          <div><label className="label" htmlFor="a-minutes">Thời gian (phút)</label><input id="a-minutes" type="number" name="minutes" min={5} max={300} defaultValue={SET_DEFAULTS.subject.minutes} className="input" /><p className="mt-1 text-xs text-slate-500">Gợi ý: {SET_DEFAULTS.subject.minutes} phút (theo môn), {SET_DEFAULTS.full.minutes} phút (tổng hợp).</p></div>
+          <div><label className="label" htmlFor="a-price">Giá (VNĐ, 0 = miễn phí)</label><input id="a-price" type="number" name="price" min={0} step={1000} defaultValue={0} className="input" /><p className="mt-1 text-xs text-slate-500">Gợi ý: {LEVELS.map((l) => `Mức ${l.level}: ${vnd(l.price)}`).join(" · ")}</p></div>
         </div>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="publish" />Công bố ngay (mặc định tạo ở trạng thái ẩn để kiểm tra trước)</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="relaxed" />Cho phép bù độ khó / dùng lại câu khi thiếu <span className="text-slate-400">(chất lượng thấp hơn, chỉ dùng khi ngân hàng còn nhỏ)</span></label>
@@ -49,7 +52,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
       </form>
 
       <section className="card overflow-x-auto !p-0"><h2 className="border-b border-slate-100 p-4 font-bold">Các đề theo mức ({sets?.length ?? 0})</h2>
-        <table className="w-full min-w-[36rem] text-sm"><tbody>{(sets ?? []).map((t) => <tr key={t.id} className="border-t border-slate-100"><td className="p-3 font-medium">{t.title}</td><td className="text-slate-500">{(t.test_questions as unknown as { count: number }[])[0]?.count ?? 0} câu · {t.duration_min}′</td><td>{vnd(t.price_vnd)}</td><td><span className={`chip ${t.is_published ? "!bg-emerald-50 !text-emerald-700" : "!bg-slate-100 !text-slate-500"}`}>{t.is_published ? "Đang công bố" : "Ẩn"}</span></td><td className="pr-3 text-right"><form action={togglePublish.bind(null, t.id, !t.is_published)}><button className={t.is_published ? "text-amber-700 hover:underline" : "font-semibold text-brand hover:underline"}>{t.is_published ? "Gỡ" : "Công bố"}</button></form></td></tr>)}</tbody></table>
+        <table className="w-full min-w-[36rem] text-sm"><tbody>{(sets ?? []).map((t) => <tr key={t.id} className="border-t border-slate-100"><td className="p-3 font-medium">{t.title}</td><td className="text-slate-500">{(t.test_questions as unknown as { count: number }[])[0]?.count ?? 0} câu · {t.duration_min}′</td><td>{vnd(t.price_vnd)}</td><td><span className={`chip ${t.is_published ? "!bg-emerald-50 !text-emerald-700" : "!bg-slate-100 !text-slate-500"}`}>{t.is_published ? "Đang công bố" : "Ẩn"}</span></td><td className="pr-3 text-right"><form action={togglePublish.bind(null, t.id, !t.is_published)}><ConfirmButton className={`inline-flex min-h-[2.5rem] items-center rounded-lg px-3 font-semibold ${t.is_published ? "text-amber-700 hover:bg-amber-50" : "text-brand hover:bg-brand-soft"}`} title={t.is_published ? "Gỡ đề khỏi học viên?" : "Công bố đề cho học viên?"} message={t.is_published ? `“${t.title}” sẽ biến mất khỏi trang Thi thử. Các bài học viên đã làm vẫn được giữ.` : `“${t.title}” (${vnd(t.price_vnd)}) sẽ hiện cho mọi học viên. Hãy chắc chắn nội dung đã được kiểm tra.`} confirmText={t.is_published ? "Gỡ đề" : "Công bố"}>{t.is_published ? "Gỡ" : "Công bố"}</ConfirmButton></form></td></tr>)}</tbody></table>
         {!sets?.length && <p className="p-5 text-sm text-slate-500">Chưa có đề theo mức.</p>}
       </section>
     </div>

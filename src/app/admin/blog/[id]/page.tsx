@@ -5,6 +5,8 @@ import { adminDb } from "@/lib/supabase/admin";
 import { reviewFlags, type Post } from "@/lib/blog";
 import { savePostAction } from "../../blog-actions";
 
+export const metadata = { title: "Sửa bài viết – Quản trị" };
+
 export default async function Page({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ ok?: string; error?: string }> }) {
   await requireAdmin("content");
   const { id } = await params; const sp = await searchParams;

@@ -4,8 +4,11 @@ import { SUBJECTS, type Subject } from "@/lib/constants";
 import { Rich } from "@/components/Rich";
 import { TEMPLATES, mkRng, seedFor, validateVariant } from "@/lib/templates/index.ts";
 import { reviewTemplateAction } from "../actions";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 const DIFF: Record<string, string> = { easy: "Dễ", medium: "Trung bình", hard: "Khó" };
+
+export const metadata = { title: "Khuôn câu hỏi – Quản trị" };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
   await requireAdmin("questions");
@@ -53,8 +56,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
                   {r?.note && <p className="text-xs text-slate-500">Ghi chú: {r.note}</p>}
                   <form action={reviewTemplateAction.bind(null, t.key)} className="flex flex-wrap items-center gap-2">
                     <input name="note" className="input !w-auto min-w-0 flex-1" placeholder="Ghi chú (bắt buộc khi loại)" />
-                    <button name="decision" value="approve" className="btn !py-2">Duyệt khuôn</button>
-                    <button name="decision" value="reject" className="btn-outline !border-rose-300 !py-2 !text-rose-700">Loại khuôn</button>
+                    <ConfirmButton name="decision" value="approve" className="btn !py-2" title="Duyệt khuôn này?" message="Toàn bộ biến thể sinh từ khuôn này sẽ được đánh dấu giáo viên đã xác nhận (có thể hàng chục đến hàng trăm câu). Chỉ duyệt khi đề bài, công thức và lời giải của khuôn đúng." confirmText="Duyệt khuôn">Duyệt khuôn</ConfirmButton>
+                    <ConfirmButton danger name="decision" value="reject" className="btn-outline !border-rose-300 !py-2 !text-rose-700" title="Loại khuôn này?" message="Toàn bộ biến thể sinh từ khuôn này sẽ bị gỡ khỏi học viên. Cần ghi lý do ở ô ghi chú bên cạnh." confirmText="Loại khuôn">Loại khuôn</ConfirmButton>
                   </form>
                 </article>
               );

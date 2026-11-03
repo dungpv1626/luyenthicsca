@@ -23,16 +23,18 @@ export const AUDIENCES = {
 } as const;
 
 export const ROLES = {
-  super_admin: "Super Admin",
-  content_manager: "Content Manager",
-  academic_reviewer: "Academic Reviewer",
-  sales: "Sales/Consultant",
-  student: "Student",
+  super_admin: "Quản trị cấp cao",
+  content_manager: "Quản lý nội dung",
+  academic_reviewer: "Giáo viên duyệt chuyên môn",
+  sales: "Tư vấn / Kinh doanh",
+  student: "Học viên",
 } as const;
 export type Role = keyof typeof ROLES;
 
 export const QUICK_TEST = { questions: 20, minutes: 15 };
 
 export const vnd = (n: number) => (n === 0 ? "Miễn phí" : n.toLocaleString("vi-VN") + "đ");
+/** Số tiền thuần (0 → "0đ"), dùng cho doanh thu/tổng tiền; `vnd` chỉ dùng cho GIÁ BÁN (0 = miễn phí). */
+export const money = (n: number) => `${n.toLocaleString("vi-VN")}đ`;
 
 export const TUTOR_DAILY_LIMIT = 30;

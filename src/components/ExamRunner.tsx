@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { saveDraftAction, submitExamAction } from "@/app/exam-actions";
 import { SUBJECTS, type Subject } from "@/lib/constants";
 import { Rich } from "./Rich";
@@ -21,10 +22,11 @@ function Modal({ open, onClose, label, children, sheet = false }: { open: boolea
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
   }, [open, onClose]);
   if (!open) return null;
-  return (
+  return createPortal(
     <div className={`fixed inset-0 z-50 flex bg-navy/60 backdrop-blur-sm ${sheet ? "items-end md:items-center" : "items-center"} justify-center p-3`} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div role="dialog" aria-modal="true" aria-label={label} className={`pop max-h-[88vh] w-full max-w-md overflow-y-auto rounded-3xl bg-white p-5 shadow-2xl ${sheet ? "rounded-b-none md:rounded-b-3xl" : ""}`}>{children}</div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

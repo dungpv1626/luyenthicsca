@@ -1,6 +1,6 @@
 import { requireAdmin } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
-import { SUBJECTS, DIFFICULTY, vnd, type Subject } from "@/lib/constants";
+import { SUBJECTS, DIFFICULTY, money, type Subject } from "@/lib/constants";
 
 type Daily = { day: string; signups: number; attempts: number; revenue: number };
 type QStat = { id: string; subject: string; topic: string; difficulty: string; shown: number; correct: number };
@@ -9,6 +9,8 @@ function Bars({ data, pick, color = "bg-brand" }: { data: Daily[]; pick: (d: Dai
   const max = Math.max(1, ...data.map(pick));
   return <div className="flex h-24 items-end gap-0.5">{data.map((d) => <div key={d.day} title={`${d.day}: ${pick(d)}`} className={`flex-1 rounded-t ${color}`} style={{ height: `${Math.max(2, (pick(d) / max) * 100)}%`, opacity: pick(d) ? 1 : 0.2 }} />)}</div>;
 }
+
+export const metadata = { title: "Phân tích – Quản trị" };
 
 export default async function Page() {
   await requireAdmin("analytics");
@@ -24,9 +26,9 @@ export default async function Page() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Analytics <span className="text-sm font-normal text-slate-500">30 ngày gần nhất</span></h1>
+      <h1 className="text-2xl font-bold">Phân tích <span className="text-sm font-normal text-slate-500">30 ngày gần nhất</span></h1>
       <div className="grid gap-4 md:grid-cols-3">
-        {([["Đăng ký mới", sum("signups"), (x: Daily) => x.signups, "bg-brand"], ["Bài thi đã nộp", sum("attempts"), (x: Daily) => x.attempts, "bg-amber-500"], ["Doanh thu", vnd(sum("revenue")), (x: Daily) => x.revenue, "bg-emerald-500"]] as const).map(([l, v, p, c]) => (
+        {([["Đăng ký mới", sum("signups"), (x: Daily) => x.signups, "bg-brand"], ["Bài thi đã nộp", sum("attempts"), (x: Daily) => x.attempts, "bg-amber-500"], ["Doanh thu", money(sum("revenue")), (x: Daily) => x.revenue, "bg-emerald-500"]] as const).map(([l, v, p, c]) => (
           <div key={l} className="card"><p className="text-sm text-slate-500">{l}</p><p className="text-2xl font-black">{v}</p><div className="mt-3"><Bars data={d} pick={p} color={c} /></div></div>
         ))}
       </div>

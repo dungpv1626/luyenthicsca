@@ -35,6 +35,6 @@ export const ADMIN_AREAS = {
 
 export async function requireAdmin(area: keyof typeof ADMIN_AREAS): Promise<Me> {
   const me = await requireMe("/admin");
-  if (!(ADMIN_AREAS[area] as readonly Role[]).includes(me.role)) redirect("/dashboard");
+  if (!(ADMIN_AREAS[area] as readonly Role[]).includes(me.role)) redirect(`/khong-co-quyen?area=${area}`);
   return me;
 }

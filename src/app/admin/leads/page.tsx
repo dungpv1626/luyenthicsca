@@ -5,12 +5,14 @@ import { setLeadStatus } from "../actions";
 
 const ST = { new: "Mới", contacted: "Đã liên hệ", closed: "Đã đóng" } as const;
 
+export const metadata = { title: "Tư vấn khách hàng – Quản trị" };
+
 export default async function Page() {
   await requireAdmin("leads");
   const { data } = await adminDb().from("consultations").select("*, profiles(full_name, audience, target), schools(name)").order("created_at", { ascending: false }).limit(300);
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Tư vấn / Leads</h1>
+      <h1 className="text-2xl font-bold">Tư vấn khách hàng</h1>
       <div className="card divide-y p-0">
         {data?.map((c) => {
           const p = c.profiles as unknown as { full_name: string; audience: string | null; target: string | null } | null;

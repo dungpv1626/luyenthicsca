@@ -2,8 +2,8 @@ import Link from "next/link";
 import { ADMIN_AREAS, requireAdmin } from "@/lib/auth";
 
 const LINKS = [
-  ["/admin", "Dashboard", "dashboard"], ["/admin/analytics", "Analytics", "analytics"], ["/admin/review", "Duyệt câu hỏi", "questions"], ["/admin/templates", "Khuôn câu hỏi", "questions"], ["/admin/blueprint", "Blueprint", "questions"], ["/admin/questions", "Question Bank", "questions"], ["/admin/levels", "Đề theo mức", "tests"], ["/admin/tests", "Mock Test", "tests"],
-  ["/admin/data/schools", "Trường", "schools"], ["/admin/data/scholarships", "Học bổng", "schools"], ["/admin/leads", "Tư vấn / Leads", "leads"],
+  ["/admin", "Tổng quan", "dashboard"], ["/admin/analytics", "Phân tích", "analytics"], ["/admin/review", "Duyệt câu hỏi", "questions"], ["/admin/templates", "Khuôn câu hỏi", "questions"], ["/admin/blueprint", "Phủ đề cương", "questions"], ["/admin/questions", "Ngân hàng câu hỏi", "questions"], ["/admin/levels", "Đề theo mức", "tests"], ["/admin/tests", "Đề thi", "tests"],
+  ["/admin/data/schools", "Trường", "schools"], ["/admin/data/scholarships", "Học bổng", "schools"], ["/admin/leads", "Tư vấn khách hàng", "leads"],
   ["/admin/data/courses", "Khóa học", "academy"], ["/admin/data/lessons", "Bài giảng", "academy"], ["/admin/data/teachers", "Giáo viên", "academy"],
   ["/admin/blog", "Blog SEO", "content"], ["/admin/orders", "Đơn hàng", "orders"], ["/admin/users", "Người dùng", "users"],
 ] as const;

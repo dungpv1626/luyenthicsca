@@ -52,3 +52,19 @@
 2. **Ảnh hưởng lớn (3–5 ngày):** layout quản trị riêng có menu nhóm và huy hiệu; dashboard theo vai trò ("việc cần làm"); Question Bank có tìm kiếm, phân trang, hiển thị công thức; Người dùng có email và tìm kiếm.
 3. **Quy trình duyệt (3–5 ngày):** 3 cột song song, phím tắt, bộ lọc mô-đun/chủ đề, gán môn cho giáo viên, tiến độ cá nhân, duyệt theo mẫu thống kê.
 4. **Sau đó:** nhật ký thao tác, hàng đợi leads/đối soát đơn, khóa tài khoản, trang quản lý mô-đun/blueprint, thử với giáo viên và tư vấn viên thật.
+
+---
+## Tình trạng xử lý nhóm 1 (cập nhật sau khi làm)
+| Hạng mục | Trạng thái | Ghi chú |
+|---|---|---|
+| "Doanh thu: Miễn phí" → "0đ" | Xong | `money()` cho số tiền, `vnd()` chỉ cho giá bán |
+| Tiêu đề tab từng trang quản trị | Xong | "Tên trang – Quản trị · CSCA Việt Nam" |
+| Hộp thoại xác nhận | Xong | Hoàn tiền, hủy đơn, xác nhận thu tiền, đổi vai trò (cảnh báo thêm khi lên Super Admin), công bố/gỡ đề, gỡ cả lô, xóa dữ liệu, duyệt/loại khuôn, lên lịch/công bố/gỡ bài blog. Chưa bắt buộc nhập lý do và chưa có nhật ký |
+| Trang "không có quyền" | Xong | `/khong-co-quyen`, nêu vai trò hiện tại và mục bị chặn |
+| Nhãn biểu mẫu | Xong | Đo lại: không còn ô thiếu nhãn ở trang quản trị (trừ 0) |
+| Vùng bấm | Xong một phần | Trang bộ đề theo mức và đề thi từ 115/133 xuống ~26/24 phần tử nhỏ (phần còn lại chủ yếu là menu của web học viên); tab và liên kết ở duyệt câu hỏi, blog ≥ 40px |
+| Việt hóa menu, tiêu đề, vai trò, trạng thái đơn | Xong | Vai trò: Quản trị cấp cao, Quản lý nội dung, Giáo viên duyệt chuyên môn, Tư vấn / Kinh doanh, Học viên |
+| Dashboard theo vai trò | Xong | Giáo viên chỉ thấy số liệu nội dung (không thấy doanh thu/đơn hàng); Tư vấn chỉ thấy kinh doanh; thẻ có liên kết và tô nổi việc tồn đọng |
+| Hộp thoại phủ cả màn hình | Xong (lỗi phát hiện khi làm) | Hộp thoại bị hiệu ứng chuyển trang giới hạn trong vùng nội dung; sửa bằng cách hiển thị ngoài khung đó, cả ở hộp thoại nộp bài của học viên |
+
+**Chưa làm (nhóm 2–4):** layout quản trị riêng, menu nhóm có huy hiệu, Question Bank có tìm kiếm/phân trang/hiển thị công thức, Người dùng có email, quy trình duyệt cho giáo viên, nhật ký thao tác, leads/đơn hàng.
