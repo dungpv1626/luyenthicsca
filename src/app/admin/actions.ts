@@ -7,6 +7,7 @@ import { adminDb } from "@/lib/supabase/admin";
 import { markOrderPaid } from "@/lib/orders";
 import { pickQuestions } from "@/lib/exam";
 import { SUBJECT_KEYS, ROLES, type Role, type Subject } from "@/lib/constants";
+import { reviewSubjectsOf, sampleNeeded } from "@/lib/reviewer";
 
 const pick = <T extends string>(v: FormDataEntryValue | null, allowed: readonly T[], d: T): T => (allowed.includes(v as T) ? (v as T) : d);
 
@@ -156,9 +157,17 @@ export async function reviewQuestionAction(id: string, next: string, fd: FormDat
   const canApprove = me.role === "super_admin" || me.role === "academic_reviewer";
   const db = adminDb();
   const now = new Date().toISOString();
+  // giáo viên chỉ duyệt môn được gán (nếu có gán)
+  if (me.role === "academic_reviewer") {
+    const mine = await reviewSubjectsOf(me.id);
+    if (mine.length) {
+      const { data: qq } = await db.from("questions").select("subject").eq("id", id).single();
+      if (!qq || !mine.includes(qq.subject)) redirect(`${next}${next.includes("?") ? "&" : "?"}not_mine=1`);
+    }
+  }
   if (decision === "approve" && canApprove) {
     // xác nhận: câu chờ duyệt → công bố; hoặc câu đã công bố tự động → đánh dấu đã có giáo viên xác nhận
-    await db.from("questions").update({ status: "approved", auto_published: false, reviewer: me.id, review_note: note || null, reviewed_at: now }).eq("id", id).or("status.eq.review,auto_published.eq.true");
+    await db.from("questions").update({ status: "approved", auto_published: false, confirmed_by_sample: false, reviewer: me.id, review_note: note || null, reviewed_at: now }).eq("id", id).or("status.eq.review,auto_published.eq.true");
   } else if (decision === "reject") {
     if (!note) redirect(`${next}${next.includes("?") ? "&" : "?"}need_note=1`);
     // loại / tắt câu hỏi (kể cả câu đang công bố): học sinh sẽ không thấy nữa
@@ -173,6 +182,36 @@ export async function disableBatchAction(batchId: string) {
   await requireAdmin("questions");
   await adminDb().from("questions").update({ status: "review", auto_published: false, review_note: "Gỡ cả lô bởi quản trị" }).eq("batch_id", batchId).eq("auto_published", true);
   revalidatePath("/admin/review");
+}
+
+/**
+ * Xác nhận cả lô theo mẫu: chỉ cho phép khi chính người này đã tự xác nhận đủ số mẫu trong lô
+ * (xem sampleNeeded) và không loại câu nào trong lô. Các câu còn lại được đánh dấu confirmed_by_sample = true
+ * để phân biệt với câu được xem từng câu.
+ */
+export async function confirmBatchBySampleAction(batchId: string) {
+  const me = await requireAdmin("questions");
+  if (me.role !== "super_admin" && me.role !== "academic_reviewer") return;
+  const db = adminDb();
+  const mine = me.role === "academic_reviewer" ? await reviewSubjectsOf(me.id) : [];
+  const { data: rest } = await db.from("questions").select("id, subject").eq("batch_id", batchId).eq("status", "approved").eq("auto_published", true).limit(5000);
+  const { count: done } = await db.from("questions").select("*", { count: "exact", head: true }).eq("batch_id", batchId).eq("reviewer", me.id).eq("status", "approved").eq("auto_published", false).eq("confirmed_by_sample", false);
+  const { count: rejected } = await db.from("questions").select("*", { count: "exact", head: true }).eq("batch_id", batchId).eq("reviewer", me.id).eq("status", "rejected");
+  const { count: total } = await db.from("questions").select("*", { count: "exact", head: true }).eq("batch_id", batchId);
+  if (!rest?.length || !total) return;
+  if (mine.length && rest.some((r) => !mine.includes(r.subject))) return;
+  if ((rejected ?? 0) > 0 || (done ?? 0) < sampleNeeded(total)) return; // chưa đủ mẫu hoặc lô có lỗi → phải xem từng câu
+  await db.from("questions").update({ auto_published: false, confirmed_by_sample: true, reviewer: me.id, review_note: `Xác nhận theo mẫu (${done}/${total} câu đã xem từng câu)`, reviewed_at: new Date().toISOString() }).eq("batch_id", batchId).eq("status", "approved").eq("auto_published", true);
+  revalidatePath("/admin/review");
+}
+
+/** Super Admin gán môn phụ trách cho giáo viên duyệt (rỗng = mọi môn). */
+export async function setReviewSubjects(userId: string, fd: FormData) {
+  const me = await requireAdmin("users");
+  if (me.role !== "super_admin") return;
+  const subjects = fd.getAll("subjects").map(String).filter((s) => (SUBJECT_KEYS as readonly string[]).includes(s));
+  await adminDb().from("profiles").update({ review_subjects: subjects }).eq("id", userId);
+  revalidatePath("/admin/users");
 }
 
 // ===== Bộ đề theo mức luyện tập =====

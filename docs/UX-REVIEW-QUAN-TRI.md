@@ -78,3 +78,16 @@
 | Ngân hàng câu hỏi | Tìm theo nội dung/chủ đề, lọc môn/mô-đun/độ khó/trạng thái/nguồn, "chờ giáo viên xác nhận", phân trang 30, hiển thị công thức |
 | Người dùng | Có email, lần đăng nhập, tìm kiếm, lọc vai trò, phân trang, xác nhận đổi vai trò |
 | Danh sách đề | Lọc theo nhóm (mô phỏng, Mức 1–4, khác), trạng thái, tìm tên, phân trang |
+
+## Trạng thái nhóm 3 (đã viết code, chờ áp dụng migration 0015 + triển khai)
+
+| Hạng mục | Kết quả |
+|---|---|
+| Màn duyệt 3 cột | Việt/Anh/Trung cạnh nhau trên màn rộng; thanh thao tác cố định dưới đáy trên điện thoại |
+| Phím tắt | A duyệt · R loại · S bỏ qua · E sửa (không kích hoạt khi đang gõ) |
+| Bộ lọc | Tìm nội dung/chủ đề, môn, mô-đun đề cương, độ khó, nguồn, kết quả kiểm tra AI |
+| Gán môn | Super Admin gán môn phụ trách cho giáo viên (trang Người dùng); hệ thống chặn duyệt môn không được gán |
+| Tiến độ cá nhân | Hôm nay / tổng đã xử lý / còn lại trong bộ lọc |
+| Xác nhận theo mẫu | Xem đủ 10% (5–20 câu) của lô và không loại câu nào → xác nhận cả lô, đánh dấu `confirmed_by_sample` |
+
+Migration `supabase/migrations/0015_reviewer_workflow.sql` (thêm `profiles.review_subjects`, `questions.confirmed_by_sample`) phải áp dụng **trước** khi triển khai code.
