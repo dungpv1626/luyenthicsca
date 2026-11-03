@@ -4,6 +4,7 @@
 //   node --env-file=.env.local scripts/generate-from-templates.mjs --show math.calc.deriv_cubic   # in thử 1 biến thể (vi/en/zh)
 //   node --env-file=.env.local scripts/generate-from-templates.mjs --publish        # tạo & công bố ngay (chờ giáo viên duyệt khuôn)
 // Tùy chọn: --max-per 100 (tối đa/khuôn) · --small-cap 8 (khuôn ít biến thể thì chỉ lấy ngần này) · --subject math · --template <key>
+import { moduleOf } from "../src/lib/syllabus.ts";
 import { createClient } from "@supabase/supabase-js";
 import { TEMPLATES, mkRng, seedFor, validateVariant, LANGS } from "../src/lib/templates/index.ts";
 
@@ -43,7 +44,7 @@ for (const t of TEMPLATES) {
     const pack = (l) => ({ body: v[l].body, options: Object.fromEntries(perm.map((o, pos) => [L[pos], v[l].opts[o]])), explanation: v[l].steps });
     const vi = pack("vi"), en = pack("en"), zh = pack("zh");
     rows.push({
-      subject: t.subject, topic: t.topic, subtopic: t.subtopic, difficulty: t.difficulty, language: "vi",
+      subject: t.subject, topic: t.topic, subtopic: t.subtopic, module: moduleOf(t), difficulty: t.difficulty, language: "vi",
       body: vi.body, options: vi.options, correct_answer: correct, explanation: vi.explanation,
       translations: { en, zh }, skill: v.skill.slice(0, 80), est_time_sec: v.est,
       source: `Khuôn tham số ${t.key} – đáp án tính bằng mã, chờ giáo viên duyệt khuôn`,

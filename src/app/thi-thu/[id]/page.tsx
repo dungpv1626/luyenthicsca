@@ -7,6 +7,7 @@ import { canAccessTest } from "@/lib/exam";
 import { DIFFICULTY, SUBJECTS, vnd, type Subject } from "@/lib/constants";
 import { LEVELS, mixText } from "@/lib/levels";
 import { SIM_FORMAT, SIM_MIX, secondsPerQuestion, score100 } from "@/lib/sim";
+import { MODULES, type Subject as SylSubject } from "@/lib/syllabus";
 import type { Breakdown } from "@/lib/scoring";
 import { buyTestAction } from "../../order-actions";
 import { startMockAction } from "../../exam-actions";
@@ -26,13 +27,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!t) notFound();
   const me = await getMe();
   const [{ data: tq }, access, { data: hist }] = await Promise.all([
-    db.from("test_questions").select("questions(subject, difficulty)").eq("test_id", id),
+    db.from("test_questions").select("questions(subject, difficulty, module)").eq("test_id", id),
     me ? canAccessTest(me.id, t) : Promise.resolve(t.price_vnd === 0),
     me ? db.from("attempts").select("id, started_at, submitted_at, duration_sec, score, readiness, breakdown").eq("user_id", me.id).eq("test_id", id).order("started_at", { ascending: false }).limit(8) : Promise.resolve({ data: [] }),
   ]);
-  const qs = (tq ?? []).map((r) => r.questions as unknown as { subject: string; difficulty: string } | null).filter(Boolean) as { subject: string; difficulty: string }[];
+  const qs = (tq ?? []).map((r) => r.questions as unknown as { subject: string; difficulty: string; module: string | null } | null).filter(Boolean) as { subject: string; difficulty: string; module: string | null }[];
   const bySub: Record<string, number> = {}, byDiff: Record<string, number> = {};
-  for (const q of qs) { bySub[q.subject] = (bySub[q.subject] ?? 0) + 1; byDiff[q.difficulty] = (byDiff[q.difficulty] ?? 0) + 1; }
+  const byMod: Record<string, number> = {};
+  for (const q of qs) { bySub[q.subject] = (bySub[q.subject] ?? 0) + 1; byDiff[q.difficulty] = (byDiff[q.difficulty] ?? 0) + 1; if (q.module) byMod[q.module] = (byMod[q.module] ?? 0) + 1; }
   const level = LEVELS.find((l) => l.level === t.level);
   const open = (hist ?? []).find((a) => !a.submitted_at && Date.now() < new Date(a.started_at).getTime() + a.duration_sec * 1000);
   const leftSec = open ? Math.max(0, Math.round((new Date(open.started_at).getTime() + open.duration_sec * 1000 - Date.now()) / 1000)) : 0;
@@ -52,12 +54,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-slate-500">Giá</dt><dd className={`text-xl font-black ${t.price_vnd ? "text-navy" : "text-emerald-600"}`}>{t.price_vnd ? vnd(t.price_vnd) : "Miễn phí"}</dd></div>
         </dl>
         <div className="grid gap-4 text-sm sm:grid-cols-2">
-          <div><p className="font-bold">Cơ cấu theo môn</p><ul className="mt-1.5 space-y-1">{Object.entries(bySub).map(([k, n]) => <li key={k} className="flex justify-between text-slate-600"><span>{SUBJECTS[k as Subject]?.split(" (")[0] ?? k}</span><b className="text-ink">{n} câu</b></li>)}</ul></div>
+          {t.sim && t.subject && t.subject in MODULES
+            ? <div><p className="font-bold">Cơ cấu theo mô-đun đề cương</p><ul className="mt-1.5 space-y-1">{MODULES[t.subject as SylSubject].filter((m) => byMod[m.key]).map((m) => <li key={m.key} className="flex justify-between gap-3 text-slate-600"><span>{m.name}</span><b className="shrink-0 text-ink">{byMod[m.key]} câu</b></li>)}</ul></div>
+            : <div><p className="font-bold">Cơ cấu theo môn</p><ul className="mt-1.5 space-y-1">{Object.entries(bySub).map(([k, n]) => <li key={k} className="flex justify-between text-slate-600"><span>{SUBJECTS[k as Subject]?.split(" (")[0] ?? k}</span><b className="text-ink">{n} câu</b></li>)}</ul></div>}
           <div><p className="font-bold">Cơ cấu độ khó</p><ul className="mt-1.5 space-y-1">{(["easy", "medium", "hard"] as const).filter((k) => byDiff[k]).map((k) => <li key={k} className="flex justify-between text-slate-600"><span>{DIFFICULTY[k]}</span><b className="text-ink">{byDiff[k]} câu</b></li>)}</ul>{t.sim ? <p className="mt-1 text-xs text-slate-500">Cơ cấu ước lượng: {mixText(SIM_MIX)}</p> : level && <p className="mt-1 text-xs text-slate-500">Mục tiêu của mức: {mixText(level.mix)}</p>}</div>
         </div>
 
         {t.sim && t.subject && t.subject in SIM_FORMAT && (
-          <p className="rounded-xl bg-brand-soft/60 p-3 text-sm text-slate-700"><b className="text-navy">Đúng khuôn đề thi thật:</b> {SIM_FORMAT[t.subject as keyof typeof SIM_FORMAT].questions} câu trắc nghiệm trong {SIM_FORMAT[t.subject as keyof typeof SIM_FORMAT].minutes} phút, trung bình khoảng {secondsPerQuestion(t.subject as keyof typeof SIM_FORMAT)} giây mỗi câu, chấm thang 100. Số câu và thời gian theo thông tin công bố của kỳ thi; cơ cấu độ khó do chúng tôi ước lượng và điểm quy đổi chỉ để tham khảo.</p>
+          <p className="rounded-xl bg-brand-soft/60 p-3 text-sm text-slate-700"><b className="text-navy">Đúng khuôn đề thi thật:</b> {SIM_FORMAT[t.subject as keyof typeof SIM_FORMAT].questions} câu trắc nghiệm trong {SIM_FORMAT[t.subject as keyof typeof SIM_FORMAT].minutes} phút, trung bình khoảng {secondsPerQuestion(t.subject as keyof typeof SIM_FORMAT)} giây mỗi câu, chấm thang 100. Số câu và thời gian theo thông tin công bố của kỳ thi; các mô-đun theo đề cương nhưng tỉ trọng mỗi mô-đun và cơ cấu độ khó do chúng tôi ước lượng (đề cương không công bố số câu theo mô-đun); điểm quy đổi chỉ để tham khảo.</p>
         )}
         <div className="border-t border-slate-100 pt-4">
           {!me ? <Link href={`/dang-nhap?next=/thi-thu/${id}`} className="btn w-full sm:w-auto">Đăng nhập để làm bài</Link>

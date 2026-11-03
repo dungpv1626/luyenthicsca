@@ -4,6 +4,7 @@ import { adminDb } from "@/lib/supabase/admin";
 import { wrongQuestionIds } from "@/lib/exam";
 import { getSkillProfile } from "@/lib/skills";
 import { PracticeFilters } from "@/components/PracticeFilters";
+import { MODULES } from "@/lib/syllabus";
 import { DIFFICULTY, SUBJECTS } from "@/lib/constants";
 import { PageHeader } from "@/components/Section";
 import { Icon } from "@/components/Icon";
@@ -11,9 +12,9 @@ import { startPracticeAction } from "../exam-actions";
 
 export const metadata = { title: "Luyện tập theo chủ đề" };
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ error?: string; subject?: string; module?: string }> }) {
   const me = await requireMe("/luyen-tap");
-  const { error } = await searchParams;
+  const { error, subject: qSubject = "", module: qModule = "" } = await searchParams;
   const [{ data: topics }, wrong, sk] = await Promise.all([adminDb().from("questions").select("subject, topic").eq("status", "approved").limit(20000), wrongQuestionIds(me.id), getSkillProfile(me.id)]);
   const bySubject: Record<string, string[]> = {};
   for (const t of topics ?? []) { const a = (bySubject[t.subject] ??= []); if (!a.includes(t.topic)) a.push(t.topic); }
@@ -33,7 +34,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
       )}
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <form action={startPracticeAction} className="card space-y-4">
-          <PracticeFilters bySubject={bySubject} subjects={SUBJECTS} difficulties={DIFFICULTY} />
+          <PracticeFilters bySubject={bySubject} subjects={SUBJECTS} difficulties={DIFFICULTY} modules={Object.fromEntries(Object.entries(MODULES).map(([k, v]) => [k, v.map((m) => ({ key: m.key, name: m.name }))]))} defaultSubject={qSubject} defaultModule={qModule} />
           <SubmitButton className="btn w-full" pendingText="Đang chọn câu hỏi…">Bắt đầu luyện tập</SubmitButton>
         </form>
         <form action={startPracticeAction} className="card flex flex-col justify-between gap-4 bg-gradient-to-br from-brand-soft to-white">

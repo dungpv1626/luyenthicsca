@@ -86,6 +86,14 @@ Ngoài câu do AI soạn, hệ thống có **41 khuôn** (`src/lib/templates/`):
 - Kiểm thử: `npm test` (mỗi khuôn sinh 400 biến thể: 4 đáp án khác nhau, đủ 3 ngôn ngữ, lời giải chứa đáp án đúng; đối chiếu các công thức bằng cách tính khác). Mọi công thức LaTeX sinh ra đã được KaTeX (strict) phân tích thử, 0 lỗi.
 - Thêm khuôn mới: viết `add({ key, subject, topic, subtopic, difficulty, build })` trong `math.ts` / `physics.ts` / `chemistry.ts`; `build` trả `null` khi tham số không hợp lệ.
 
+## Blueprint theo mô-đun đề cương CSCA
+
+- `src/lib/syllabus.ts`: các **mô-đun theo đề cương** (Toán 4, Vật lý 5, Hóa học 4; Professional Chinese 3 nhóm theo cách ngân hàng phân loại), quy tắc gán mô-đun cho từng câu và hạn ngạch theo tỉ trọng. **Tỉ trọng là ước lượng**: đề cương không công bố số câu theo mô-đun. Cấu trúc mô-đun lấy từ các bài hướng dẫn đề cương 2025, chưa đối chiếu trực tiếp với file PDF chính thức.
+- `questions.module`: khóa mô-đun, `out` = ngoài phần liệt kê của đề cương (vd tích phân, nhiệt hóa học, điện phân; vẫn dùng để luyện tập, không đưa vào đề mô phỏng).
+- Gán lại mô-đun: `node --env-file=.env.local scripts/backfill-modules.mjs` (in luôn bảng phủ đề cương). Bộ sinh câu hỏi tự gán mô-đun cho câu mới.
+- Đề mô phỏng lắp theo hạn ngạch mô-đun (`src/lib/assemble-modules.ts`); `--max-shift 2`: đề lệch quá 2 câu so với hạn ngạch thì không dựng. Dựng lại: `node --env-file=.env.local scripts/build-sim-exams.mjs --replace` (chỉ xóa đề chưa có lượt làm).
+- Học viên: chi tiết đề mô phỏng hiện cơ cấu theo mô-đun; kết quả hiện đúng/sai theo mô-đun và nút luyện mô-đun yếu nhất; Luyện tập lọc được theo mô-đun. Quản trị: Admin → Blueprint có bảng phủ đề cương.
+
 ## Đề mô phỏng CSCA
 
 Khác với các **mức luyện tập** (Mức 1–4, do chúng tôi đặt ra để học từ dễ đến khó; kỳ thi thật **không** chia cấp độ), đề mô phỏng bám khuôn của kỳ thi: Toán, Vật lý, Hóa học **48 câu / 60 phút**; Professional Chinese **80 câu / 90 phút**; mỗi môn một bài riêng, điểm quy đổi thang 100 (`src/lib/sim.ts`). Số câu và thời gian theo thông tin công bố; cơ cấu độ khó (30/50/20) là ước lượng của chúng tôi.

@@ -7,6 +7,7 @@
 //   node --env-file=.env.local scripts/generate-questions.mjs --subject math --topic "Đại số" --difficulty easy --count 5
 //   node --env-file=.env.local scripts/generate-questions.mjs --fill --subject math --max 60 [--overshoot 1.3] [--publish] [--budget-usd 25]
 import Anthropic from "@anthropic-ai/sdk";
+import { moduleOf } from "../src/lib/syllabus.ts";
 import { createClient } from "@supabase/supabase-js";
 
 const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i < 0 ? d : (process.argv[i + 1]?.startsWith("--") || process.argv[i + 1] === undefined ? true : process.argv[i + 1]); };
@@ -204,7 +205,7 @@ async function runTask({ subject, topic, subtopic, difficulty, count, hints }) {
     if (best.s >= 0.5) note = (note ? note + " · " : "") + `Gần giống một câu đã có (${Math.round(best.s * 100)}%)`;
 
     rows.push({
-      subject, topic, subtopic: subtopic || null, difficulty, language: "vi",
+      subject, topic, subtopic: subtopic || null, module: moduleOf({ subject, topic, subtopic }), difficulty, language: "vi",
       body: vi.body, options: vi.options, correct_answer: correct, explanation: vi.explanation,
       translations: { en: { body: en.body, options: en.options, explanation: en.explanation }, zh: { body: zh.body, options: zh.options, explanation: zh.explanation } },
       skill: String(q.skill).slice(0, 80), est_time_sec: Math.min(300, Math.max(15, q.est_time_sec | 0)),

@@ -10,6 +10,7 @@ import { Rich } from "@/components/Rich";
 import { reportQuestionAction } from "../../report-actions";
 import { ScoreRing } from "@/components/ScoreRing";
 import { SIM_FORMAT, score100, secondsPerQuestion } from "@/lib/sim";
+import { MODULES, type Subject as SylSubject } from "@/lib/syllabus";
 
 export const metadata = { title: "Kết quả bài thi" };
 
@@ -28,7 +29,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const spentSec = Object.values((att.time_spent ?? {}) as Record<string, number>).reduce((a, v) => a + (Number(v) || 0), 0);
   const simKey = simTest?.sim && simTest.subject && simTest.subject in SIM_FORMAT ? (simTest.subject as keyof typeof SIM_FORMAT) : null;
   const ai = att.ai_report as AiReport;
-  const { data: qs } = await db.from("questions").select("id, body, options, correct_answer, explanation, subject, topic, translations").in("id", att.question_ids);
+  const { data: qs } = await db.from("questions").select("id, body, options, correct_answer, explanation, subject, topic, module, translations").in("id", att.question_ids);
   const byId = new Map((qs ?? []).map((q) => [q.id, q]));
   const review = (att.question_ids as string[]).map((id) => byId.get(id)).filter(Boolean) as NonNullable<ReturnType<typeof byId.get>>[];
   const ans = att.answers as Record<string, string>;
@@ -41,6 +42,9 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const insufficient = !!b.insufficient;
   const nPractice = insufficient ? review.filter((q) => ans[q.id] && !isRight(q)).length : nNeed; // đúng với wrong_ids dùng cho luyện câu sai
   const href = (o: { lang?: string; show?: string }) => `?lang=${o.lang ?? lang}&show=${o.show ?? show}`;
+  // kết quả theo mô-đun đề cương (chỉ đề mô phỏng)
+  const modRows = simKey ? MODULES[simKey as SylSubject].map((m) => { const items = review.filter((q) => (q as { module?: string | null }).module === m.key); const ok = items.filter((q) => ans[q.id] === q.correct_answer).length; return { m, total: items.length, ok, pct: items.length ? Math.round((ok / items.length) * 100) : 0 }; }).filter((r) => r.total > 0) : [];
+  const weakMod = [...modRows].sort((a, b) => a.pct - b.pct)[0];
   const topicLabel = (k: string) => `${SUBJECTS[k.split("|")[0] as Subject]} – ${k.split("|")[1]}`;
 
   return (
@@ -65,6 +69,17 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           {nNeed > 0 && <a href="#xem-lai" className="btn-outline">Xem lại câu sai ↓</a>}
         </div>
       </div>
+
+      {simKey && modRows.length > 0 && (
+        <div className="card">
+          <h2 className="mb-1 text-lg font-bold">Kết quả theo mô-đun đề cương</h2>
+          <p className="mb-3 text-xs text-slate-500">Các mô-đun theo đề cương CSCA; tỉ trọng mỗi mô-đun trong đề là ước lượng của chúng tôi.</p>
+          <div className="space-y-3">{modRows.map((r) => (
+            <div key={r.m.key}><div className="flex justify-between gap-3 text-sm"><span className="font-medium">{r.m.name}</span><span className="shrink-0 text-slate-600">{r.ok}/{r.total} ({r.pct}%)</span></div>
+              <div className="mt-1 h-2 rounded bg-slate-100"><div className={`h-2 rounded ${r.pct >= 70 ? "bg-emerald-500" : r.pct >= 40 ? "bg-brand" : "bg-rose-500"}`} style={{ width: `${r.pct}%` }} /></div></div>))}</div>
+          {weakMod && weakMod.pct < 70 && <Link href={`/luyen-tap?subject=${simKey}&module=${weakMod.m.key}`} className="btn mt-4">Luyện mô-đun yếu nhất: {weakMod.m.name}</Link>}
+        </div>
+      )}
 
       <div className="card">
         <h2 className="mb-3 text-lg font-bold">Kết quả theo môn</h2>

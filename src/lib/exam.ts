@@ -13,11 +13,12 @@ function shuffle<T>(a: T[]): T[] {
 }
 
 /** Chọn ngẫu nhiên câu hỏi đã duyệt, chia đều theo môn. */
-export async function pickQuestions(opts: { subjects?: Subject[]; topic?: string; difficulty?: Difficulty; count: number }) {
+export async function pickQuestions(opts: { subjects?: Subject[]; topic?: string; module?: string; difficulty?: Difficulty; count: number }) {
   const db = adminDb();
   const subjects = opts.subjects?.length ? opts.subjects : SUBJECT_KEYS;
   let q = db.from("questions").select("id, subject").eq("status", "approved").in("subject", subjects);
   if (opts.topic) q = q.eq("topic", opts.topic);
+  if (opts.module) q = q.eq("module", opts.module);
   if (opts.difficulty) q = q.eq("difficulty", opts.difficulty);
   const { data } = await q;
   const pool = shuffle(data ?? []);
