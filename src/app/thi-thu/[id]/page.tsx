@@ -6,6 +6,7 @@ import { adminDb } from "@/lib/supabase/admin";
 import { canAccessTest } from "@/lib/exam";
 import { DIFFICULTY, SUBJECTS, vnd, type Subject } from "@/lib/constants";
 import { LEVELS, mixText } from "@/lib/levels";
+import { SIM_FORMAT, SIM_MIX, secondsPerQuestion, score100 } from "@/lib/sim";
 import type { Breakdown } from "@/lib/scoring";
 import { buyTestAction } from "../../order-actions";
 import { startMockAction } from "../../exam-actions";
@@ -41,7 +42,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     <div className="mx-auto grid max-w-3xl gap-4">
       <div className="card space-y-4 !p-6 shadow-soft sm:!p-7">
         <div>
-          <p className="eyebrow">{level ? `Cấp ${level.level} · ${level.name}` : "Đề thi thử"}</p>
+          <p className="eyebrow">{t.sim ? "Đề mô phỏng CSCA" : level ? `Mức ${level.level} · ${level.name}` : "Đề thi thử"}</p>
           <h1 className="mt-1 text-2xl font-extrabold text-navy">{t.title}</h1>
           {t.description && <p className="mt-1 text-slate-600">{t.description}</p>}
         </div>
@@ -52,9 +53,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </dl>
         <div className="grid gap-4 text-sm sm:grid-cols-2">
           <div><p className="font-bold">Cơ cấu theo môn</p><ul className="mt-1.5 space-y-1">{Object.entries(bySub).map(([k, n]) => <li key={k} className="flex justify-between text-slate-600"><span>{SUBJECTS[k as Subject]?.split(" (")[0] ?? k}</span><b className="text-ink">{n} câu</b></li>)}</ul></div>
-          <div><p className="font-bold">Cơ cấu độ khó</p><ul className="mt-1.5 space-y-1">{(["easy", "medium", "hard"] as const).filter((k) => byDiff[k]).map((k) => <li key={k} className="flex justify-between text-slate-600"><span>{DIFFICULTY[k]}</span><b className="text-ink">{byDiff[k]} câu</b></li>)}</ul>{level && <p className="mt-1 text-xs text-slate-500">Mục tiêu của cấp: {mixText(level.mix)}</p>}</div>
+          <div><p className="font-bold">Cơ cấu độ khó</p><ul className="mt-1.5 space-y-1">{(["easy", "medium", "hard"] as const).filter((k) => byDiff[k]).map((k) => <li key={k} className="flex justify-between text-slate-600"><span>{DIFFICULTY[k]}</span><b className="text-ink">{byDiff[k]} câu</b></li>)}</ul>{t.sim ? <p className="mt-1 text-xs text-slate-500">Cơ cấu ước lượng: {mixText(SIM_MIX)}</p> : level && <p className="mt-1 text-xs text-slate-500">Mục tiêu của mức: {mixText(level.mix)}</p>}</div>
         </div>
 
+        {t.sim && t.subject && t.subject in SIM_FORMAT && (
+          <p className="rounded-xl bg-brand-soft/60 p-3 text-sm text-slate-700"><b className="text-navy">Đúng khuôn đề thi thật:</b> {SIM_FORMAT[t.subject as keyof typeof SIM_FORMAT].questions} câu trắc nghiệm trong {SIM_FORMAT[t.subject as keyof typeof SIM_FORMAT].minutes} phút, trung bình khoảng {secondsPerQuestion(t.subject as keyof typeof SIM_FORMAT)} giây mỗi câu, chấm thang 100. Số câu và thời gian theo thông tin công bố của kỳ thi; cơ cấu độ khó do chúng tôi ước lượng và điểm quy đổi chỉ để tham khảo.</p>
+        )}
         <div className="border-t border-slate-100 pt-4">
           {!me ? <Link href={`/dang-nhap?next=/thi-thu/${id}`} className="btn w-full sm:w-auto">Đăng nhập để làm bài</Link>
             : access ? <form action={startMockAction.bind(null, id)} className="flex flex-wrap items-center gap-3"><SubmitButton className="btn w-full sm:w-auto" pendingText="Đang mở bài thi…">{open ? "Tiếp tục làm bài" : done.some((a) => !(a.breakdown as Breakdown | null)?.insufficient) ? "Làm lại bài này" : "Bắt đầu làm bài"}</SubmitButton>{open && <p className="text-sm text-amber-800">Bạn đang làm dở, còn <b className="font-mono">{String(Math.floor(leftSec / 60)).padStart(2, "0")}:{String(leftSec % 60).padStart(2, "0")}</b>. Đồng hồ vẫn chạy.</p>}</form>
@@ -78,7 +82,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <h2 className="font-extrabold text-navy">Lịch sử làm bài</h2>
           <ul className="mt-2 divide-y divide-slate-100 text-sm">
             {done.map((a) => { const b = a.breakdown as Breakdown | null; return (
-              <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex min-h-[2.75rem] items-center justify-between gap-3 py-2 hover:text-brand"><span className="text-slate-600">{fmtDate(a.submitted_at!)}</span><span className="font-semibold">{b?.insufficient ? <span className="text-amber-700">Chưa đủ câu để chấm</span> : `Readiness ${a.readiness ?? 0}/100 · đúng ${a.score ?? 0}/${b?.total ?? qs.length}`} →</span></Link></li>
+              <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex min-h-[2.75rem] items-center justify-between gap-3 py-2 hover:text-brand"><span className="text-slate-600">{fmtDate(a.submitted_at!)}</span><span className="font-semibold">{b?.insufficient ? <span className="text-amber-700">Chưa đủ câu để chấm</span> : t.sim ? `Điểm quy đổi ${score100(a.score ?? 0, b?.total ?? qs.length)}/100 · đúng ${a.score ?? 0}/${b?.total ?? qs.length}` : `Readiness ${a.readiness ?? 0}/100 · đúng ${a.score ?? 0}/${b?.total ?? qs.length}`} →</span></Link></li>
             ); })}
           </ul>
         </div>

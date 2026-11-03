@@ -1,11 +1,11 @@
 import type { Difficulty } from "./constants";
 
-/** 4 cấp độ: cơ cấu độ khó (%) tăng dần. Cấp 4 theo tỉ lệ blueprint (35/45/20). */
+/** 4 MỨC luyện tập (không phải cấp độ chính thức của kỳ thi CSCA): cơ cấu độ khó (%) tăng dần. Mức 4 theo tỉ lệ blueprint (35/45/20). */
 export const LEVELS = [
   { level: 1, name: "Nền tảng", tagline: "Làm quen dạng đề, củng cố kiến thức cơ bản", mix: { easy: 70, medium: 30, hard: 0 }, price: 0, range: "dưới 40 điểm" },
   { level: 2, name: "Cơ bản", tagline: "Vận dụng kiến thức, tăng tốc độ làm bài", mix: { easy: 40, medium: 50, hard: 10 }, price: 49000, range: "40–59 điểm" },
   { level: 3, name: "Nâng cao", tagline: "Bài nhiều bước, tránh bẫy thường gặp", mix: { easy: 15, medium: 50, hard: 35 }, price: 59000, range: "60–79 điểm" },
-  { level: 4, name: "Mô phỏng thi", tagline: "Đề sát cấu trúc thi thật, tính giờ nghiêm ngặt", mix: { easy: 35, medium: 45, hard: 20 }, price: 59000, range: "từ 80 điểm" },
+  { level: 4, name: "Chinh phục", tagline: "Cơ cấu độ khó gần với đề thi, tính giờ nghiêm ngặt", mix: { easy: 35, medium: 45, hard: 20 }, price: 59000, range: "từ 80 điểm" },
 ] as const;
 
 export type LevelNo = (typeof LEVELS)[number]["level"];

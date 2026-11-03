@@ -175,7 +175,7 @@ export async function disableBatchAction(batchId: string) {
   revalidatePath("/admin/review");
 }
 
-// ===== Bộ đề theo cấp =====
+// ===== Bộ đề theo mức luyện tập =====
 import { buildSets, type Q } from "@/lib/assemble";
 import { LEVELS, SCOPE_LABEL, SET_DEFAULTS } from "@/lib/levels";
 
@@ -210,14 +210,14 @@ export async function createLevelSets(fd: FormData) {
   const built = buildSets(pools, subjects, count, perSubject, info.mix, usedSet, { relaxed });
   if (!built.sets.length) {
     const miss = built.shortages.map((s) => `${SUBJECTS_VI[s.subject] ?? s.subject}: thiếu ${s.missing} câu`).join("; ");
-    back(`error=${encodeURIComponent(`Không đủ câu đã duyệt đúng cơ cấu cho Cấp ${level}. ${miss || "Chưa có câu hỏi đã duyệt."} Hãy duyệt thêm câu hỏi hoặc bật "cho phép bù độ khó/trùng câu".`)}`);
+    back(`error=${encodeURIComponent(`Không đủ câu đã duyệt đúng cơ cấu cho Mức ${level}. ${miss || "Chưa có câu hỏi đã duyệt."} Hãy duyệt thêm câu hỏi hoặc bật "cho phép bù độ khó/trùng câu".`)}`);
   }
 
   let no = Math.max(0, ...(existing ?? []).map((t) => t.set_no ?? 0));
   let warn = 0;
   for (const s of built.sets) {
     no++;
-    const title = `Cấp ${level} · ${info.name} · ${scope === "full" ? "Tổng hợp" : SUBJECTS_VI[subject as string]} · Đề ${no}`;
+    const title = `Mức ${level} · ${info.name} · ${scope === "full" ? "Tổng hợp" : SUBJECTS_VI[subject as string]} · Đề ${no}`;
     const { data: t, error } = await db.from("tests").insert({
       title, kind: "mock", level, scope, subject, set_no: no, duration_min: minutes, price_vnd: price, is_published: publish,
       description: `${s.ids.length} câu · ${info.tagline}.`,

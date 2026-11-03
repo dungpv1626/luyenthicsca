@@ -86,6 +86,14 @@ Ngoài câu do AI soạn, hệ thống có **41 khuôn** (`src/lib/templates/`):
 - Kiểm thử: `npm test` (mỗi khuôn sinh 400 biến thể: 4 đáp án khác nhau, đủ 3 ngôn ngữ, lời giải chứa đáp án đúng; đối chiếu các công thức bằng cách tính khác). Mọi công thức LaTeX sinh ra đã được KaTeX (strict) phân tích thử, 0 lỗi.
 - Thêm khuôn mới: viết `add({ key, subject, topic, subtopic, difficulty, build })` trong `math.ts` / `physics.ts` / `chemistry.ts`; `build` trả `null` khi tham số không hợp lệ.
 
+## Đề mô phỏng CSCA
+
+Khác với các **mức luyện tập** (Mức 1–4, do chúng tôi đặt ra để học từ dễ đến khó; kỳ thi thật **không** chia cấp độ), đề mô phỏng bám khuôn của kỳ thi: Toán, Vật lý, Hóa học **48 câu / 60 phút**; Professional Chinese **80 câu / 90 phút**; mỗi môn một bài riêng, điểm quy đổi thang 100 (`src/lib/sim.ts`). Số câu và thời gian theo thông tin công bố; cơ cấu độ khó (30/50/20) là ước lượng của chúng tôi.
+
+- Dựng đề: `node --env-file=.env.local scripts/build-sim-exams.mjs --dry` rồi chạy không `--dry`. Các đề không trùng câu với nhau; câu sinh từ khuôn tham số chỉ chiếm tối đa ½ số câu còn lại để đề đa dạng.
+- Đề 01 mỗi môn: miễn phí và đã công bố. Các đề còn lại: **ẩn**, 49.000đ, chờ giáo viên duyệt mẫu.
+- Trang kết quả của đề mô phỏng hiện điểm quy đổi thang 100, thời gian trung bình mỗi câu so với chuẩn thi thật.
+
 ## Blog SEO (kế hoạch 60 bài)
 
 - Nguồn: `content/seo/*.docx` → `python3 scripts/seo_docx_to_json.py` (cần `pandoc`) → `content/seo/posts.json` → `node --env-file=.env.local scripts/import-seo-posts.mjs` (nhập bài mới ở trạng thái **nháp**, không ghi đè bài đã sửa; `--force` để ghi đè).

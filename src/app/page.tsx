@@ -178,13 +178,13 @@ export default async function Home() {
 
       {/* ===== 4 CẤP ĐỘ ===== */}
       <section>
-        <div className="flex flex-wrap items-end justify-between gap-3"><Reveal><SectionTitle en="Mock Test" vi="Thi thử theo 4 cấp độ" /></Reveal><Reveal><Link href="/thi-thu" className="btn-outline">Xem tất cả đề <Icon name="arrow" className="h-4 w-4" /></Link></Reveal></div>
+        <div className="flex flex-wrap items-end justify-between gap-3"><Reveal><SectionTitle en="Mock Test" vi="Thi thử theo 4 mức luyện tập" /></Reveal><Reveal><Link href="/thi-thu" className="btn-outline">Xem tất cả đề <Icon name="arrow" className="h-4 w-4" /></Link></Reveal></div>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {LEVELS.map((l, i) => (
             <Reveal key={l.level} delay={i * 100}>
               <Link href={`/thi-thu#cap-${l.level}`} className="card card-hover group relative block h-full overflow-hidden">
                 <span className="absolute -right-3 -top-5 select-none text-[6.5rem] font-black leading-none text-brand/[0.07] transition group-hover:text-brand/15">{l.level}</span>
-                <span className="chip">Cấp {l.level}</span>
+                <span className="chip">Mức {l.level}</span>
                 <h3 className="mt-3 text-lg font-extrabold text-navy">{l.name}</h3><p className="mt-1 min-h-[2.5rem] text-sm text-slate-600">{l.tagline}</p>
                 <div className="mt-4 flex h-2.5 overflow-hidden rounded-full bg-slate-100" title={mixText(l.mix)}><span className="bg-sky-300" style={{ width: `${l.mix.easy}%` }} /><span className="bg-brand" style={{ width: `${l.mix.medium}%` }} /><span className="bg-navy" style={{ width: `${l.mix.hard}%` }} /></div>
                 <p className="mt-1.5 text-[11px] font-medium text-slate-500">{mixText(l.mix)}</p>

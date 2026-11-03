@@ -9,6 +9,7 @@ import { TutorChat } from "@/components/TutorChat";
 import { Rich } from "@/components/Rich";
 import { reportQuestionAction } from "../../report-actions";
 import { ScoreRing } from "@/components/ScoreRing";
+import { SIM_FORMAT, score100, secondsPerQuestion } from "@/lib/sim";
 
 export const metadata = { title: "Kết quả bài thi" };
 
@@ -23,6 +24,9 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   if (!att.submitted_at) redirect(`/thi/${attemptId}`);
 
   const b = att.breakdown as Breakdown;
+  const { data: simTest } = att.test_id ? await db.from("tests").select("sim, subject").eq("id", att.test_id).maybeSingle() : { data: null };
+  const spentSec = Object.values((att.time_spent ?? {}) as Record<string, number>).reduce((a, v) => a + (Number(v) || 0), 0);
+  const simKey = simTest?.sim && simTest.subject && simTest.subject in SIM_FORMAT ? (simTest.subject as keyof typeof SIM_FORMAT) : null;
   const ai = att.ai_report as AiReport;
   const { data: qs } = await db.from("questions").select("id, body, options, correct_answer, explanation, subject, topic, translations").in("id", att.question_ids);
   const byId = new Map((qs ?? []).map((q) => [q.id, q]));
@@ -43,12 +47,16 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     <div className="space-y-6" id="top">
       <div className="card flex flex-col items-center text-center shadow-soft">
         <p className="text-sm text-slate-500">{att.title}</p>
-        <p className="eyebrow mt-1">CSCA Readiness Score</p>
+        {!simKey && <p className="eyebrow mt-1">CSCA Readiness Score</p>}
         {insufficient ? (
           <div className="mt-3 max-w-md rounded-2xl bg-amber-50 p-4 text-sm text-amber-900"><p className="font-extrabold">Chưa đủ dữ liệu để chấm Readiness</p><p className="mt-1">Bạn mới trả lời {Object.keys(ans).length}/{b.total} câu. Bài này không được tính vào tiến bộ và hồ sơ năng lực của bạn.</p></div>
         ) : (<>
-          <ScoreRing value={att.readiness ?? 0} size={150} />
-          <p className="mt-2 text-slate-600">Đúng {att.score}/{b.total} câu · Chính xác {b.accuracy}% · Tốc độ {b.speed}%</p>
+          {simKey ? (
+            <div className="mt-3 w-full max-w-md space-y-2"><p className="eyebrow">Điểm quy đổi (thang 100)</p><p className="text-6xl font-black text-navy">{score100(att.score ?? 0, b.total)}<span className="text-2xl font-bold text-slate-400">/100</span></p>
+              <p className="text-sm text-slate-600">Đúng {att.score}/{b.total} câu. Đây là điểm ước tính để tham khảo, không phải điểm chính thức. Readiness: <b>{att.readiness ?? 0}/100</b>.</p>
+              <p className="rounded-xl bg-mist p-2.5 text-xs text-slate-600">Thời gian: bạn dùng khoảng {Math.round(spentSec / 60)} phút, trung bình {b.total ? Math.round(spentSec / b.total) : 0} giây/câu (chuẩn thi thật khoảng {secondsPerQuestion(simKey)} giây/câu).</p></div>
+          ) : <ScoreRing value={att.readiness ?? 0} size={150} />}
+          {!simKey && <p className="mt-2 text-slate-600">Đúng {att.score}/{b.total} câu · Chính xác {b.accuracy}% · Tốc độ {b.speed}%</p>}
         </>)}
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           {att.test_id && <Link href={`/thi-thu/${att.test_id}`} className={insufficient ? "btn" : "btn-outline"}>Làm lại bài này</Link>}

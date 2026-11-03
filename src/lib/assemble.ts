@@ -1,4 +1,4 @@
-// Lắp bộ đề theo cấp: hàm thuần (không phụ thuộc DB) để dễ kiểm thử.
+// Lắp bộ đề theo mức: hàm thuần (không phụ thuộc DB) để dễ kiểm thử.
 export type Diff = "easy" | "medium" | "hard";
 export type Q = { id: string; subject: string; topic: string; difficulty: Diff };
 export type Mix = Record<Diff, number>;
