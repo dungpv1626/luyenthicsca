@@ -86,6 +86,13 @@ Ngoài câu do AI soạn, hệ thống có **41 khuôn** (`src/lib/templates/`):
 - Kiểm thử: `npm test` (mỗi khuôn sinh 400 biến thể: 4 đáp án khác nhau, đủ 3 ngôn ngữ, lời giải chứa đáp án đúng; đối chiếu các công thức bằng cách tính khác). Mọi công thức LaTeX sinh ra đã được KaTeX (strict) phân tích thử, 0 lỗi.
 - Thêm khuôn mới: viết `add({ key, subject, topic, subtopic, difficulty, build })` trong `math.ts` / `physics.ts` / `chemistry.ts`; `build` trả `null` khi tham số không hợp lệ.
 
+## Blog SEO (kế hoạch 60 bài)
+
+- Nguồn: `content/seo/*.docx` → `python3 scripts/seo_docx_to_json.py` (cần `pandoc`) → `content/seo/posts.json` → `node --env-file=.env.local scripts/import-seo-posts.mjs` (nhập bài mới ở trạng thái **nháp**, không ghi đè bài đã sửa; `--force` để ghi đè).
+- Trang công khai: `/blog`, `/blog/[slug]` (title/meta riêng, canonical, Open Graph, JSON-LD Article + BreadcrumbList), `sitemap.xml`, `robots.txt`. Địa chỉ gốc SEO cố định ở `src/lib/seo.ts`.
+- Quản trị: Admin → Blog SEO. Mỗi bài: Xem trước (chỉ nhân viên nội dung), Sửa, Lên lịch (hiển thị tự động 9:00 giờ Việt Nam vào ngày dự kiến), Công bố ngay, Gỡ về nháp.
+- **Chặn công bố** khi bài còn “[CẦN XÁC MINH …]”, “[CHÈN …]”, “đội ngũ giáo viên”, “do bạn cung cấp” (xem `reviewFlags` trong `src/lib/blog-utils.ts`).
+
 ## Bộ đề theo cấp
 4 cấp (`src/lib/levels.ts`): **1 Nền tảng** (dễ 70/TB 30/khó 0) · **2 Cơ bản** (40/50/10) · **3 Nâng cao** (15/50/35) · **4 Mô phỏng thi** (35/45/20).
 Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration: `0004_levels.sql`.

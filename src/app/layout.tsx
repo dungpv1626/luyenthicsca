@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -6,7 +7,7 @@ import { BottomNav } from "@/components/NavLinks";
 import { getMe } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://luyenthicsca.edu.vn"),
+  metadataBase: new URL(SITE_URL),
   title: { default: "CSCA Việt Nam – Luyện thi CSCA | Luyenthicsca", template: "%s · CSCA Việt Nam" },
   description: "Thi thử CSCA miễn phí, AI phân tích điểm mạnh/yếu, luyện tập theo chủ đề.",
   openGraph: { title: "CSCA Việt Nam – Luyện thi CSCA", description: "Thi thử CSCA miễn phí, AI phân tích điểm mạnh/yếu, luyện tập theo chủ đề.", images: [{ url: "/og.png", width: 1200, height: 630 }], locale: "vi_VN", type: "website" },
