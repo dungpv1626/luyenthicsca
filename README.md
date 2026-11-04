@@ -117,3 +117,11 @@ Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration
 - Thiếu câu → báo rõ môn nào thiếu bao nhiêu; có tùy chọn "nới lỏng" (bù độ khó/dùng lại câu) khi ngân hàng còn nhỏ.
 - Học sinh: `/thi-thu` nhóm theo cấp, lọc theo môn, gợi ý cấp theo Readiness gần nhất, hiện điểm cao nhất đã đạt.
 - Kích thước đề mặc định (30 câu/45′ theo môn; 15 câu mỗi môn/90′ tổng hợp) chỉ là gợi ý, cần chỉnh theo đặc tả chính thức.
+
+## Blog SEO: nguồn bài và quy trình
+
+- `content/seo/posts.json`: 17 bài chuyển từ tài liệu docx (`python3 scripts/seo_docx_to_json.py`; chạy lại sẽ ghi đè các sửa tay trong file này).
+- `content/seo/posts-extra.json`: bài viết thêm, sinh từ `python3 scripts/seo_new_posts.py` (sửa nội dung trong script rồi chạy lại).
+- Nhập vào DB (trạng thái nháp, không ghi đè bài đã có): `node --env-file=.env.local scripts/import-seo-posts.mjs`.
+- Công thức `$...$` trong bài được KaTeX hiển thị (`src/components/Markdown.tsx`). Tránh `\,` trong công thức (Markdown coi là ký tự thoát), dùng `\ `.
+- Trước khi công bố: đối chiếu lịch thi, lệ phí, danh sách điểm thi với csca.cn; admin hiển thị cảnh báo nếu bài còn dòng giữ chỗ hoặc câu chưa nên công bố.

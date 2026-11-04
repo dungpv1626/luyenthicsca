@@ -7,7 +7,9 @@ import { readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 
 const FORCE = process.argv.includes("--force");
-const posts = JSON.parse(readFileSync(new URL("../content/seo/posts.json", import.meta.url), "utf8"));
+import { existsSync } from "node:fs";
+const load = (f) => (existsSync(new URL(`../content/seo/${f}`, import.meta.url)) ? JSON.parse(readFileSync(new URL(`../content/seo/${f}`, import.meta.url), "utf8")) : []);
+const posts = [...load("posts.json"), ...load("posts-extra.json")]; // posts-extra.json: python3 scripts/seo_new_posts.py
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const { data: have } = await sb.from("posts").select("slug");
 const exists = new Set((have ?? []).map((p) => p.slug));

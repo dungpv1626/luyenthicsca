@@ -6,6 +6,7 @@ import { Icon } from "./Icon";
 
 export const NAV = [
   ["/csca", "CSCA"],
+  ["/blog", "Blog"],
   ["/thi-thu", "Thi thử"],
   ["/luyen-tap", "Luyện tập"],
   ["/ai", "AI CSCA"],
@@ -21,7 +22,7 @@ export function DesktopNav() {
   return (
     <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex">
       {NAV.map(([href, label]) => (
-        <Link key={href} href={href} className={`whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold transition xl:px-3 xl:text-sm ${active(path, href) ? "bg-white/15 text-white" : "text-white/80 hover:bg-white/10 hover:text-white"}`}>{label}</Link>
+        <Link key={href} href={href} className={`${href === "/blog" ? "hidden xl:inline-block " : ""}whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold transition xl:px-3 xl:text-sm ${active(path, href) ? "bg-white/15 text-white" : "text-white/80 hover:bg-white/10 hover:text-white"}`}>{label}</Link>
       ))}
     </nav>
   );
