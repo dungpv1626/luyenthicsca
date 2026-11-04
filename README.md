@@ -78,13 +78,13 @@ Công thức dùng LaTeX `$...$` (KaTeX). Giải độc lập bằng cùng một
 
 ## Khuôn câu hỏi tham số (Toán / Vật lý / Hóa học)
 
-Ngoài câu do AI soạn, hệ thống có **41 khuôn** (`src/lib/templates/`): mỗi khuôn là một dạng bài có tham số; **đáp án và các đáp án nhiễu do mã tính** (không gọi API, không tốn tiền), đề + lời giải có đủ Việt–Anh–Trung.
+Ngoài câu do AI soạn, hệ thống có **57 khuôn** (`src/lib/templates/`): mỗi khuôn là một dạng bài có tham số; **đáp án và các đáp án nhiễu do mã tính** (không gọi API, không tốn tiền), đề + lời giải có đủ Việt–Anh–Trung.
 
 - Sinh biến thể: `node --env-file=.env.local scripts/generate-from-templates.mjs --dry` (xem số lượng) · `--show <key>` (in thử) · `--publish` (ghi và công bố ngay).
 - Mỗi khuôn chỉ lấy tối đa ½ số biến thể duy nhất (tối đa 100) để tránh đề na ná nhau; khuôn ít biến thể (<50) chỉ lấy 8.
 - Giáo viên duyệt **theo khuôn** tại Admin → *Khuôn câu hỏi*: duyệt = xác nhận toàn bộ biến thể; loại = gỡ toàn bộ biến thể.
 - Kiểm thử: `npm test` (mỗi khuôn sinh 400 biến thể: 4 đáp án khác nhau, đủ 3 ngôn ngữ, lời giải chứa đáp án đúng; đối chiếu các công thức bằng cách tính khác). Mọi công thức LaTeX sinh ra đã được KaTeX (strict) phân tích thử, 0 lỗi.
-- Thêm khuôn mới: viết `add({ key, subject, topic, subtopic, difficulty, build })` trong `math.ts` / `physics.ts` / `chemistry.ts`; `build` trả `null` khi tham số không hợp lệ.
+- Thêm khuôn mới: viết `add({ key, subject, topic, subtopic, difficulty, build })` trong `math.ts` / `physics.ts` / `chemistry.ts` / `extra.ts` (xác suất–thống kê, quang học, vật lý hiện đại, thí nghiệm hóa); `build` trả `null` khi tham số không hợp lệ.
 
 ## Blueprint theo mô-đun đề cương CSCA
 

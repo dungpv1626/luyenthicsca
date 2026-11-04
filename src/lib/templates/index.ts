@@ -2,8 +2,9 @@ import type { Template } from "./core.ts";
 import { MATH_TEMPLATES } from "./math.ts";
 import { PHYSICS_TEMPLATES } from "./physics.ts";
 import { CHEMISTRY_TEMPLATES } from "./chemistry.ts";
+import { EXTRA_TEMPLATES } from "./extra.ts";
 
-export const TEMPLATES: Template[] = [...MATH_TEMPLATES, ...PHYSICS_TEMPLATES, ...CHEMISTRY_TEMPLATES];
+export const TEMPLATES: Template[] = [...MATH_TEMPLATES, ...PHYSICS_TEMPLATES, ...CHEMISTRY_TEMPLATES, ...EXTRA_TEMPLATES];
 export { mkRng, validateVariant, LANGS } from "./core.ts";
 export type { Template, Variant, Lang } from "./core.ts";
 

@@ -4,6 +4,7 @@ import { TEMPLATES, mkRng, seedFor, validateVariant } from "./index.ts";
 import { choose, perm, arithSum, derivCubic, evalCubic, geoTerm } from "./math.ts";
 import { parallelR, lensImage, mixTemp, vFinal, distance } from "./physics.ts";
 import { valenceOf, periodOf } from "./chemistry.ts";
+import { mean, median, variance } from "./extra.ts";
 
 const SAMPLES = 400;
 
@@ -41,6 +42,10 @@ test("đối chiếu các hàm tính với cách tính khác", () => {
   assert.equal(mixTemp(1, 20, 1, 80), 50); assert.equal(vFinal(2, 3, 4), 14); assert.equal(distance(2, 4, 3), 24);
   // lớp electron / chu kì
   assert.equal(valenceOf(11), 1); assert.equal(valenceOf(17), 7); assert.equal(valenceOf(20), 2); assert.equal(periodOf(8), 2); assert.equal(periodOf(19), 4);
+});
+
+test("thống kê: trung bình, trung vị, phương sai", () => {
+  assert.equal(mean([2, 4, 6, 8]), 5); assert.equal(median([5, 1, 3]), 3); assert.equal(median([4, 1, 3, 2]), 2.5); assert.equal(variance([2, 4, 4, 4, 5, 5, 7, 9]), 4);
 });
 
 test("đáp án đúng luôn là opts[0] và không bị trùng với đáp án nhiễu trong lời giải mẫu", () => {
