@@ -125,3 +125,9 @@ Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration
 - Nhập vào DB (trạng thái nháp, không ghi đè bài đã có): `node --env-file=.env.local scripts/import-seo-posts.mjs`.
 - Công thức `$...$` trong bài được KaTeX hiển thị (`src/components/Markdown.tsx`). Tránh `\,` trong công thức (Markdown coi là ký tự thoát), dùng `\ `.
 - Trước khi công bố: đối chiếu lịch thi, lệ phí, danh sách điểm thi với csca.cn; admin hiển thị cảnh báo nếu bài còn dòng giữ chỗ hoặc câu chưa nên công bố.
+
+## Đo lường website và SEO
+
+- **Nguồn đăng ký (tự đo, không bên thứ ba):** `AttributionTracker` ghi nguồn truy cập đầu tiên (utm_source/medium/campaign, tên miền giới thiệu, trang đích) vào cookie `lt_attr` 30 ngày; `signUp` lưu vào `profiles.signup_source` (migration `0016_signup_source.sql`). Admin → Phân tích → “Nguồn đăng ký” cho biết nguồn và bài blog nào mang về đăng ký, người làm bài, người mua. Gắn `?utm_source=…&utm_medium=…` vào liên kết quảng cáo/bài đăng.
+- **Cloudflare Web Analytics:** đặt `NEXT_PUBLIC_CF_BEACON_TOKEN` trong `.env.local` rồi triển khai lại (không có biến thì không gắn script).
+- **Google Search Console:** đặt `NEXT_PUBLIC_GSC_VERIFICATION` (nội dung thẻ xác minh) rồi triển khai lại; sau đó gửi `https://luyenthicsca.edu.vn/sitemap.xml`.

@@ -1,4 +1,6 @@
 "use server";
+import { cookies } from "next/headers";
+import { ATTR_COOKIE, parseAttribution } from "@/lib/attribution";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { adminDb } from "@/lib/supabase/admin";
@@ -42,6 +44,11 @@ export async function signUp(_: unknown, fd: FormData) {
     options: { data: { full_name: String(fd.get("full_name")), phone: String(fd.get("phone") ?? ""), audience: String(fd.get("audience") ?? "") } },
   });
   if (error) return { error: error.message, values: keep(fd) };
+  // nguồn truy cập đầu tiên (first-touch) từ cookie; lỗi ở đây không được làm hỏng việc đăng ký
+  if (data.user) {
+    const attr = parseAttribution((await cookies()).get(ATTR_COOKIE)?.value);
+    if (attr) { try { await adminDb().from("profiles").update({ signup_source: attr }).eq("id", data.user.id); } catch { /* bỏ qua */ } }
+  }
   if (!data.session) return { pending: String(fd.get("email")), values: keep(fd) };
   const target = String(fd.get("target") ?? "").trim();
   const examDate = String(fd.get("exam_date") ?? "");
