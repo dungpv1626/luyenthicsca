@@ -16,12 +16,12 @@ export function AdminShell({ groups, name, roleLabel, children }: { groups: NavG
   const total = groups.flatMap((g) => g.items).reduce((s, i) => s + (i.badge ?? 0), 0);
 
   const nav = (
-    <nav aria-label="Menu quản trị" className="space-y-5 text-sm">
+    <nav aria-label="Menu quản trị" className="space-y-4 text-sm">
       {groups.map((g) => (
         <div key={g.title}>
           <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">{g.title}</p>
           <ul className="space-y-0.5">{g.items.map((i) => (
-            <li key={i.href}><Link href={i.href} aria-current={active(i.href) ? "page" : undefined} className={`flex min-h-[2.5rem] items-center justify-between gap-2 rounded-lg px-3 font-medium transition ${active(i.href) ? "bg-brand text-white shadow-sm" : "text-slate-700 hover:bg-brand-soft hover:text-brand"}`}>
+            <li key={i.href}><Link href={i.href} aria-current={active(i.href) ? "page" : undefined} className={`flex min-h-[2.25rem] items-center justify-between gap-2 rounded-lg px-3 font-medium transition ${active(i.href) ? "bg-brand text-white shadow-sm" : "text-slate-700 hover:bg-brand-soft hover:text-brand"}`}>
               <span>{i.label}</span>
               {i.badge ? <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${active(i.href) ? "bg-white/25 text-white" : "bg-amber-100 text-amber-800"}`} aria-label={`${i.badge} việc cần xử lý`}>{i.badge > 999 ? "999+" : i.badge}</span> : null}
             </Link></li>))}

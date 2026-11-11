@@ -91,3 +91,13 @@
 | Xác nhận theo mẫu | Xem đủ 10% (5–20 câu) của lô và không loại câu nào → xác nhận cả lô, đánh dấu `confirmed_by_sample` |
 
 Migration `supabase/migrations/0015_reviewer_workflow.sql` (thêm `profiles.review_subjects`, `questions.confirmed_by_sample`) phải áp dụng **trước** khi triển khai code.
+
+## Đợt thiết kế lại giao diện quản trị (phản hồi: khó dùng, không trực quan, không đẹp)
+
+Nguyên nhân gốc: khu quản trị dùng chung phong cách "trang quảng cáo" của học viên (nút bo tròn có hiệu ứng quét sáng, thẻ bo lớn nảy lên khi rê chuột, chữ và khoảng cách lớn) nên chậm, thưa và khó quét thông tin.
+
+- **Lớp giao diện riêng cho admin** (`html[data-admin]` trong `globals.css`): cỡ chữ 15px, nút bo 8px không hiệu ứng, thẻ gọn, bảng có hàng rê chuột và tiêu đề cột nhỏ, viền focus rõ, ô chọn trong thanh lọc không bị co.
+- **Trang Tổng quan theo việc cần làm:** danh sách việc ưu tiên có số lượng và nút hành động ("Bắt đầu duyệt", "Xử lý đơn"…), tiến độ cá nhân của giáo viên, số liệu gọn bên dưới; mỗi vai trò chỉ thấy việc thuộc phạm vi mình.
+- **Khuôn câu hỏi:** sửa lỗi trang không tải được (dựng 57 khuôn một lúc quá nặng); chia thẻ theo môn, lọc theo trạng thái, khuôn chờ duyệt lên đầu.
+- **Đề thi:** danh sách lên trước, form tạo đề thu gọn; mỗi đề có chip "Đang công bố/Đang ẩn" và nút hành động rõ.
+- **Menu:** gọn hơn để thấy hết mục không cần cuộn.

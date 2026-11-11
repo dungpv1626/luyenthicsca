@@ -10,9 +10,11 @@ const DIFF: Record<string, string> = { easy: "Dễ", medium: "Trung bình", hard
 
 export const metadata = { title: "Khuôn câu hỏi – Quản trị" };
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string; s?: string; st?: string }> }) {
   await requireAdmin("questions");
-  const { ok, error } = await searchParams;
+  const { ok, error, s: sp, st = "" } = await searchParams;
+  const subjects = ["math", "physics", "chemistry"] as Subject[];
+  const cur = (subjects as string[]).includes(sp ?? "") ? (sp as Subject) : subjects[0];
   const db = adminDb();
   const [{ data: reviews }, { data: counts }] = await Promise.all([
     db.from("template_reviews").select("template_key, status, note, reviewed_at"),
@@ -21,8 +23,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
   const rv = new Map((reviews ?? []).map((r) => [r.template_key, r]));
   const cnt = new Map<string, { live: number; total: number }>(((counts ?? []) as { template_key: string; live: number; total: number }[]).map((c) => [c.template_key, c]));
 
+  const statusOf = (k: string) => rv.get(k)?.status ?? "pending";
+  const pendingIn = (sub: Subject) => TEMPLATES.filter((t) => t.subject === sub && statusOf(t.key) === "pending").length;
+  const list = TEMPLATES.filter((t) => t.subject === cur && (!st || statusOf(t.key) === st)).sort((a, b) => Number(statusOf(b.key) === "pending") - Number(statusOf(a.key) === "pending"));
+  const tab = (href: string, on: boolean, label: React.ReactNode) => <a href={href} className={`inline-flex min-h-[2.25rem] items-center gap-1.5 rounded-lg px-3 text-sm font-semibold ${on ? "bg-brand text-white" : "border border-slate-200 bg-white hover:border-brand hover:text-brand"}`}>{label}</a>;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold">Khuôn câu hỏi tham số</h1>
         <p className="mt-1 max-w-3xl text-sm text-slate-600">Đáp án và các đáp án nhiễu của mỗi khuôn được <b>tính bằng mã</b> nên mọi biến thể luôn đúng với công thức của khuôn. Giáo viên chỉ cần kiểm tra <b>đề bài, công thức, lời giải và các "lỗi thường gặp"</b> của từng khuôn qua các biến thể mẫu. Duyệt một khuôn = xác nhận toàn bộ biến thể; loại một khuôn = gỡ toàn bộ biến thể.</p>
@@ -30,11 +37,15 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
       {ok && <p className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">Đã ghi nhận quyết định.</p>}
       {error && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{error}</p>}
 
-      {(["math", "physics", "chemistry"] as Subject[]).map((s) => (
+      <div className="flex flex-wrap items-center gap-2">
+        {subjects.map((x) => tab(`?s=${x}${st ? `&st=${st}` : ""}`, cur === x, <>{SUBJECTS[x].split(" (")[0]}{pendingIn(x) > 0 && <span className={`rounded-full px-1.5 text-[11px] font-bold ${cur === x ? "bg-white/25" : "bg-amber-100 text-amber-800"}`}>{pendingIn(x)} chờ duyệt</span>}</>))}
+        <span className="mx-1 hidden h-5 w-px bg-slate-200 sm:block" />
+        {([["", "Tất cả"], ["pending", "Chờ duyệt"], ["approved", "Đã duyệt"], ["rejected", "Đã loại"]] as const).map(([v, l]) => tab(`?s=${cur}${v ? `&st=${v}` : ""}`, st === v, l))}
+      </div>
+      {[cur].map((s) => (
         <section key={s} className="space-y-3">
-          <h2 className="text-lg font-bold text-navy">{SUBJECTS[s]}</h2>
           <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
-            {TEMPLATES.filter((t) => t.subject === s).map((t) => {
+            {list.map((t) => {
               const r = rv.get(t.key), c = cnt.get(t.key);
               const samples = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => t.build(mkRng(seedFor(t.key, i)))).filter((v) => v && !validateVariant(v)).slice(0, 2) as NonNullable<ReturnType<typeof t.build>>[];
               const status = r?.status ?? "pending";
@@ -65,6 +76,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
           </div>
         </section>
       ))}
+      {!list.length && <p className="card text-sm text-slate-600">Không có khuôn nào khớp bộ lọc.</p>}
     </div>
   );
 }

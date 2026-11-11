@@ -140,3 +140,30 @@ input[type="checkbox"], input[type="radio"] { width: 1.15rem; height: 1.15rem; a
 /* khu quản trị có khung riêng: ẩn menu/chân trang của web học viên và bỏ giới hạn bề rộng của <main> */
 html[data-admin] [data-chrome] { display: none; }
 html[data-admin] body > main { max-width: none !important; padding: 0 !important; }
+
+/* ===== Khu quản trị: giao diện công cụ làm việc (gọn, tĩnh, mật độ cao) =====
+   Dùng lại các lớp .btn/.card/.input của trang học viên nhưng bỏ phần "quảng cáo":
+   nút bo tròn có hiệu ứng quét sáng, thẻ nảy lên khi rê chuột, chữ và khoảng cách lớn. */
+html[data-admin] { font-size: 15px; }
+html[data-admin] body { background: #f4f6fa; }
+html[data-admin] .btn { border-radius: 0.5rem; background-image: none; background-color: var(--color-brand); box-shadow: none; padding: 0.45rem 1rem; min-height: 2.25rem; }
+html[data-admin] .btn:hover { background-color: var(--color-brand-dark); box-shadow: none; transform: none; }
+html[data-admin] .btn::after { display: none; }
+html[data-admin] .btn-outline { border-radius: 0.5rem; box-shadow: none; padding: 0.45rem 1rem; min-height: 2.25rem; border-color: #cbd5e1; }
+html[data-admin] .btn-outline:hover { box-shadow: none; transform: none; background: var(--color-brand-soft); }
+html[data-admin] .card { border-radius: 0.75rem; padding: 1rem; border-color: #e2e8f0; box-shadow: 0 1px 2px rgb(15 23 42 / 0.05); }
+html[data-admin] .card-hover { transition: border-color .15s, box-shadow .15s; }
+html[data-admin] .card-hover:hover { transform: none; border-color: var(--color-brand); box-shadow: 0 2px 10px rgb(37 99 235 / 0.12); }
+html[data-admin] .input { border-radius: 0.5rem; padding: 0.35rem 0.7rem; min-height: 2.25rem; }
+html[data-admin] .label { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; }
+html[data-admin] .chip { border-radius: 0.375rem; font-weight: 600; }
+html[data-admin] main h1 { font-size: 1.45rem; line-height: 1.25; letter-spacing: -0.01em; }
+html[data-admin] main h2 { letter-spacing: -0.005em; }
+/* bảng dữ liệu: dòng rõ ràng, rê chuột nổi bật, tiêu đề cột nhỏ */
+html[data-admin] main table { border-collapse: separate; border-spacing: 0; }
+html[data-admin] main table th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: #64748b; font-weight: 700; }
+html[data-admin] main table tbody tr:hover > td { background: #f8fafc; }
+html[data-admin] :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+/* thanh lọc: ô chọn không được co nhỏ tới mức không đọc được chữ; ô tìm kiếm chiếm cả hàng trên điện thoại */
+html[data-admin] main select.input { min-width: 8.5rem; }
+@media (max-width: 639px) { html[data-admin] main form input[type="search"], html[data-admin] main form input[name="q"] { flex: 1 1 100%; } }
