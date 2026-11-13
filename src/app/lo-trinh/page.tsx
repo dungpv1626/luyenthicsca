@@ -66,7 +66,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
       <div className="grid gap-4 md:grid-cols-4">
         <div className="card md:col-span-2"><p className="eyebrow">Tiến độ</p><p className="mt-1 text-3xl font-black">{pct}%<span className="ml-2 text-sm font-medium text-muted">{done}/{tasks.length} nhiệm vụ</span></p><div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div></div>
         <div className="card"><p className="eyebrow">Mục tiêu</p><p className="mt-1 text-3xl font-black">{plan.target_readiness}<span className="text-sm text-muted">/100</span></p><p className="text-xs text-muted">{plan.goal || "—"}</p></div>
-        <div className="card"><p className="eyebrow">Quá hạn</p><p className={`mt-1 text-3xl font-black ${overdue ? "text-red-600" : ""}`}>{overdue}</p><p className="text-xs text-muted">{plan.weeks} tuần · {plan.minutes_per_day} phút/ngày</p></div>
+        <div className="card"><p className="eyebrow">Quá hạn</p><p className={`mt-1 text-3xl font-black ${overdue ? "text-danger" : ""}`}>{overdue}</p><p className="text-xs text-muted">{plan.weeks} tuần · {plan.minutes_per_day} phút/ngày</p></div>
       </div>
 
       <div className="flex items-center justify-between">
@@ -74,32 +74,45 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
         <div className="flex gap-2"><Link href={`/lo-trinh?w=${offset - 1}`} className="btn-outline !px-3">←</Link>{offset !== 0 && <Link href="/lo-trinh" className="btn-outline">Hôm nay</Link>}<Link href={`/lo-trinh?w=${offset + 1}`} className="btn-outline !px-3">→</Link></div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-7">
-        {week.map((d) => {
-          const list = tasks.filter((t) => t.due_date === d.date);
-          const isToday = d.date === today;
-          return (
-            <div key={d.date} className={`rounded-2xl border p-3 ${isToday ? "border-brand bg-brand-soft/50" : "border-slate-200 bg-surface"}`}>
-              <p className="text-xs font-bold uppercase tracking-wider text-muted">{d.name}</p>
-              <p className={`text-sm font-semibold ${isToday ? "text-brand-text" : ""}`}>{new Date(d.date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}</p>
-              <div className="mt-2 space-y-2">
-                {list.length === 0 && <p className="text-xs text-muted">Nghỉ</p>}
-                {list.map((t) => (
-                  <div key={t.id} className={`rounded-xl border bg-surface p-2.5 text-sm ${t.done_at ? "border-emerald-200 opacity-70" : t.due_date < today ? "border-red-300" : "border-slate-200"}`}>
-                    <span className="chip !text-xs">{KIND[t.kind as keyof typeof KIND]}</span>
-                    <p className={`mt-1 font-semibold leading-snug ${t.done_at ? "line-through" : ""}`}>{t.title}</p>
-                    {t.subject && <p className="text-xs text-muted">{subjectName(t.subject)}</p>}
-                    <div className="mt-2 flex items-center gap-1.5">
-                      {!t.done_at && <form action={startTaskAction.bind(null, t.id)}><SubmitButton className="inline-flex min-h-[2.5rem] items-center rounded-full bg-brand px-4 text-xs font-bold text-white hover:bg-brand-dark" pendingText="Đang mở…">Làm ngay</SubmitButton></form>}
-                      <form action={toggleTaskAction.bind(null, t.id, !t.done_at)}><button title={t.done_at ? "Bỏ đánh dấu" : "Đánh dấu xong"} className={`grid h-6 w-6 place-items-center rounded-full border ${t.done_at ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-300 text-transparent hover:text-muted"}`}><Icon name="check" className="h-3.5 w-3.5" /></button></form>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <section className="card !p-0 overflow-hidden" aria-label="Kế hoạch trong tuần">
+        <ul className="divide-y divide-slate-100">
+          {week.map((d) => {
+            const list = tasks.filter((t) => t.due_date === d.date);
+            const isToday = d.date === today;
+            return (
+              <li key={d.date} className={`grid gap-x-4 gap-y-2 p-4 sm:grid-cols-[7.5rem_1fr] ${isToday ? "bg-brand-soft/60" : ""}`} aria-current={isToday ? "date" : undefined}>
+                <div className="flex items-baseline gap-2 sm:block">
+                  <p className={`text-sm font-extrabold ${isToday ? "text-brand-text" : "text-navy"}`}>{d.name}</p>
+                  <p className="text-sm text-muted">{new Date(d.date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}</p>
+                  {isToday && <span className="chip !px-2 !py-0.5 !text-xs sm:mt-1">Hôm nay</span>}
+                </div>
+                <div className="min-w-0 space-y-2">
+                  {list.length === 0 && <p className="py-1 text-sm text-muted">Ngày nghỉ, không có nhiệm vụ.</p>}
+                  {list.map((t) => {
+                    const late = !t.done_at && t.due_date < today;
+                    return (
+                      <div key={t.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-slate-200 bg-surface px-3 py-2.5">
+                        <form action={toggleTaskAction.bind(null, t.id, !t.done_at)}>
+                          <button aria-label={t.done_at ? "Bỏ đánh dấu hoàn thành" : "Đánh dấu hoàn thành"} title={t.done_at ? "Bỏ đánh dấu" : "Đánh dấu xong"} className={`grid h-7 w-7 place-items-center rounded-full border-2 ${t.done_at ? "border-success bg-success text-white" : "border-border-strong text-transparent hover:text-muted"}`}><Icon name="check" className="h-4 w-4" /></button>
+                        </form>
+                        <div className="min-w-0 flex-1 basis-48">
+                          <p className={`font-semibold leading-snug ${t.done_at ? "text-muted line-through" : "text-navy"}`}>{t.title}</p>
+                          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+                            <span className="chip !px-2 !py-0.5 !text-xs">{KIND[t.kind as keyof typeof KIND]}</span>
+                            {t.subject && <span>{subjectName(t.subject)}</span>}
+                            {late && <span className="chip !bg-danger-bg !px-2 !py-0.5 !text-xs !text-danger">Quá hạn</span>}
+                          </p>
+                        </div>
+                        {!t.done_at && <form action={startTaskAction.bind(null, t.id)}><SubmitButton className="inline-flex min-h-[2.5rem] items-center whitespace-nowrap rounded-full bg-brand px-5 text-sm font-bold text-white hover:bg-brand-dark" pendingText="Đang mở…">Làm ngay</SubmitButton></form>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
 
       {(() => {
         const upcoming = tasks.filter((t) => !t.done_at && t.due_date > today).slice(0, 5);
