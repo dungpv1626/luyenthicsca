@@ -12,9 +12,9 @@ export function BulkBar({ formId, canApprove }: { formId: string; canApprove: bo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formId]);
   const all = (v: boolean) => { boxes().forEach((b) => { b.checked = v; }); setN(v ? boxes().length : 0); };
-  if (!n) return <p className="text-xs text-muted"><button type="button" onClick={() => all(true)} className="font-semibold text-brand hover:underline">Chọn tất cả trên trang</button> để duyệt hoặc gửi duyệt hàng loạt.</p>;
+  if (!n) return <p className="text-xs text-muted"><button type="button" onClick={() => all(true)} className="font-semibold text-brand-text hover:underline">Chọn tất cả trên trang</button> để duyệt hoặc gửi duyệt hàng loạt.</p>;
   return (
-    <div role="region" aria-label="Thao tác hàng loạt" className="sticky bottom-3 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-brand/30 bg-white p-3 text-sm shadow-lg">
+    <div role="region" aria-label="Thao tác hàng loạt" className="sticky bottom-3 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-brand/30 bg-surface p-3 text-sm shadow-lg">
       <b>{n} câu đã chọn</b>
       <button type="button" onClick={() => all(false)} className="inline-flex min-h-[2.25rem] items-center px-2 font-semibold text-muted hover:text-ink">Bỏ chọn</button>
       <span className="ml-auto flex flex-wrap gap-2">

@@ -19,11 +19,11 @@ export default async function Page() {
           const s = c.schools as unknown as { name: string } | null;
           return (
             <div key={c.id} className="flex flex-wrap items-start gap-3 p-4 text-sm">
-              <div className="min-w-0 flex-1"><p className="font-semibold">{p?.full_name || "(chưa có tên)"} · <a href={`tel:${c.phone}`} className="text-brand">{c.phone}</a></p>
+              <div className="min-w-0 flex-1"><p className="font-semibold">{p?.full_name || "(chưa có tên)"} · <a href={`tel:${c.phone}`} className="text-brand-text">{c.phone}</a></p>
                 <p className="text-muted">{AUDIENCES[p?.audience as keyof typeof AUDIENCES] ?? "—"} · Mục tiêu: {p?.target ?? "—"} · Quan tâm: {s?.name ?? "chung"}</p>
                 {c.message && <p className="mt-1 text-slate-700">“{c.message}”</p>}<p className="mt-1 text-xs text-muted">{new Date(c.created_at).toLocaleString("vi-VN")}</p></div>
               <span className={`chip ${c.status === "new" ? "" : "!bg-slate-100 !text-muted"}`}>{ST[c.status as keyof typeof ST]}</span>
-              <div className="flex gap-2">{(["contacted", "closed"] as const).filter((x) => x !== c.status).map((x) => <form key={x} action={setLeadStatus.bind(null, c.id, x)}><button className="font-semibold text-brand hover:underline">{ST[x]}</button></form>)}</div>
+              <div className="flex gap-2">{(["contacted", "closed"] as const).filter((x) => x !== c.status).map((x) => <form key={x} action={setLeadStatus.bind(null, c.id, x)}><button className="font-semibold text-brand-text hover:underline">{ST[x]}</button></form>)}</div>
             </div>
           );
         })}

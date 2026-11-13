@@ -56,9 +56,9 @@ export function DesktopNav() {
           Khám phá<svg viewBox="0 0 24 24" className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
         </button>
         {open && (
-          <div className="absolute left-1/2 top-full z-40 mt-2 w-48 -translate-x-1/2 rounded-2xl border border-slate-200 bg-white p-1.5 text-ink shadow-xl">
+          <div className="absolute left-1/2 top-full z-40 mt-2 w-48 -translate-x-1/2 rounded-2xl border border-slate-200 bg-surface p-1.5 text-ink shadow-xl">
             {EXPLORE.map(([href, label]) => (
-              <Link key={href} href={href} aria-current={active(path, href) ? "page" : undefined} className={`block rounded-xl px-3 py-2.5 text-sm font-semibold ${active(path, href) ? "bg-brand-soft text-brand" : "hover:bg-slate-100"}`}>{label}</Link>
+              <Link key={href} href={href} aria-current={active(path, href) ? "page" : undefined} className={`block rounded-xl px-3 py-2.5 text-sm font-semibold ${active(path, href) ? "bg-brand-soft text-brand-text" : "hover:bg-slate-100"}`}>{label}</Link>
             ))}
           </div>
         )}
@@ -71,13 +71,13 @@ export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const path = usePathname();
   const item = (href: string, label: string) => (
-    <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active(path, href) ? "page" : undefined} className={`rounded-xl px-3 py-2.5 font-semibold ${active(path, href) ? "bg-brand-soft text-brand" : ""}`}>{label}{DESC[href] && <span className="block text-xs font-normal text-muted">{DESC[href]}</span>}</Link>
+    <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active(path, href) ? "page" : undefined} className={`rounded-xl px-3 py-2.5 font-semibold ${active(path, href) ? "bg-brand-soft text-brand-text" : ""}`}>{label}{DESC[href] && <span className="block text-xs font-normal text-muted">{DESC[href]}</span>}</Link>
   );
   return (
     <div className="lg:hidden">
       <button aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)} className="grid h-10 w-10 place-items-center rounded-full border border-white/40 text-white"><Icon name={open ? "x" : "menu"} /></button>
       {open && (
-        <div className="absolute inset-x-0 top-full max-h-[75vh] overflow-y-auto border-b border-slate-200 bg-white p-4 text-ink shadow-xl">
+        <div className="absolute inset-x-0 top-full max-h-[75vh] overflow-y-auto border-b border-slate-200 bg-surface p-4 text-ink shadow-xl">
           <div className="mx-auto grid max-w-6xl gap-1">
             {NAV.map(([href, label]) => item(href, label))}
             <p className="mt-2 px-3 pt-2 text-xs font-bold uppercase tracking-[0.2em] text-muted">Khám phá</p>
@@ -98,22 +98,22 @@ export function BottomNav() {
   useEffect(() => setMore(false), [path]);
   if (path.startsWith("/thi/") || path.startsWith("/admin")) return null;
   const moreActive = MORE.some(([href]) => active(path, href));
-  const tab = (on: boolean) => `relative flex min-h-[3.5rem] flex-col items-center justify-center gap-0.5 text-xs font-semibold transition ${on ? "text-brand" : "text-muted"}`;
+  const tab = (on: boolean) => `relative flex min-h-[3.5rem] flex-col items-center justify-center gap-0.5 text-xs font-semibold transition ${on ? "text-brand-text" : "text-muted"}`;
   const bar = (on: boolean) => on && <span className="absolute top-0 h-0.5 w-8 rounded-full bg-brand" />;
   return (
     <>
       {more && (
         <div className="fixed inset-0 z-20 lg:hidden" onMouseDown={() => setMore(false)}>
-          <div role="dialog" aria-label="Khám phá" onMouseDown={(e) => e.stopPropagation()} className="absolute inset-x-0 bottom-14 max-h-[70vh] overflow-y-auto rounded-t-3xl border-t border-slate-200 bg-white p-4 pb-6 shadow-2xl">
+          <div role="dialog" aria-label="Khám phá" onMouseDown={(e) => e.stopPropagation()} className="absolute inset-x-0 bottom-14 max-h-[70vh] overflow-y-auto rounded-t-3xl border-t border-slate-200 bg-surface p-4 pb-6 shadow-2xl">
             <div className="grid gap-1">
               {MORE.map(([href, label]) => (
-                <Link key={href} href={href} aria-current={active(path, href) ? "page" : undefined} className={`rounded-xl px-3 py-3 font-semibold ${active(path, href) ? "bg-brand-soft text-brand" : ""}`}>{label}{DESC[href] && <span className="block text-xs font-normal text-muted">{DESC[href]}</span>}</Link>
+                <Link key={href} href={href} aria-current={active(path, href) ? "page" : undefined} className={`rounded-xl px-3 py-3 font-semibold ${active(path, href) ? "bg-brand-soft text-brand-text" : ""}`}>{label}{DESC[href] && <span className="block text-xs font-normal text-muted">{DESC[href]}</span>}</Link>
               ))}
             </div>
           </div>
         </div>
       )}
-      <nav aria-label="Menu nhanh" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+      <nav aria-label="Menu nhanh" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
         {TABS.map(([href, icon, label]) => (
           <Link key={href} href={href} className={tab(active(path, href))}>
             {bar(active(path, href))}

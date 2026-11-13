@@ -8,8 +8,8 @@ export function HeroSlides() {
       {SLIDES.map((s, i) => (
         <img key={s} src={`/schools/${s}.jpg`} alt="" decoding="async" loading={i === 0 ? "eager" : "lazy"} className="hero-slide absolute inset-0 h-full w-full object-cover object-top" style={{ animationDelay: `${i * 5}s` }} />
       ))}
-      <div className="absolute inset-0 bg-navy/60 lg:bg-gradient-to-r lg:from-navy/95 lg:via-navy/55 lg:to-navy/5" />
-      <div className="absolute inset-0 bg-gradient-to-t from-navy/40 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-navy-deep/60 lg:bg-gradient-to-r lg:from-navy-deep/95 lg:via-navy-deep/55 lg:to-navy-deep/5" />
+      <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/40 via-transparent to-transparent" />
     </div>
   );
 }

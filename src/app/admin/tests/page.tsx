@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
         <input type="search" name="q" defaultValue={term} aria-label="Tìm theo tên đề" placeholder="Tìm theo tên đề…" className="input min-w-[12rem] flex-1" />
         <select name="g" aria-label="Nhóm đề" defaultValue={g} className="input min-w-0 flex-1 sm:w-auto sm:flex-none">{GROUPS.map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
         <select name="pub" aria-label="Trạng thái công bố" defaultValue={pub} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi trạng thái</option><option value="1">Đang công bố</option><option value="0">Đang ẩn</option></select>
-        <button className="btn">Lọc</button>{(g || pub || term) && <Link href="/admin/tests" className="inline-flex min-h-[2.5rem] items-center px-2 font-semibold text-brand hover:underline">Xóa lọc</Link>}
+        <button className="btn">Lọc</button>{(g || pub || term) && <Link href="/admin/tests" className="inline-flex min-h-[2.5rem] items-center px-2 font-semibold text-brand-text hover:underline">Xóa lọc</Link>}
       </form>
       <div className="card divide-y p-0">
         {data?.map((t) => (

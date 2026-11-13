@@ -20,14 +20,14 @@ export default async function Page() {
       <PageHeader en="Skill Profile" vi="Hồ sơ năng lực cá nhân">Mỗi bài thi cập nhật hồ sơ kỹ năng của bạn: điểm mạnh, điểm yếu, tốc độ và tiến bộ theo thời gian.</PageHeader>
 
       {!p.attempts.length && p.topics.length === 0 ? (
-        <div className="card mx-auto max-w-xl text-center"><Icon name="sparkles" className="mx-auto h-10 w-10 text-brand" /><h2 className="mt-3 text-xl font-bold">Chưa có dữ liệu để phân tích</h2><p className="mt-1 text-slate-600">Làm Quick Test 15 phút để AI đánh giá năng lực và dựng hồ sơ cho bạn.</p><Link href="/quick-test" className="btn mt-5">Làm Quick Test</Link></div>
+        <div className="card mx-auto max-w-xl text-center"><Icon name="sparkles" className="mx-auto h-10 w-10 text-brand-text" /><h2 className="mt-3 text-xl font-bold">Chưa có dữ liệu để phân tích</h2><p className="mt-1 text-slate-600">Làm Quick Test 15 phút để AI đánh giá năng lực và dựng hồ sơ cho bạn.</p><Link href="/quick-test" className="btn mt-5">Làm Quick Test</Link></div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-3">
           <section className="card flex flex-col items-center gap-3 text-center">
             <p className="eyebrow">Readiness Score</p>
             <ScoreRing value={p.latestReadiness ?? 0} size={170} />
             {delta !== null && <span className={`chip ${delta < 0 ? "!bg-slate-100 !text-slate-600" : "!bg-success-bg !text-success"}`}>{delta >= 0 ? "▲" : "▼"} {Math.abs(delta)} điểm so với lần trước</span>}
-            {last && <Link href={`/ket-qua/${last.id}`} className="inline-flex min-h-[2.75rem] items-center text-sm font-semibold text-brand hover:underline">Xem báo cáo gần nhất →</Link>}
+            {last && <Link href={`/ket-qua/${last.id}`} className="inline-flex min-h-[2.75rem] items-center text-sm font-semibold text-brand-text hover:underline">Xem báo cáo gần nhất →</Link>}
           </section>
 
           <section className="card lg:col-span-2">
@@ -40,7 +40,7 @@ export default async function Page() {
           <section className="card lg:col-span-2">
             <h2 className="mb-1 font-bold">Nhận xét gần nhất của AI</h2>
             {p.lastReport ? <p className="text-slate-700">{p.lastReport.summary}</p> : <p className="text-sm text-muted">Chưa có nhận xét.</p>}
-            {p.weak.length > 0 && <div className="mt-4"><h3 className="text-sm font-bold text-brand">Điểm yếu cần ưu tiên</h3><ul className="mt-2 flex flex-wrap gap-2">{p.weak.map((t) => <li key={t.subject + t.topic} className="chip">{t.topic} · {t.pct}%</li>)}</ul></div>}
+            {p.weak.length > 0 && <div className="mt-4"><h3 className="text-sm font-bold text-brand-text">Điểm yếu cần ưu tiên</h3><ul className="mt-2 flex flex-wrap gap-2">{p.weak.map((t) => <li key={t.subject + t.topic} className="chip">{t.topic} · {t.pct}%</li>)}</ul></div>}
             <div className="mt-5 flex flex-wrap gap-3"><Link href="/lo-trinh" className="btn"><Icon name="route" className="h-4 w-4" />Tạo lộ trình học</Link><Link href="/gia-su" className="btn-outline"><Icon name="chat" className="h-4 w-4" />Hỏi Gia sư AI</Link><Link href="/luyen-tap" className="btn-outline">Luyện tập</Link></div>
           </section>
 

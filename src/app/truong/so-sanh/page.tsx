@@ -20,7 +20,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ i
     ["Toán", (s) => pct(s.req_math)], ["Vật lý", (s) => pct(s.req_physics)], ["Hóa học", (s) => pct(s.req_chemistry)], ["Professional Chinese", (s) => pct(s.req_chinese)],
     ["Ngành", (s) => ((s.majors as string[]).length ? (s.majors as string[]).join(", ") : "Đang cập nhật")],
     ["Học bổng liên kết", (s) => `${(sch ?? []).filter((x) => x.school_id === s.id).length} chương trình`],
-    ["Website", (s) => (s.website ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-brand underline">Mở</a> : "—")],
+    ["Website", (s) => (s.website ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-brand-text underline">Mở</a> : "—")],
   ];
   return (
     <div>
@@ -30,7 +30,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ i
       ) : (
         <div className="card overflow-x-auto !p-0">
           <table className="w-full min-w-[32rem] text-sm">
-            <thead><tr className="bg-brand-soft"><th className="p-4 text-left" />{cols.map((s) => <th key={s.id} className="p-4 text-left"><Link href={`/truong/${s.id}`} className="font-bold text-brand hover:underline">{s.name}</Link><div className="text-xs font-normal text-muted">{s.name_zh}</div></th>)}</tr></thead>
+            <thead><tr className="bg-brand-soft"><th className="p-4 text-left" />{cols.map((s) => <th key={s.id} className="p-4 text-left"><Link href={`/truong/${s.id}`} className="font-bold text-brand-text hover:underline">{s.name}</Link><div className="text-xs font-normal text-muted">{s.name_zh}</div></th>)}</tr></thead>
             <tbody>{rows.map(([label, f]) => <tr key={label} className="border-t border-slate-100"><th className="p-4 text-left font-semibold text-muted">{label}</th>{cols.map((s) => <td key={s.id} className="p-4">{f(s)}</td>)}</tr>)}</tbody>
           </table>
         </div>

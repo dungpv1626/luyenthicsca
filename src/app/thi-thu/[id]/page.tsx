@@ -86,7 +86,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <h2 className="font-extrabold text-navy">Lịch sử làm bài</h2>
           <ul className="mt-2 divide-y divide-slate-100 text-sm">
             {done.map((a) => { const b = a.breakdown as Breakdown | null; return (
-              <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex min-h-[2.75rem] items-center justify-between gap-3 py-2 hover:text-brand"><span className="text-slate-600">{fmtDate(a.submitted_at!)}</span><span className="font-semibold">{b?.insufficient ? <span className="text-amber-700">Chưa đủ câu để chấm</span> : t.sim ? `Điểm quy đổi ${score100(a.score ?? 0, b?.total ?? qs.length)}/100 · đúng ${a.score ?? 0}/${b?.total ?? qs.length}` : `Readiness ${a.readiness ?? 0}/100 · đúng ${a.score ?? 0}/${b?.total ?? qs.length}`} →</span></Link></li>
+              <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex min-h-[2.75rem] items-center justify-between gap-3 py-2 hover:text-brand-text"><span className="text-slate-600">{fmtDate(a.submitted_at!)}</span><span className="font-semibold">{b?.insufficient ? <span className="text-amber-700">Chưa đủ câu để chấm</span> : t.sim ? `Điểm quy đổi ${score100(a.score ?? 0, b?.total ?? qs.length)}/100 · đúng ${a.score ?? 0}/${b?.total ?? qs.length}` : `Readiness ${a.readiness ?? 0}/100 · đúng ${a.score ?? 0}/${b?.total ?? qs.length}`} →</span></Link></li>
             ); })}
           </ul>
         </div>

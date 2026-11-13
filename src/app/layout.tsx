@@ -30,7 +30,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const me = await getMe();
   const isAdmin = ((await headers()).get("x-pathname") ?? "").startsWith("/admin");
   return (
-    <html lang="vi" data-admin={isAdmin ? "1" : undefined} className={beVietnam.variable}>
+    <html lang="vi" suppressHydrationWarning data-admin={isAdmin ? "1" : undefined} className={beVietnam.variable}>
+      <head><script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}` }} /></head>
       <body className="flex min-h-screen flex-col">
         <ChromeSync />
         <AttributionTracker />

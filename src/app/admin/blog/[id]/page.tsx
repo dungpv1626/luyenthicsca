@@ -17,7 +17,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const len = (s: string, lo: number, hi: number) => (s.length > hi ? `text-amber-700 font-semibold` : s.length < lo ? "text-amber-700" : "text-success");
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-sm text-muted"><Link href="/admin/blog" className="hover:text-brand">← Blog SEO</Link></p><h1 className="text-2xl font-bold">{p.title}</h1></div><Link href={`/blog/${p.slug}`} target="_blank" className="btn-outline">Xem trước</Link></div>
+      <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-sm text-muted"><Link href="/admin/blog" className="hover:text-brand-text">← Blog SEO</Link></p><h1 className="text-2xl font-bold">{p.title}</h1></div><Link href={`/blog/${p.slug}`} target="_blank" className="btn-outline">Xem trước</Link></div>
       {sp.ok && <p role="status" className="rounded-xl bg-success-bg p-3 text-sm text-emerald-800">Đã lưu.</p>}
       {sp.error && <p role="alert" className="rounded-xl bg-warning-bg p-3 text-sm text-amber-900">{sp.error}</p>}
       {flags.length > 0 && <div className="rounded-xl bg-warning-bg p-3 text-sm text-amber-900"><p className="font-bold">Cần xử lý trước khi công bố:</p><ul className="mt-1 list-disc pl-5">{flags.map((f) => <li key={f}>{f}</li>)}</ul></div>}

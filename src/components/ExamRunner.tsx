@@ -24,8 +24,8 @@ function Modal({ open, onClose, label, children, sheet = false }: { open: boolea
   }, [open, onClose]);
   if (!open) return null;
   return createPortal(
-    <div className={`fixed inset-0 z-50 flex bg-navy/60 backdrop-blur-sm ${sheet ? "items-end md:items-center" : "items-center"} justify-center p-3`} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" aria-label={label} className={`pop max-h-[88vh] w-full max-w-md overflow-y-auto rounded-3xl bg-white p-5 shadow-2xl ${sheet ? "rounded-b-none md:rounded-b-3xl" : ""}`}>{children}</div>
+    <div className={`fixed inset-0 z-50 flex bg-navy-deep/60 backdrop-blur-sm ${sheet ? "items-end md:items-center" : "items-center"} justify-center p-3`} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" aria-label={label} className={`pop max-h-[88vh] w-full max-w-md overflow-y-auto rounded-3xl bg-surface p-5 shadow-2xl ${sheet ? "rounded-b-none md:rounded-b-3xl" : ""}`}>{children}</div>
     </div>,
     document.body,
   );
@@ -141,18 +141,18 @@ export function ExamRunner({ attemptId, title, questions, deadline, draft, draft
     <div className="space-y-4 pb-24 md:pb-0">
       <div className="card sticky top-2 z-30 grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-2 !p-3 shadow-md sm:flex sm:flex-wrap sm:justify-between sm:!p-4">
         <div className="col-span-2 min-w-0 sm:col-auto"><h1 className="truncate text-sm font-bold sm:text-base">{title}</h1><p className="text-xs text-muted sm:text-sm">Đã trả lời {done}/{questions.length}{saveText && <span className={`ml-2 ${save === "error" ? "font-semibold text-red-600" : "text-muted"}`} role="status">{saveText}</span>}</p></div>
-        {hasTr && <div className="flex w-fit rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{LANGS.map(([k, label, short]) => <button key={k} onClick={() => pickLang(k)} aria-label={label} className={`min-h-[2.25rem] rounded-full px-2.5 transition sm:px-3 ${lang === k ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand"}`}><span className="sm:hidden">{short}</span><span className="hidden sm:inline">{label}</span></button>)}</div>}
+        {hasTr && <div className="flex w-fit rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{LANGS.map(([k, label, short]) => <button key={k} onClick={() => pickLang(k)} aria-label={label} className={`min-h-[2.25rem] rounded-full px-2.5 transition sm:px-3 ${lang === k ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand-text"}`}><span className="sm:hidden">{short}</span><span className="hidden sm:inline">{label}</span></button>)}</div>}
         <div className="flex items-center gap-2">
           <div className={`rounded-lg px-3 py-1.5 font-mono text-xl font-bold sm:px-4 sm:text-2xl ${left < 60 ? "bg-red-100 text-danger" : "bg-slate-100"}`} aria-label="Thời gian còn lại" role="timer">{fmt(left)}</div>
           <button className="btn btn-sm md:hidden" disabled={pending} onClick={() => setDlg("submit")}>Nộp bài</button>
-          <button className="hidden rounded-lg px-2 py-2 text-xs font-semibold text-muted hover:text-brand md:block" onClick={() => setDlg("leave")}>Thoát</button>
+          <button className="hidden rounded-lg px-2 py-2 text-xs font-semibold text-muted hover:text-brand-text md:block" onClick={() => setDlg("leave")}>Thoát</button>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-[1fr_220px]">
         <div className="card space-y-4">
           <div className="flex items-start justify-between gap-3">
-            <p className="text-xs font-semibold uppercase text-brand">{SUBJECTS[q.subject as Subject]} · {q.topic}</p>
+            <p className="text-xs font-semibold uppercase text-brand-text">{SUBJECTS[q.subject as Subject]} · {q.topic}</p>
             <button onClick={toggleFlag} aria-pressed={isFlag} className={`inline-flex min-h-[2.5rem] shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isFlag ? "border-gold bg-warning-bg text-warning" : "border-slate-200 text-muted hover:border-gold hover:text-warning"}`}><Icon name="flag" className="h-4 w-4" />{isFlag ? "Đã đánh dấu" : "Đánh dấu xem lại"}</button>
           </div>
           <p className="text-lg">Câu {idx + 1}. <Rich text={view.body} /></p>
@@ -177,7 +177,7 @@ export function ExamRunner({ attemptId, title, questions, deadline, draft, draft
       </div>
 
       {/* thanh điều hướng cố định cho điện thoại */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-slate-200 bg-white/95 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden" aria-label="Điều hướng câu hỏi">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-slate-200 bg-surface/95 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden" aria-label="Điều hướng câu hỏi">
         <button className="btn-outline flex-1" disabled={idx === 0} onClick={() => setIdx(idx - 1)} aria-label="Câu trước">←</button>
         <button className="btn-outline flex-[2]" onClick={() => setDlg("grid")}>Câu {idx + 1}/{questions.length} ▾</button>
         {!last ? <button className="btn flex-1" onClick={() => setIdx(idx + 1)} aria-label="Câu sau">→</button> : <button className="btn flex-1" disabled={pending} onClick={() => setDlg("submit")}>Nộp</button>}

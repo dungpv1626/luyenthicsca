@@ -88,7 +88,7 @@ export default async function Home() {
       <section>
         <Reveal><p className="mb-4 text-center text-sm font-semibold text-muted">Bạn là ai? Chọn để chúng tôi gợi ý phù hợp</p></Reveal>
         <div className="flex flex-wrap justify-center gap-2.5">
-          {Object.entries(AUDIENCES).map(([k, v], i) => <Reveal key={k} delay={i * 60}><Link href={`/dang-ky?audience=${k}`} className="inline-flex min-h-[2.5rem] items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:bg-brand-soft hover:text-brand hover:shadow-md">{v}</Link></Reveal>)}
+          {Object.entries(AUDIENCES).map(([k, v], i) => <Reveal key={k} delay={i * 60}><Link href={`/dang-ky?audience=${k}`} className="inline-flex min-h-[2.5rem] items-center rounded-full border border-slate-200 bg-surface px-4 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:bg-brand-soft hover:text-brand-text hover:shadow-md">{v}</Link></Reveal>)}
         </div>
       </section>
 
@@ -111,7 +111,7 @@ export default async function Home() {
             <Reveal key={k} delay={i * 100}>
               <Link href="/luyen-tap" className="card card-hover group block h-full overflow-hidden !p-0">
                 <div className="overflow-hidden"><SubjectArt subject={k} className="aspect-[10/7] w-full transition duration-500 group-hover:scale-105" /></div>
-                <div className="p-3.5 sm:p-5"><h3 className="text-sm font-extrabold text-navy sm:text-lg">{name}</h3><p className="mt-1 hidden text-sm text-slate-600 sm:block">{desc}</p><span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-brand sm:mt-3 sm:text-sm">Luyện ngay <Icon name="arrow" className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></span></div>
+                <div className="p-3.5 sm:p-5"><h3 className="text-sm font-extrabold text-navy sm:text-lg">{name}</h3><p className="mt-1 hidden text-sm text-slate-600 sm:block">{desc}</p><span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-brand-text sm:mt-3 sm:text-sm">Luyện ngay <Icon name="arrow" className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></span></div>
               </Link>
             </Reveal>
           ))}
@@ -119,7 +119,7 @@ export default async function Home() {
       </section>
 
       {/* ===== QUY TRÌNH ===== */}
-      <section className="relative isolate overflow-hidden rounded-3xl border border-slate-200/70 bg-white px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2rem] sm:px-10 sm:py-14">
+      <section className="relative isolate overflow-hidden rounded-3xl border border-slate-200/70 bg-surface px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2rem] sm:px-10 sm:py-14">
         <Reveal><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="eyebrow">How it works</p><h2 className="mt-2 max-w-xl text-navy text-3xl font-extrabold leading-tight sm:text-4xl">Từ bài thi đầu tiên đến ngày bạn sẵn sàng</h2></div><Link href="/quick-test" className="btn">Bắt đầu ngay <Icon name="arrow" className="h-4 w-4" /></Link></div></Reveal>
         <ol className="relative mt-12 grid gap-x-4 gap-y-9 md:grid-cols-5">
           <span className="pointer-events-none absolute left-[10%] right-[10%] top-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-brand/0 via-brand/40 to-brand/0 md:block" aria-hidden="true" />
@@ -142,7 +142,7 @@ export default async function Home() {
           <Reveal className="md:col-span-2 md:row-span-2"><Link href="/quick-test" className="mesh-navy group relative flex h-full min-h-[22rem] flex-col justify-between overflow-hidden rounded-3xl p-6 text-white shadow-[var(--shadow-glow)] transition duration-300 hover:-translate-y-1">
             <div><p className="eyebrow !text-sky-200">Readiness Score</p><h3 className="mt-2 text-2xl font-extrabold sm:text-3xl">Biết mình đang ở đâu<br />chỉ sau 15 phút</h3></div>
             <div className="flex items-center gap-6">
-              <svg viewBox="0 0 128 128" className="h-32 w-32 shrink-0 -rotate-90 sm:h-40 sm:w-40" aria-hidden="true"><circle cx="64" cy="64" r="54" fill="none" stroke="rgb(255 255 255 / .18)" strokeWidth="12" /><circle cx="64" cy="64" r="54" fill="none" stroke="#7dd3fc" strokeWidth="12" strokeLinecap="round" strokeDasharray="339.3" strokeDashoffset="95" className="ring-anim" style={{ ["--circ" as string]: 339.3 }} /><text x="64" y="64" textAnchor="middle" dominantBaseline="central" className="rotate-90 fill-white text-[34px] font-black" style={{ transformOrigin: "64px 64px" }}>72</text></svg>
+              <svg viewBox="0 0 128 128" className="h-32 w-32 shrink-0 -rotate-90 sm:h-40 sm:w-40" aria-hidden="true"><circle cx="64" cy="64" r="54" fill="none" stroke="rgb(255 255 255 / .18)" strokeWidth="12" /><circle cx="64" cy="64" r="54" fill="none" stroke="#7dd3fc" strokeWidth="12" strokeLinecap="round" strokeDasharray="339.3" strokeDashoffset="95" className="ring-anim" style={{ ["--circ" as string]: 339.3 }} /><text x="64" y="64" textAnchor="middle" dominantBaseline="central" className="rotate-90 fill-surface text-[34px] font-black" style={{ transformOrigin: "64px 64px" }}>72</text></svg>
               <ul className="min-w-0 flex-1 space-y-2.5 text-xs font-semibold">{[["Toán", 78], ["Vật lý", 65], ["Hóa học", 72], ["Tiếng Trung", 81]].map(([n, v]) => <li key={n}><div className="flex justify-between text-white/85"><span>{n}</span><span>{v}%</span></div><div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/20"><span className="bar-anim block h-full rounded-full bg-sky-300" style={{ width: `${v}%` }} /></div></li>)}</ul>
             </div>
             <span className="inline-flex items-center gap-1 text-sm font-bold">Thi thử miễn phí <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-1" /></span>
@@ -154,22 +154,22 @@ export default async function Home() {
           </Link></Reveal>
 
           <Reveal delay={160}><Link href="/lo-trinh" className="card card-hover group flex h-full flex-col justify-between !rounded-3xl">
-            <h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="route" className="h-5 w-5 text-brand" />Lộ trình</h3>
+            <h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="route" className="h-5 w-5 text-brand-text" />Lộ trình</h3>
             <ul className="space-y-1.5 text-xs text-slate-600">{[["20 câu Đại số", true], ["Xem lại câu sai", true], ["Mini Test", false]].map(([t, d]) => <li key={String(t)} className="flex items-center gap-2"><span className={`grid h-4 w-4 place-items-center rounded-full text-[9px] text-white ${d ? "bg-emerald-500" : "border border-slate-300"}`}>{d ? "✓" : ""}</span><span className={d ? "line-through opacity-60" : "font-semibold"}>{t}</span></li>)}</ul>
           </Link></Reveal>
 
           <Reveal delay={220}><Link href="/luyen-tap" className="card card-hover group flex h-full flex-col justify-between !rounded-3xl">
-            <h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="book" className="h-5 w-5 text-brand" />Ngân hàng đề</h3>
+            <h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="book" className="h-5 w-5 text-brand-text" />Ngân hàng đề</h3>
             <div><p className="text-3xl font-black text-navy"><CountUp value={nQ ?? 0} suffix="+" /></p><div className="mt-1 flex gap-1 text-xs font-bold"><span className="chip">VI</span><span className="chip">EN</span><span className="chip">中文</span></div></div>
           </Link></Reveal>
 
           <Reveal delay={120} className="md:col-span-2"><Link href="/truong" className="card card-hover group flex h-full items-center justify-between gap-4 overflow-hidden !rounded-3xl">
-            <div className="min-w-0"><h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="school" className="h-5 w-5 text-brand" />Trường & Học bổng</h3><p className="mt-1 text-sm text-slate-600">Đối chiếu năng lực với yêu cầu của từng trường và đăng ký tư vấn.</p></div>
+            <div className="min-w-0"><h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="school" className="h-5 w-5 text-brand-text" />Trường & Học bổng</h3><p className="mt-1 text-sm text-slate-600">Đối chiếu năng lực với yêu cầu của từng trường và đăng ký tư vấn.</p></div>
             <div className="flex shrink-0 -space-x-3">{(schools ?? []).filter((x) => x.image_url).slice(0, 4).map((x) => <img key={x.id} src={x.image_url as string} alt={x.name} loading="lazy" className="h-12 w-12 rounded-full border-2 border-white object-cover object-top shadow transition group-hover:translate-y-[-3px] sm:h-14 sm:w-14" />)}</div>
           </Link></Reveal>
 
           <Reveal delay={180} className="md:col-span-2"><Link href="/dashboard" className="card card-hover group flex h-full items-end justify-between gap-4 !rounded-3xl">
-            <div><h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="chart" className="h-5 w-5 text-brand" />Thi lại & so sánh tiến bộ</h3><p className="mt-1 text-sm text-slate-600">Thấy điểm tăng qua từng lần thi.</p></div>
+            <div><h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="chart" className="h-5 w-5 text-brand-text" />Thi lại & so sánh tiến bộ</h3><p className="mt-1 text-sm text-slate-600">Thấy điểm tăng qua từng lần thi.</p></div>
             <div className="flex h-16 items-end gap-1.5" aria-hidden="true">{[35, 48, 55, 66, 78].map((h, i) => <span key={h} className="bar-anim w-4 rounded-t-md bg-gradient-to-t from-brand to-sky-300 sm:w-5" style={{ height: `${h}%`, animationDelay: `${0.2 + i * 0.12}s` }} />)}</div>
           </Link></Reveal>
         </div>
@@ -185,7 +185,7 @@ export default async function Home() {
                 <span className="absolute -right-3 -top-5 select-none text-[6.5rem] font-black leading-none text-brand/[0.07] transition group-hover:text-brand/15">{l.level}</span>
                 <span className="chip">Mức {l.level}</span>
                 <h3 className="mt-3 text-lg font-extrabold text-navy">{l.name}</h3><p className="mt-1 min-h-[2.5rem] text-sm text-slate-600">{l.tagline}</p>
-                <div className="mt-4 flex h-2.5 overflow-hidden rounded-full bg-slate-100" title={mixText(l.mix)}><span className="bg-sky-300" style={{ width: `${l.mix.easy}%` }} /><span className="bg-brand" style={{ width: `${l.mix.medium}%` }} /><span className="bg-navy" style={{ width: `${l.mix.hard}%` }} /></div>
+                <div className="mt-4 flex h-2.5 overflow-hidden rounded-full bg-slate-100" title={mixText(l.mix)}><span className="bg-sky-300" style={{ width: `${l.mix.easy}%` }} /><span className="bg-brand" style={{ width: `${l.mix.medium}%` }} /><span className="bg-navy-deep" style={{ width: `${l.mix.hard}%` }} /></div>
                 <p className="mt-1.5 text-xs font-medium text-muted">{mixText(l.mix)}</p>
                 <p className="mt-3 flex items-center justify-between text-sm"><span className="text-muted">{l.range}</span><b className={l.price ? "text-ink" : "text-emerald-600"}>{l.price ? vnd(l.price) : "Miễn phí"}</b></p>
               </Link>
@@ -204,7 +204,7 @@ export default async function Home() {
           </Reveal>
           <Reveal delay={150}>
             <div className="card mx-auto max-w-md space-y-3 !rounded-3xl !p-4 sm:!p-5">
-              <div className="flex items-center gap-2 border-b border-slate-200 pb-3"><span className="grid h-8 w-8 place-items-center rounded-full bg-brand-soft text-brand"><Icon name="sparkles" className="h-4 w-4" /></span><b className="text-sm">Gia sư AI</b><span className="ml-auto rounded-full bg-mist px-2 py-0.5 text-xs font-bold text-slate-600">Ví dụ</span></div>
+              <div className="flex items-center gap-2 border-b border-slate-200 pb-3"><span className="grid h-8 w-8 place-items-center rounded-full bg-brand-soft text-brand-text"><Icon name="sparkles" className="h-4 w-4" /></span><b className="text-sm">Gia sư AI</b><span className="ml-auto rounded-full bg-mist px-2 py-0.5 text-xs font-bold text-slate-600">Ví dụ</span></div>
               <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-brand px-3.5 py-2 text-sm">Vì sao x² − 5x + 6 = 0 có tổng hai nghiệm bằng 5?</p>
               <p className="w-fit max-w-[90%] rounded-2xl rounded-bl-sm bg-mist px-3.5 py-2.5 text-sm leading-relaxed text-ink">Theo định lý Vi-ét, tổng hai nghiệm là x₁ + x₂ = −b/a. Ở đây a = 1, b = −5 nên tổng = 5. Bạn thử tính tích hai nghiệm xem?</p>
               <p className="caret w-fit rounded-2xl rounded-bl-sm bg-mist px-3.5 py-2 text-sm text-slate-600">Nhập câu hỏi của bạn</p>
@@ -214,7 +214,7 @@ export default async function Home() {
       </section>
 
       {/* ===== TRƯỜNG ===== */}
-      <section className="relative isolate overflow-hidden rounded-3xl border border-slate-200/70 bg-white px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2rem] sm:px-12 sm:py-14">
+      <section className="relative isolate overflow-hidden rounded-3xl border border-slate-200/70 bg-surface px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2rem] sm:px-12 sm:py-14">
         <div className="flex flex-wrap items-end justify-between gap-3"><Reveal><SectionTitle en="Universities" vi="Trường & học bổng" /></Reveal><Reveal><Link href="/truong" className="btn-outline">Khám phá trường <Icon name="arrow" className="h-4 w-4" /></Link></Reveal></div>
         <div className="relative z-10 mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
           {(schools ?? []).map((s, i) => (
@@ -227,12 +227,12 @@ export default async function Home() {
             </Link></Reveal>
           ))}
         </div>
-        {scholarships?.[0] && <Reveal><Link href="/hoc-bong" className="relative z-10 mt-5 flex items-center gap-3 rounded-2xl border border-brand/20 bg-brand-soft p-4 text-ink transition hover:-translate-y-0.5"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold text-white"><Icon name="award" /></span><span className="min-w-0 text-sm"><b className="block truncate">{scholarships[0].name}</b><span className="text-muted">Xem các học bổng đang mở</span></span><Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-brand" /></Link></Reveal>}
+        {scholarships?.[0] && <Reveal><Link href="/hoc-bong" className="relative z-10 mt-5 flex items-center gap-3 rounded-2xl border border-brand/20 bg-brand-soft p-4 text-ink transition hover:-translate-y-0.5"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold text-white"><Icon name="award" /></span><span className="min-w-0 text-sm"><b className="block truncate">{scholarships[0].name}</b><span className="text-muted">Xem các học bổng đang mở</span></span><Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-brand-text" /></Link></Reveal>}
       </section>
 
       {/* ===== KÊU GỌI ===== */}
       <Reveal>
-        <section className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-r from-brand via-indigo to-navy px-5 py-12 text-center text-white sm:rounded-[2rem] sm:py-16">
+        <section className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-r from-brand via-indigo to-navy-deep px-5 py-12 text-center text-white sm:rounded-[2rem] sm:py-16">
           <div className="drift pointer-events-none absolute -left-10 -top-10 -z-10 h-56 w-56 rounded-full bg-white/15 blur-2xl" /><div className="drift pointer-events-none absolute -bottom-16 right-0 -z-10 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" style={{ animationDelay: "-6s" }} />
           <h2 className="mx-auto max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl">Biết mình đang ở đâu chỉ sau 15 phút</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/85">Làm Quick Test miễn phí, nhận Readiness Score và lộ trình cá nhân hóa ngay hôm nay.</p>

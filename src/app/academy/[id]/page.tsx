@@ -40,7 +40,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 <li key={l.id}>
                   {open ? (
                     <Link href={`/academy/${id}/hoc/${l.id}`} className="flex items-center gap-3 p-4 hover:bg-brand-soft/50">
-                      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-bold ${doneSet.has(l.id) ? "bg-emerald-500 text-white" : "bg-brand-soft text-brand"}`}>{doneSet.has(l.id) ? <Icon name="check" className="h-4 w-4" /> : i + 1}</span>
+                      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-bold ${doneSet.has(l.id) ? "bg-emerald-500 text-white" : "bg-brand-soft text-brand-text"}`}>{doneSet.has(l.id) ? <Icon name="check" className="h-4 w-4" /> : i + 1}</span>
                       <span className="flex-1 font-medium">{l.title}</span>{!access && <span className="chip">Học thử</span>}
                     </Link>
                   ) : (
@@ -54,7 +54,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </section>
         <aside className="space-y-4">
           <div className="card">
-            <p className="text-3xl font-black text-brand">{vnd(c.price_vnd)}</p>
+            <p className="text-3xl font-black text-brand-text">{vnd(c.price_vnd)}</p>
             {access && me ? (<>
               <div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div><p className="mt-1 text-xs text-muted">Tiến độ {pct}% ({doneSet.size}/{total})</p>
               {first && <Link href={`/academy/${id}/hoc/${first.id}`} className="btn mt-4 w-full">{doneSet.size ? "Tiếp tục học" : "Bắt đầu học"}</Link>}
@@ -62,7 +62,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <form action={buyCourseAction.bind(null, id)}><SubmitButton className="btn mt-4 w-full" pendingText="Đang xử lý…">Đăng ký khóa học</SubmitButton></form>
             ) : <Link href={`/dang-nhap?next=/academy/${id}`} className="btn mt-4 w-full">Đăng nhập để đăng ký</Link>}
           </div>
-          {t && <div className="card"><p className="eyebrow">Giáo viên</p><p className="mt-1 font-bold">{t.name}</p><p className="text-sm text-brand">{t.title}</p><p className="mt-2 text-sm text-slate-600">{t.bio}</p></div>}
+          {t && <div className="card"><p className="eyebrow">Giáo viên</p><p className="mt-1 font-bold">{t.name}</p><p className="text-sm text-brand-text">{t.title}</p><p className="mt-2 text-sm text-slate-600">{t.bio}</p></div>}
         </aside>
       </div>
     </div>

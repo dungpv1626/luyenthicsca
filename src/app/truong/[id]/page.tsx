@@ -51,8 +51,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                     </div>
                   );
                 })}
-                {!me && <p className="text-sm text-muted"><Link href={`/dang-nhap?next=/truong/${id}`} className="font-semibold text-brand">Đăng nhập</Link> để so sánh với năng lực của bạn.</p>}
-                {me && skills && !skills.topics.length && <p className="text-sm text-muted">Làm <Link href="/quick-test" className="font-semibold text-brand">Quick Test</Link> để có dữ liệu so sánh.</p>}
+                {!me && <p className="text-sm text-muted"><Link href={`/dang-nhap?next=/truong/${id}`} className="font-semibold text-brand-text">Đăng nhập</Link> để so sánh với năng lực của bạn.</p>}
+                {me && skills && !skills.topics.length && <p className="text-sm text-muted">Làm <Link href="/quick-test" className="font-semibold text-brand-text">Quick Test</Link> để có dữ liệu so sánh.</p>}
               </div>
             ) : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">Trường chưa có mức chuẩn CSCA. Đội ngũ đang cập nhật từ thông báo chính thức. Bạn có thể đăng ký tư vấn để được hỗ trợ.</p>}
           </section>
@@ -60,7 +60,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           {(s.majors as string[]).length > 0 && <section className="card"><h2 className="mb-3 font-bold">Ngành học</h2><div className="flex flex-wrap gap-2">{(s.majors as string[]).map((m) => <span key={m} className="chip">{m}</span>)}</div></section>}
 
           <section className="card"><h2 className="mb-3 font-bold">Học bổng liên quan</h2>
-            {sch?.length ? <ul className="space-y-2">{sch.map((x) => <li key={x.id} className="flex items-start gap-3 rounded-xl border border-slate-200 p-3"><Icon name="award" className="mt-0.5 h-5 w-5 text-brand" /><div><p className="font-semibold">{x.name}</p><p className="text-sm text-slate-600">{x.coverage}</p>{x.deadline && <p className="text-xs text-muted">Hạn: {new Date(x.deadline).toLocaleDateString("vi-VN")}</p>}</div></li>)}</ul> : <p className="text-sm text-muted">Chưa có học bổng gắn với trường này. Xem <Link href="/hoc-bong" className="font-semibold text-brand">tất cả học bổng</Link>.</p>}
+            {sch?.length ? <ul className="space-y-2">{sch.map((x) => <li key={x.id} className="flex items-start gap-3 rounded-xl border border-slate-200 p-3"><Icon name="award" className="mt-0.5 h-5 w-5 text-brand-text" /><div><p className="font-semibold">{x.name}</p><p className="text-sm text-slate-600">{x.coverage}</p>{x.deadline && <p className="text-xs text-muted">Hạn: {new Date(x.deadline).toLocaleDateString("vi-VN")}</p>}</div></li>)}</ul> : <p className="text-sm text-muted">Chưa có học bổng gắn với trường này. Xem <Link href="/hoc-bong" className="font-semibold text-brand-text">tất cả học bổng</Link>.</p>}
           </section>
         </div>
 
@@ -76,7 +76,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
               <button className="btn w-full">Gửi yêu cầu tư vấn</button>
             </form>
           ) : <Link href={`/dang-nhap?next=/truong/${id}`} className="btn w-full">Đăng nhập để đăng ký tư vấn</Link>}
-          {s.website && <a href={s.website} target="_blank" rel="noopener noreferrer" className="mt-4 block text-center text-sm font-semibold text-brand hover:underline">Website chính thức ↗</a>}
+          {s.website && <a href={s.website} target="_blank" rel="noopener noreferrer" className="mt-4 block text-center text-sm font-semibold text-brand-text hover:underline">Website chính thức ↗</a>}
         </aside>
       </div>
     </div>

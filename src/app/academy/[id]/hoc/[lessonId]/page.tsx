@@ -29,7 +29,7 @@ export default async function Page({ params }: { params: Promise<{ id: string; l
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
       <article className="space-y-5">
-        <Link href={`/academy/${id}`} className="text-sm font-semibold text-brand hover:underline">← {c.title}</Link>
+        <Link href={`/academy/${id}`} className="text-sm font-semibold text-brand-text hover:underline">← {c.title}</Link>
         <h1 className="work-title">{l.title}</h1>
         {video ? <div className="aspect-video overflow-hidden rounded-2xl bg-black shadow-soft"><iframe src={video} title={l.title} className="h-full w-full" allow="accelerometer; encrypted-media; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /></div>
           : l.video_url ? <a href={l.video_url} target="_blank" rel="noopener noreferrer" className="btn-outline"><Icon name="play" className="h-4 w-4" />Xem video</a> : null}

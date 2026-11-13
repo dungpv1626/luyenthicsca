@@ -74,7 +74,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const verifyInfo = q ? VERIFY[q.verify_status as keyof typeof VERIFY] : null;
   const myReports = q ? (reps ?? []).filter((r) => r.question_id === q.id) : [];
   const skipHref = `/admin/review?${new URLSearchParams([...keep, ...(q ? [["skip", q.id]] : [])] as [string, string][])}`;
-  const tab = (v: string, label: string, n: number | null) => <Link href={`/admin/review?view=${v}`} className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 text-sm font-semibold ${view === v || (v === "offline" && !live) ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand"}`}>{label} <span className="ml-1 opacity-80">({n ?? 0})</span></Link>;
+  const tab = (v: string, label: string, n: number | null) => <Link href={`/admin/review?view=${v}`} className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 text-sm font-semibold ${view === v || (v === "offline" && !live) ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand-text"}`}>{label} <span className="ml-1 opacity-80">({n ?? 0})</span></Link>;
   const modOptions = (Object.keys(MODULES) as Subject[]).filter((k) => !subject || subject === k).filter((k) => !mine.length || mine.includes(k));
   const cols = langs.length >= 3 ? "xl:grid-cols-3" : langs.length === 2 ? "xl:grid-cols-2" : "";
 
@@ -123,7 +123,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
             </div>
           </div>
 
-          <aside className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white p-3 shadow-[0_-4px_16px_rgba(15,23,42,.08)] lg:static lg:z-auto lg:h-fit lg:space-y-3 lg:rounded-2xl lg:border lg:p-4 lg:shadow-none lg:sticky lg:top-20">
+          <aside className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-surface p-3 shadow-[0_-4px_16px_rgba(15,23,42,.08)] lg:static lg:z-auto lg:h-fit lg:space-y-3 lg:rounded-2xl lg:border lg:p-4 lg:shadow-none lg:sticky lg:top-20">
             <p className="hidden text-sm text-slate-600 lg:block">Đáp án soạn: <b className="text-success">{q.correct_answer}</b>. Kiểm tra cả 3 ngôn ngữ có tương đương và đúng khoa học không.</p>
             {need_note && <p className="mb-2 rounded-lg bg-danger-bg p-2 text-sm text-danger">Cần nhập lý do khi loại câu.</p>}
             <form action={reviewQuestionAction.bind(null, q.id, `/admin/review${qs ? `?${qs}` : ""}`)} className="space-y-2">
@@ -133,7 +133,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
                 <button name="decision" value="reject" disabled={notMyQ} className="btn-outline min-h-[2.75rem] !border-red-300 !text-danger">{live ? "Loại (tắt ngay)" : "Loại"} <kbd className="ml-1 hidden rounded bg-danger-bg px-1.5 text-xs lg:inline">R</kbd></button>
               </div>
             </form>
-            <div className="mt-1 flex justify-between text-sm lg:mt-0"><Link href={`/admin/questions/${q.id}`} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand hover:underline">Sửa <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">E</kbd></Link><Link href={skipHref} className="inline-flex min-h-[2.5rem] items-center text-muted hover:underline">Bỏ qua <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">S</kbd></Link></div>
+            <div className="mt-1 flex justify-between text-sm lg:mt-0"><Link href={`/admin/questions/${q.id}`} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand-text hover:underline">Sửa <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">E</kbd></Link><Link href={skipHref} className="inline-flex min-h-[2.5rem] items-center text-muted hover:underline">Bỏ qua <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">S</kbd></Link></div>
             <p className="hidden border-t border-slate-100 pt-2 text-xs text-muted lg:block">Phím tắt: A duyệt · R loại (gõ lý do trước, hoặc R để vào ô lý do) · S bỏ qua · E sửa. Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
           </aside>
           <ReviewHotkeys skipHref={skipHref} editHref={`/admin/questions/${q.id}`} canApprove={canApprove && !notMyQ} />

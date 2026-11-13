@@ -34,8 +34,8 @@ export function ConfirmButton({ children, className = "", title, message, confir
           setOpen(true);
         }}>{children}</button>
       {open && createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-3 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }}>
-          <div role="alertdialog" aria-modal="true" aria-label={title} className="pop w-full max-w-md rounded-3xl bg-white p-5 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-deep/60 p-3 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }}>
+          <div role="alertdialog" aria-modal="true" aria-label={title} className="pop w-full max-w-md rounded-3xl bg-surface p-5 shadow-2xl">
             <h2 className="text-lg font-extrabold text-navy">{title}</h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">{text}</p>
             <div className="mt-5 flex flex-wrap justify-end gap-2">
