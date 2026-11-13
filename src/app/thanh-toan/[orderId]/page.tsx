@@ -4,6 +4,7 @@ import { requireMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { vietQrUrl } from "@/lib/vietqr";
 import { vnd } from "@/lib/constants";
+import { planDef, isPaidPlan, PLAN_DAYS } from "@/lib/plans";
 
 export const metadata = { title: "Thanh toán" };
 
@@ -17,12 +18,12 @@ export default async function Page({ params }: { params: Promise<{ orderId: stri
   return (
     <div className="card mx-auto max-w-md space-y-3 text-center">
       <h1 className="work-title">Thanh toán đơn hàng</h1>
-      <p>{(o.tests as { title: string } | null)?.title ?? (o.courses as { title: string } | null)?.title}</p>
+      <p>{o.plan && isPaidPlan(o.plan) ? `Gói ${planDef(o.plan).name} · ${PLAN_DAYS / 365} năm` : ((o.tests as { title: string } | null)?.title ?? (o.courses as { title: string } | null)?.title)}</p>
       <p className="text-3xl font-extrabold text-brand-text">{vnd(o.amount_vnd)}</p>
       {paid ? (
         <>
           <p className="rounded bg-success-bg p-3 font-medium text-success">Đã thanh toán – nội dung đã được mở khóa.</p>
-          <Link href={o.course_id ? `/academy/${o.course_id}` : `/thi-thu/${o.test_id}`} className="btn">{o.course_id ? "Vào học ngay" : "Làm bài ngay"}</Link>
+          <Link href={o.plan ? "/thi-thu" : o.course_id ? `/academy/${o.course_id}` : `/thi-thu/${o.test_id}`} className="btn">{o.plan ? "Vào làm đề ngay" : o.course_id ? "Vào học ngay" : "Làm bài ngay"}</Link>
         </>
       ) : o.status === "pending" ? (
         <>

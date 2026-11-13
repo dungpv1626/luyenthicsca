@@ -3,7 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { todayVN } from "@/lib/plan";
-import { TUTOR_DAILY_LIMIT } from "@/lib/constants";
+import { getPlan } from "@/lib/entitlement";
+import { planDef } from "@/lib/plans";
 
 export type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -25,7 +26,9 @@ export async function askTutor(messages: ChatMsg[], ctx?: { attemptId: string; q
   const day = todayVN();
   const { data: u } = await db.from("tutor_usage").select("count").eq("user_id", me.id).eq("day", day).maybeSingle();
   const used = u?.count ?? 0;
-  if (used >= TUTOR_DAILY_LIMIT) return { error: `Bạn đã dùng hết ${TUTOR_DAILY_LIMIT} lượt hỏi hôm nay. Hãy quay lại vào ngày mai.`, left: 0 };
+  const { plan } = await getPlan(me.id);
+  const limit = planDef(plan).tutorPerDay;
+  if (used >= limit) return { error: plan === "pro" || plan === "max" ? `Bạn đã dùng hết ${limit} lượt hỏi hôm nay. Hãy quay lại vào ngày mai.` : `Bạn đã dùng hết ${limit} lượt hỏi hôm nay (gói ${planDef(plan).name}). Nâng cấp ở trang Bảng giá để hỏi nhiều hơn, hoặc quay lại vào ngày mai.`, left: 0 };
 
   let context = "";
   if (ctx) {
@@ -45,7 +48,7 @@ export async function askTutor(messages: ChatMsg[], ctx?: { attemptId: string; q
     });
     const reply = res.content.map((c) => (c.type === "text" ? c.text : "")).join("").trim();
     await db.from("tutor_usage").upsert({ user_id: me.id, day, count: used + 1 });
-    return { reply: reply || "Xin lỗi, mình chưa trả lời được. Bạn thử diễn đạt lại nhé.", left: TUTOR_DAILY_LIMIT - used - 1 };
+    return { reply: reply || "Xin lỗi, mình chưa trả lời được. Bạn thử diễn đạt lại nhé.", left: limit - used - 1 };
   } catch (e) {
     console.error("tutor failed:", e);
     return { error: "Gia sư AI đang bận, vui lòng thử lại sau ít phút." };

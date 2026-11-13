@@ -28,6 +28,7 @@ export const EXPLORE = [
   ["/csca", "CSCA là gì?"],
   ["/blog", "Blog"],
   ["/academy", "Academy"],
+  ["/bang-gia", "Bảng giá"],
 ] as const;
 
 const active = (path: string, href: string) => (href === "/" ? path === "/" : path === href || path.startsWith(href + "/"));
@@ -90,7 +91,7 @@ export function MobileMenu() {
 }
 
 const TABS = [["/thi-thu", "test", "Thi thử"], ["/luyen-tap", "pencil", "Luyện tập"], ["/gia-su", "sparkles", "Gia sư"]] as const;
-const MORE = [["/", "Trang chủ"], ["/lo-trinh", "Lộ trình"], ["/ai", "Hồ sơ năng lực"], ["/truong", "Trường & Học bổng"], ["/csca", "CSCA là gì?"], ["/blog", "Blog"], ["/academy", "Academy"]] as const;
+const MORE = [["/", "Trang chủ"], ["/lo-trinh", "Lộ trình"], ["/ai", "Hồ sơ năng lực"], ["/truong", "Trường & Học bổng"], ["/csca", "CSCA là gì?"], ["/blog", "Blog"], ["/academy", "Academy"], ["/bang-gia", "Bảng giá"]] as const;
 
 export function BottomNav() {
   const path = usePathname();

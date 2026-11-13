@@ -51,10 +51,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
   const SetPill = ({ t }: { t: (typeof tests)[number] }) => {
     const b = best.get(t.id), o = open.has(t.id);
     return (
-      <Link href={`/thi-thu/${t.id}`} aria-label={`${t.title}${o ? ", đang làm dở" : b !== undefined ? `, đã làm, điểm cao nhất ${b}` : t.price_vnd ? `, ${vnd(t.price_vnd)}` : ", chưa làm"}`}
+      <Link href={`/thi-thu/${t.id}`} aria-label={`${t.title}${o ? ", đang làm dở" : b !== undefined ? `, đã làm, điểm cao nhất ${b}` : t.price_vnd ? ", cần gói trả phí" : ", chưa làm"}`}
         className={`inline-flex min-h-[2.75rem] items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition hover:-translate-y-0.5 ${o ? "border-amber-400 bg-warning-bg text-amber-900" : b !== undefined ? "border-emerald-300 bg-success-bg text-emerald-800" : "border-slate-200 bg-surface hover:border-brand hover:text-brand-text"}`}>
         Đề {t.set_no ?? "·"}
-        {o ? <span className="text-xs font-bold">▶ đang làm</span> : b !== undefined ? <span className="text-xs font-bold">✓ {t.sim ? (bestSim.get(t.id) ?? 0) : b}/100</span> : t.price_vnd ? <span className="text-xs text-muted">{vnd(t.price_vnd)}</span> : null}
+        {o ? <span className="text-xs font-bold">▶ đang làm</span> : b !== undefined ? <span className="text-xs font-bold">✓ {t.sim ? (bestSim.get(t.id) ?? 0) : b}/100</span> : t.price_vnd ? <span className="text-xs text-muted">Gói trả phí</span> : null}
       </Link>
     );
   };
@@ -116,7 +116,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
       ))}
 
       {others.length > 0 && <section><h2 className="mb-3 text-xl font-extrabold">Đề khác</h2><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{others.map((t) => (
-        <Link key={t.id} href={`/thi-thu/${t.id}`} className="card card-hover flex flex-col"><div className="flex flex-wrap gap-1.5"><span className="chip">Đề thi</span>{open.has(t.id) && <span className="chip !bg-warning-bg !text-warning">Đang làm dở</span>}{best.has(t.id) && <span className="chip !bg-success-bg !text-success">Đã làm</span>}</div><h3 className="mt-2 font-bold">{t.title}</h3><p className="mt-1 line-clamp-2 text-sm text-slate-600">{t.description}</p><p className="mt-auto flex items-center justify-between pt-4 text-sm"><span className="flex items-center gap-1 text-muted"><Icon name="clock" className="h-4 w-4" />{count(t)} câu · {t.duration_min}′</span><b>{t.price_vnd ? vnd(t.price_vnd) : "Miễn phí"}</b></p></Link>
+        <Link key={t.id} href={`/thi-thu/${t.id}`} className="card card-hover flex flex-col"><div className="flex flex-wrap gap-1.5"><span className="chip">Đề thi</span>{open.has(t.id) && <span className="chip !bg-warning-bg !text-warning">Đang làm dở</span>}{best.has(t.id) && <span className="chip !bg-success-bg !text-success">Đã làm</span>}</div><h3 className="mt-2 font-bold">{t.title}</h3><p className="mt-1 line-clamp-2 text-sm text-slate-600">{t.description}</p><p className="mt-auto flex items-center justify-between pt-4 text-sm"><span className="flex items-center gap-1 text-muted"><Icon name="clock" className="h-4 w-4" />{count(t)} câu · {t.duration_min}′</span><b>{t.price_vnd ? "Gói trả phí" : "Miễn phí"}</b></p></Link>
       ))}</div></section>}
       {!tests.length && <p className="text-muted">Chưa có đề thi nào được công bố {mon ? "cho lựa chọn này" : ""}.</p>}
     </div>

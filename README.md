@@ -139,3 +139,11 @@ Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration
 - Logic thuần: `src/lib/journey.ts` (có test). Ngưỡng chỉnh ở đầu file: `PRACTICE_GOAL` (6 buổi luyện chuyên đề), `LEVEL_GOAL` (3 đề theo mức), `LEVEL_PASS` (60/100), `SIM_GOAL` (2 đề mô phỏng). Điểm mục tiêu lấy từ lộ trình AI (mặc định 80).
 - Dữ liệu: `src/lib/journey-data.ts` (bài đã nộp, hồ sơ, lộ trình, chủ đề yếu). Giao diện: `src/components/JourneyPipeline.tsx`.
 - Chặng "Vá lỗ hổng" chỉ xong khi đủ buổi luyện VÀ hết chuyên đề yếu (dưới 60%); chặng "Luyện đề theo mức" cần 3 đề và đạt từ 60/100.
+
+## Gói đăng ký theo năm (Free / Starter / Pro / Max)
+
+- Định nghĩa gói, giá, hạn mức Gia sư AI: `src/lib/plans.ts` (Free 5, Starter 20, Pro 150 lượt/ngày; Max như Pro cộng video và ping mentor, `forSale: false` nên chỉ hiện "Sắp ra mắt").
+- Không còn bán đề lẻ: đề có `price_vnd > 0` là "đề trả phí", mở bằng gói Starter trở lên. Người đã mua lẻ trước đây vẫn giữ quyền (đơn `test_id` đã paid).
+- Gói còn hiệu lực = đơn `paid` có `plan` và `paid_at + 365 ngày` > hiện tại (`activePlan`, `getPlan` trong `src/lib/entitlement.ts`). Hoàn tiền (refunded) tự thu hồi quyền; không có bảng đăng ký riêng.
+- Trang `/bang-gia`, mua gói `buyPlanAction` (VietQR + webhook như đơn cũ). **Cần chạy migration `0017_plans.sql`** (thêm cột `orders.plan`).
+- Chưa làm: video bài giảng, ping mentor, tự gia hạn, cộng dồn ngày khi gia hạn sớm, trừ tiền khi nâng cấp Starter lên Pro.
