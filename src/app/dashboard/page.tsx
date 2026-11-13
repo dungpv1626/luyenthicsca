@@ -3,6 +3,8 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { requireMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { getSkillProfile } from "@/lib/skills";
+import { getJourney } from "@/lib/journey-data";
+import { JourneyMini } from "@/components/JourneyPipeline";
 import { todayVN, subjectName } from "@/lib/plan";
 import { ScoreRing } from "@/components/ScoreRing";
 import { LineChart } from "@/components/LineChart";
@@ -17,12 +19,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const { pw } = await searchParams;
   const db = adminDb();
   const today = todayVN();
-  const [{ data: prof }, sk, { data: open }, { data: plan }, { data: recent }] = await Promise.all([
+  const [{ data: prof }, sk, { data: open }, { data: plan }, { data: recent }, journey] = await Promise.all([
     db.from("profiles").select("target, exam_date").eq("id", me.id).single(),
     getSkillProfile(me.id),
     db.from("attempts").select("id, title, started_at, duration_sec").eq("user_id", me.id).is("submitted_at", null).neq("kind", "practice").order("started_at", { ascending: false }).limit(1),
     db.from("study_plans").select("id, target_readiness").eq("user_id", me.id).eq("active", true).maybeSingle(),
     db.from("attempts").select("id, title, readiness, submitted_at, breakdown").eq("user_id", me.id).not("submitted_at", "is", null).order("submitted_at", { ascending: false }).limit(5),
+    getJourney(me.id),
   ]);
   const { data: tasks } = plan ? await db.from("plan_tasks").select("*").eq("plan_id", plan.id).lte("due_date", today).order("due_date").limit(40) : { data: [] };
   const todo = (tasks ?? []).filter((t) => !t.done_at && t.due_date <= today);
@@ -61,6 +64,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
           <Link href="/luyen-tap" className="btn-outline">Luyện tập</Link>
         </div>
       </div>
+
+      <JourneyMini journey={journey} />
 
       {onboardSteps.some((x) => !x.done) && (
         <section className="card !border-brand/30 bg-gradient-to-br from-brand-soft/60 to-surface" aria-labelledby="onb">

@@ -5,6 +5,8 @@ import { adminDb } from "@/lib/supabase/admin";
 import { getSkillProfile } from "@/lib/skills";
 import { addDays, todayVN, subjectName } from "@/lib/plan";
 import { PageHeader } from "@/components/Section";
+import { getJourney } from "@/lib/journey-data";
+import { JourneyPipeline } from "@/components/JourneyPipeline";
 import { Icon } from "@/components/Icon";
 import { createPlanAction, endPlanAction, startTaskAction, toggleTaskAction } from "../plan-actions";
 
@@ -17,6 +19,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
   const me = await requireMe("/lo-trinh");
   const { w, error } = await searchParams;
   const db = adminDb();
+  const journey = await getJourney(me.id);
   const [{ data: plan }, { data: prof }] = await Promise.all([
     db.from("study_plans").select("*").eq("user_id", me.id).eq("active", true).maybeSingle(),
     db.from("profiles").select("target, exam_date").eq("id", me.id).single(),
@@ -27,8 +30,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
     return (
       <div>
         <PageHeader en="Study Plan" vi="Lộ trình học cá nhân">AI dựng kế hoạch theo ngày dựa trên điểm yếu của bạn. {sk.topics.length ? "" : "Bạn chưa có dữ liệu thi nên lộ trình sẽ bắt đầu từ nền tảng, hãy làm Quick Test để cá nhân hóa hơn."}</PageHeader>
+        <div className="mb-6"><JourneyPipeline journey={journey} /></div>
         {error && <p className="mb-4 rounded-xl bg-warning-bg p-3 text-sm text-warning">Không tạo được lộ trình. Hãy thử lại.</p>}
-        <form action={createPlanAction} className="card mx-auto max-w-xl space-y-4">
+        <form id="tao-lo-trinh" action={createPlanAction} className="card mx-auto max-w-xl scroll-mt-24 space-y-4">
           <div><label className="label" htmlFor="f-goal">Mục tiêu</label><input id="f-goal" name="goal" defaultValue={prof?.target ?? ""} placeholder="vd: Toán ≥ 80, vào Đại học Chiết Giang" className="input" /></div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div><label className="label" htmlFor="f-weeks">Thời gian</label><select id="f-weeks" name="weeks" className="input" defaultValue="4"><option value="4">1 tháng (4 tuần)</option><option value="12">3 tháng (12 tuần)</option><option value="24">6 tháng (24 tuần)</option></select></div>
@@ -58,6 +62,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
   return (
     <div className="space-y-6">
       <PageHeader en="Study Plan" vi="Lộ trình học cá nhân">{plan.summary}</PageHeader>
+      <JourneyPipeline journey={journey} />
       <div className="grid gap-4 md:grid-cols-4">
         <div className="card md:col-span-2"><p className="eyebrow">Tiến độ</p><p className="mt-1 text-3xl font-black">{pct}%<span className="ml-2 text-sm font-medium text-muted">{done}/{tasks.length} nhiệm vụ</span></p><div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div></div>
         <div className="card"><p className="eyebrow">Mục tiêu</p><p className="mt-1 text-3xl font-black">{plan.target_readiness}<span className="text-sm text-muted">/100</span></p><p className="text-xs text-muted">{plan.goal || "—"}</p></div>

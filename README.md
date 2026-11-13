@@ -131,3 +131,11 @@ Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration
 - **Nguồn đăng ký (tự đo, không bên thứ ba):** `AttributionTracker` ghi nguồn truy cập đầu tiên (utm_source/medium/campaign, tên miền giới thiệu, trang đích) vào cookie `lt_attr` 30 ngày; `signUp` lưu vào `profiles.signup_source` (migration `0016_signup_source.sql`). Admin → Phân tích → “Nguồn đăng ký” cho biết nguồn và bài blog nào mang về đăng ký, người làm bài, người mua. Gắn `?utm_source=…&utm_medium=…` vào liên kết quảng cáo/bài đăng.
 - **Cloudflare Web Analytics:** đặt `NEXT_PUBLIC_CF_BEACON_TOKEN` trong `.env.local` rồi triển khai lại (không có biến thì không gắn script).
 - **Google Search Console:** đặt `NEXT_PUBLIC_GSC_VERIFICATION` (nội dung thẻ xác minh) rồi triển khai lại; sau đó gửi `https://luyenthicsca.edu.vn/sitemap.xml`.
+
+## Lộ trình dạng đường ống (6 chặng)
+
+`/lo-trinh` mở đầu bằng **đường ống nhiều chặng**: Đo năng lực → Đặt mục tiêu và lộ trình → Vá lỗ hổng theo chuyên đề → Luyện đề theo mức → Đề mô phỏng → Tổng duyệt trước ngày thi. Mỗi chặng có trạng thái (đã xong / đang ở đây / chưa tới), tiến độ và việc còn phải làm; máy bay chỉ chặng đang ở. Máy tính xếp ngang (thẻ xen kẽ trên/dưới), điện thoại xếp dọc; dashboard có bản thu nhỏ.
+
+- Logic thuần: `src/lib/journey.ts` (có test). Ngưỡng chỉnh ở đầu file: `PRACTICE_GOAL` (6 buổi luyện chuyên đề), `LEVEL_GOAL` (3 đề theo mức), `LEVEL_PASS` (60/100), `SIM_GOAL` (2 đề mô phỏng). Điểm mục tiêu lấy từ lộ trình AI (mặc định 80).
+- Dữ liệu: `src/lib/journey-data.ts` (bài đã nộp, hồ sơ, lộ trình, chủ đề yếu). Giao diện: `src/components/JourneyPipeline.tsx`.
+- Chặng "Vá lỗ hổng" chỉ xong khi đủ buổi luyện VÀ hết chuyên đề yếu (< 60
