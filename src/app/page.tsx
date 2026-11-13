@@ -11,7 +11,6 @@ import { SectionTitle } from "@/components/Section";
 import { DailyQuestion, type DailyQ } from "@/components/DailyQuestion";
 import { HeroSlides } from "@/components/HeroSlides";
 import { SubjectArt } from "@/components/art/SubjectArt";
-import { CampusArt } from "@/components/art/CampusArt";
 
 const STEPS = [
   ["test", "Thi thử", "Quick Test 15 phút"],
@@ -51,7 +50,7 @@ export default async function Home() {
   ] as const;
 
   return (
-    <div className="space-y-20 sm:space-y-24">
+    <div className="space-y-14 sm:space-y-20">
       {/* ===== HERO ===== */}
       <section className="mesh-navy relative isolate overflow-hidden rounded-[1.75rem] text-white shadow-[0_30px_80px_-30px_rgb(30_58_138/0.7)] sm:rounded-[2.25rem]">
         <HeroSlides />
@@ -67,7 +66,7 @@ export default async function Home() {
               <Link href="/csca" className="btn-ghost-light !px-6 !py-3 text-base">Tìm hiểu CSCA</Link>
             </div>
             <ul className="rise rise-4 mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
-              {[`${QUICK_TEST.questions} câu`, `${QUICK_TEST.minutes} phút`, "Báo cáo AI ngay"].map((t) => <li key={t} className="flex items-center gap-1.5"><span className="grid h-5 w-5 place-items-center rounded-full bg-white/20"><Icon name="check" className="h-3 w-3" /></span>{t}</li>)}
+              {[`${QUICK_TEST.questions} câu`, `${QUICK_TEST.minutes} phút`, "Báo cáo AI ngay"].map((t) => <li key={t} className="flex items-center gap-1.5"><span className="grid h-5 w-5 place-items-center rounded-full bg-brand text-white"><Icon name="check" className="h-3 w-3" /></span>{t}</li>)}
             </ul>
           </div>
           <div className="rise rise-3">{daily ? <DailyQuestion q={daily} /> : null}</div>
@@ -83,17 +82,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ===== DẢI TÊN TRƯỜNG ===== */}
-      {(schools?.length ?? 0) > 0 && (
-        <section aria-hidden="true" className="-mx-4 overflow-hidden py-2 sm:-mx-6">
-          <div className="marquee flex w-max items-center gap-10 whitespace-nowrap">
-            {[...Array(2)].flatMap((_, h) => [...Array(3)].flatMap((__, r) => (schools ?? []).map((sc) => (
-              <span key={`${h}-${r}-${sc.id}`} className="flex items-center gap-10"><span className="outline-text text-5xl font-black sm:text-7xl">{sc.name_zh}</span><span className="text-brand/40">✦</span></span>
-            ))))}
-          </div>
-        </section>
-      )}
-
       {/* ===== ĐỐI TƯỢNG ===== */}
       <section>
         <Reveal><p className="mb-4 text-center text-sm font-semibold text-slate-500">Bạn là ai? Chọn để chúng tôi gợi ý phù hợp</p></Reveal>
@@ -101,6 +89,17 @@ export default async function Home() {
           {Object.entries(AUDIENCES).map(([k, v], i) => <Reveal key={k} delay={i * 60}><Link href={`/dang-ky?audience=${k}`} className="inline-flex min-h-[2.5rem] items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:bg-brand-soft hover:text-brand hover:shadow-md">{v}</Link></Reveal>)}
         </div>
       </section>
+
+      {/* ===== DẢI TÊN TRƯỜNG ===== */}
+      {(schools?.length ?? 0) > 0 && (
+        <section aria-hidden="true" className="-mx-4 overflow-hidden py-2 sm:-mx-6">
+          <div className="marquee flex w-max items-center gap-10 whitespace-nowrap">
+            {[...Array(2)].flatMap((_, h) => [...Array(3)].flatMap((__, r) => (schools ?? []).map((sc) => (
+              <span key={`${h}-${r}-${sc.id}`} className="flex items-center gap-10"><span className="outline-text text-3xl font-black sm:text-4xl">{sc.name_zh}</span><span className="text-brand/40">✦</span></span>
+            ))))}
+          </div>
+        </section>
+      )}
 
       {/* ===== BỐN MÔN ===== */}
       <section>
@@ -118,18 +117,16 @@ export default async function Home() {
       </section>
 
       {/* ===== QUY TRÌNH ===== */}
-      <section className="mesh-navy relative isolate overflow-hidden rounded-[1.75rem] px-5 py-10 text-white sm:rounded-[2.25rem] sm:px-10 sm:py-14">
-        <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-50" />
-        <div className="drift pointer-events-none absolute -right-16 -top-16 -z-10 h-64 w-64 rounded-full bg-cyan-300/25 blur-3xl" />
-        <Reveal><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="eyebrow !text-sky-200">How it works</p><h2 className="mt-2 max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl">Từ bài thi đầu tiên đến ngày bạn sẵn sàng</h2></div><Link href="/quick-test" className="btn-light">Bắt đầu ngay <Icon name="arrow" className="h-4 w-4" /></Link></div></Reveal>
+      <section className="relative isolate overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2.25rem] sm:px-10 sm:py-14">
+        <Reveal><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="eyebrow">How it works</p><h2 className="mt-2 max-w-xl text-navy text-3xl font-extrabold leading-tight sm:text-4xl">Từ bài thi đầu tiên đến ngày bạn sẵn sàng</h2></div><Link href="/quick-test" className="btn">Bắt đầu ngay <Icon name="arrow" className="h-4 w-4" /></Link></div></Reveal>
         <ol className="relative mt-12 grid gap-x-4 gap-y-9 md:grid-cols-5">
-          <span className="pointer-events-none absolute left-[10%] right-[10%] top-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-sky-300/0 via-sky-300/70 to-sky-300/0 md:block" aria-hidden="true" />
+          <span className="pointer-events-none absolute left-[10%] right-[10%] top-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-brand/0 via-brand/40 to-brand/0 md:block" aria-hidden="true" />
           {STEPS.map(([icon, t, d], i) => (
             <Reveal key={t} as="li" delay={i * 110} className="relative">
-              <div className="glass-dark group relative h-full rounded-2xl p-4 pt-12 transition duration-300 hover:-translate-y-1.5 hover:bg-white/20 sm:p-5 sm:pt-14">
-                <span className="absolute left-4 top-0 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-2xl bg-white text-brand shadow-[0_10px_30px_-8px_rgb(125_211_252/0.9)] transition group-hover:rotate-6 sm:left-5"><Icon name={icon} className="h-6 w-6" /></span>
-                <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden="true"><span className="absolute -bottom-4 right-2 select-none text-[5.5rem] font-black leading-none text-white/[0.09] transition group-hover:text-white/20">{i + 1}</span></span>
-                <h3 className="relative text-lg font-extrabold">{t}</h3><p className="relative mt-1 text-sm text-white/75">{d}</p>
+              <div className="group relative h-full rounded-2xl border border-slate-200 bg-canvas p-4 pt-12 transition duration-300 hover:-translate-y-1.5 hover:border-brand/40 sm:p-5 sm:pt-14">
+                <span className="absolute left-4 top-0 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-2xl bg-brand text-white shadow-[var(--shadow-glow)] transition group-hover:rotate-6 sm:left-5"><Icon name={icon} className="h-6 w-6" /></span>
+                <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden="true"><span className="absolute -bottom-4 right-2 select-none text-[5.5rem] font-black leading-none text-brand/[0.07] transition group-hover:text-brand/15">{i + 1}</span></span>
+                <h3 className="relative text-lg font-extrabold">{t}</h3><p className="relative mt-1 text-sm text-slate-600">{d}</p>
               </div>
             </Reveal>
           ))}
@@ -196,41 +193,39 @@ export default async function Home() {
       </section>
 
       {/* ===== GIA SƯ AI ===== */}
-      <section className="mesh-navy relative isolate overflow-hidden rounded-[1.75rem] px-5 py-10 text-white sm:rounded-[2.25rem] sm:px-12 sm:py-14">
-        <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-60" />
+      <section className="relative isolate overflow-hidden rounded-[1.75rem] border border-brand/15 bg-brand-soft px-5 py-10 sm:rounded-[2.25rem] sm:px-12 sm:py-14">
         <div className="grid items-center gap-10 md:grid-cols-2">
           <Reveal>
-            <p className="eyebrow !text-sky-200">AI Tutor</p><h2 className="mt-2 text-3xl font-extrabold leading-tight sm:text-4xl">Gia sư AI giải thích đến khi bạn hiểu</h2>
-            <ul className="mt-5 space-y-3 text-white/85">{["Hỏi từng câu ngay trong trang kết quả", "Trả lời bằng ngôn ngữ bạn dùng: Việt, Anh hoặc Trung", "Giải từng bước, nêu rõ vì sao các đáp án còn lại sai"].map((t) => <li key={t} className="flex gap-3"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-white/20"><Icon name="check" className="h-3 w-3" /></span>{t}</li>)}</ul>
-            <Link href="/gia-su" className="btn-light mt-7">Hỏi gia sư ngay <Icon name="arrow" className="h-4 w-4" /></Link>
+            <p className="eyebrow">AI Tutor</p><h2 className="mt-2 text-navy text-3xl font-extrabold leading-tight sm:text-4xl">Gia sư AI giải thích đến khi bạn hiểu</h2>
+            <ul className="mt-5 space-y-3 text-slate-700">{["Hỏi từng câu ngay trong trang kết quả", "Trả lời bằng ngôn ngữ bạn dùng: Việt, Anh hoặc Trung", "Giải từng bước, nêu rõ vì sao các đáp án còn lại sai"].map((t) => <li key={t} className="flex gap-3"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-white/20"><Icon name="check" className="h-3 w-3" /></span>{t}</li>)}</ul>
+            <Link href="/gia-su" className="btn mt-7">Hỏi gia sư ngay <Icon name="arrow" className="h-4 w-4" /></Link>
           </Reveal>
           <Reveal delay={150}>
-            <div className="glass-dark mx-auto max-w-md space-y-3 rounded-3xl p-4 sm:p-5">
-              <div className="flex items-center gap-2 border-b border-white/15 pb-3"><span className="grid h-8 w-8 place-items-center rounded-full bg-white text-brand"><Icon name="sparkles" className="h-4 w-4" /></span><b className="text-sm">Gia sư AI</b><span className="ml-auto rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold">Ví dụ</span></div>
+            <div className="card mx-auto max-w-md space-y-3 !rounded-3xl !p-4 sm:!p-5">
+              <div className="flex items-center gap-2 border-b border-slate-200 pb-3"><span className="grid h-8 w-8 place-items-center rounded-full bg-brand-soft text-brand"><Icon name="sparkles" className="h-4 w-4" /></span><b className="text-sm">Gia sư AI</b><span className="ml-auto rounded-full bg-mist px-2 py-0.5 text-xs font-bold text-slate-600">Ví dụ</span></div>
               <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-brand px-3.5 py-2 text-sm">Vì sao x² − 5x + 6 = 0 có tổng hai nghiệm bằng 5?</p>
-              <p className="w-fit max-w-[90%] rounded-2xl rounded-bl-sm bg-white px-3.5 py-2.5 text-sm leading-relaxed text-ink">Theo định lý Vi-ét, tổng hai nghiệm là x₁ + x₂ = −b/a. Ở đây a = 1, b = −5 nên tổng = 5. Bạn thử tính tích hai nghiệm xem?</p>
-              <p className="caret w-fit rounded-2xl rounded-bl-sm bg-white/15 px-3.5 py-2 text-sm text-white/80">Nhập câu hỏi của bạn</p>
+              <p className="w-fit max-w-[90%] rounded-2xl rounded-bl-sm bg-mist px-3.5 py-2.5 text-sm leading-relaxed text-ink">Theo định lý Vi-ét, tổng hai nghiệm là x₁ + x₂ = −b/a. Ở đây a = 1, b = −5 nên tổng = 5. Bạn thử tính tích hai nghiệm xem?</p>
+              <p className="caret w-fit rounded-2xl rounded-bl-sm bg-mist px-3.5 py-2 text-sm text-slate-600">Nhập câu hỏi của bạn</p>
             </div>
           </Reveal>
         </div>
       </section>
 
       {/* ===== TRƯỜNG ===== */}
-      <section className="relative isolate overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-navy to-brand px-5 pb-28 pt-10 text-white sm:rounded-[2.25rem] sm:px-12 sm:pb-36 sm:pt-14">
-        <div className="flex flex-wrap items-end justify-between gap-3 text-white"><Reveal><SectionTitle en="Universities" vi="Trường & học bổng" light /></Reveal><Reveal><Link href="/truong" className="btn-light">Khám phá trường <Icon name="arrow" className="h-4 w-4" /></Link></Reveal></div>
+      <section className="relative isolate overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2.25rem] sm:px-12 sm:py-14">
+        <div className="flex flex-wrap items-end justify-between gap-3"><Reveal><SectionTitle en="Universities" vi="Trường & học bổng" /></Reveal><Reveal><Link href="/truong" className="btn-outline">Khám phá trường <Icon name="arrow" className="h-4 w-4" /></Link></Reveal></div>
         <div className="relative z-10 mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
           {(schools ?? []).map((s, i) => (
-            <Reveal key={s.id} delay={i * 80}><Link href={`/truong/${s.id}`} className="glass-dark group block overflow-hidden rounded-2xl transition duration-300 hover:-translate-y-1 hover:bg-white/20">
+            <Reveal key={s.id} delay={i * 80}><Link href={`/truong/${s.id}`} className="card card-hover group block overflow-hidden !p-0">
               <SchoolPhoto url={s.image_url} credit={s.image_credit} alt={s.name} className="h-36 sm:h-40" />
               <div className="p-4 sm:p-5">
-              <p className="text-2xl font-black text-white/40 transition group-hover:text-white/70">{s.name_zh}</p><h3 className="mt-1 font-bold">{s.name}</h3>
-              <p className="mt-1 flex items-center gap-1 text-sm text-white/75"><Icon name="map" className="h-4 w-4" />{s.city} · {s.kind}</p>
+              <p className="text-2xl font-black text-brand/30 transition group-hover:text-brand/60">{s.name_zh}</p><h3 className="mt-1 font-bold">{s.name}</h3>
+              <p className="mt-1 flex items-center gap-1 text-sm text-slate-600"><Icon name="map" className="h-4 w-4" />{s.city} · {s.kind}</p>
               </div>
             </Link></Reveal>
           ))}
         </div>
-        {scholarships?.[0] && <Reveal><Link href="/hoc-bong" className="relative z-10 mt-5 flex items-center gap-3 rounded-2xl bg-white p-4 text-ink shadow-xl transition hover:-translate-y-0.5"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold text-white"><Icon name="award" /></span><span className="min-w-0 text-sm"><b className="block truncate">{scholarships[0].name}</b><span className="text-slate-500">Xem các học bổng đang mở</span></span><Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-brand" /></Link></Reveal>}
-        <CampusArt className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28 w-full sm:h-40" />
+        {scholarships?.[0] && <Reveal><Link href="/hoc-bong" className="relative z-10 mt-5 flex items-center gap-3 rounded-2xl border border-brand/20 bg-brand-soft p-4 text-ink transition hover:-translate-y-0.5"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold text-white"><Icon name="award" /></span><span className="min-w-0 text-sm"><b className="block truncate">{scholarships[0].name}</b><span className="text-slate-500">Xem các học bổng đang mở</span></span><Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-brand" /></Link></Reveal>}
       </section>
 
       {/* ===== KÊU GỌI ===== */}
