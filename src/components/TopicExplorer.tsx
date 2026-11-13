@@ -22,7 +22,15 @@ export function TopicExplorer({ subject, stats }: { subject: Subject; stats: Top
       <nav className="flex flex-wrap gap-2" aria-label="Chọn môn">
         {SUBJ.map((s) => <Link key={s} href={`/luyen-tap?subject=${s}#chuyen-de`} scroll={false} aria-current={s === subject ? "page" : undefined} className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 text-sm font-semibold ${s === subject ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand"}`}>{short(s)}</Link>)}
       </nav>
-      {isChinese && <p className="rounded-xl bg-brand-soft p-3 text-sm text-slate-700">Đề cương Tiếng Trung chuyên ngành chia theo <b>dạng câu</b> (nhận biết chữ Hán, chọn từ điền chỗ trống, phân biệt từ, chọn từ thành đoạn, hoàn thành câu, đọc hiểu) và hai khối văn – khoa học. Hiện ngân hàng đang chia theo 3 nhóm bên dưới; phần chia theo dạng câu và khối sẽ được bổ sung.</p>}
+      {isChinese && (
+        <div className="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-2" aria-label="Hai khối Tiếng Trung chuyên ngành">
+            <div className="rounded-xl border-2 border-brand bg-brand-soft/50 p-3"><p className="font-bold text-ink">Khối khoa học <span className="text-xs font-normal text-slate-500">理科中文</span></p><p className="mt-0.5 text-sm text-slate-600">Thuật ngữ toán, lý, hóa, thí nghiệm, đọc biểu đồ và bài khoa học. Dành cho ngành kỹ thuật, khoa học tự nhiên.</p><span className="chip mt-2">{(stats.byModule.chinese ? Object.values(stats.byModule.chinese).reduce((a, b) => a + b, 0) : 0).toLocaleString("vi-VN")} câu</span></div>
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3"><p className="font-bold text-ink">Khối văn <span className="text-xs font-normal text-slate-500">文科中文</span></p><p className="mt-0.5 text-sm text-slate-600">Văn học, triết học, luật, giáo dục, lịch sử, nghệ thuật. Dành cho ngành khoa học xã hội và nhân văn.</p><span className="chip mt-2 !bg-slate-200 !text-slate-600">Sắp có</span></div>
+          </div>
+          <p className="rounded-xl bg-brand-soft p-3 text-sm text-slate-700">Đề cương chính thức chia Tiếng Trung chuyên ngành theo <b>6 dạng câu</b>: nhận biết chữ Hán, chọn từ điền chỗ trống, phân biệt từ, chọn từ thành đoạn, hoàn thành câu và đọc hiểu. Ngân hàng hiện chia theo 3 nhóm bên dưới; phần chia đủ 6 dạng sẽ được bổ sung.</p>
+        </div>
+      )}
       {mods.map((m) => {
         const topics = isChinese ? [] : (TOPICS as Record<string, typeof TOPICS.math>)[subject].filter((t) => t.module === m.key);
         const total = stats.byModule[subject]?.[m.key] ?? 0;

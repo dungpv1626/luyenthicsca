@@ -319,7 +319,8 @@ async function mainInner() {
   } else {
     const subject = arg("subject", null), topic = arg("topic", null), difficulty = arg("difficulty", "medium");
     if (!SUBJECTS[subject] || !topic || !DIFF[difficulty]) { console.error("Thiếu/không hợp lệ: --subject math|physics|chemistry|chinese --topic \"...\" --difficulty easy|medium|hard --count N"); process.exit(1); }
-    tasks.push({ subject, topic, difficulty, count: Number(arg("count", 5)), hints: hintsOf(subject, topic) });
+    const sub = arg("subtopic", undefined);
+    tasks.push({ subject, topic, subtopic: typeof sub === "string" ? sub : undefined, difficulty, count: Number(arg("count", 5)), hints: hintsOf(subject, topic) });
   }
 
   console.log(`Lô ${BATCH}: ${tasks.length} nhiệm vụ, ${tasks.reduce((s, t) => s + t.count, 0)} câu yêu cầu${DRY ? " (DRY-RUN: không lưu)" : ""}. Model ${MODEL}.`);
