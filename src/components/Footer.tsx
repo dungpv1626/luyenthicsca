@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 
 const COLS = [
-  ["Học tập", [["/thi-thu", "Thi thử"], ["/luyen-tap", "Luyện tập"], ["/ai", "AI CSCA"], ["/lo-trinh", "Lộ trình"], ["/gia-su", "Gia sư AI"]]],
+  ["Học tập", [["/thi-thu", "Thi thử"], ["/luyen-tap", "Luyện tập"], ["/ai", "Hồ sơ năng lực"], ["/lo-trinh", "Lộ trình"], ["/gia-su", "Gia sư AI"]]],
   ["Khám phá", [["/csca", "CSCA là gì?"], ["/blog", "Blog CSCA"], ["/truong", "Trường"], ["/hoc-bong", "Học bổng"], ["/academy", "Academy"], ["/giao-vien", "Giáo viên"]]],
   ["Tài khoản", [["/dashboard", "Dashboard"], ["/don-hang", "Đơn hàng"], ["/khoa-hoc-cua-toi", "Khóa học của tôi"], ["/dang-nhap", "Đăng nhập"]]],
 ] as const;

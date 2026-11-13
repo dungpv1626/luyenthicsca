@@ -7,7 +7,7 @@ import { LineChart } from "@/components/LineChart";
 import { SubjectBars, TopicHeat } from "@/components/SkillBars";
 import { Icon } from "@/components/Icon";
 
-export const metadata = { title: "AI CSCA – Hồ sơ năng lực" };
+export const metadata = { title: "Hồ sơ năng lực" };
 
 export default async function Page() {
   const me = await requireMe("/ai");
@@ -17,7 +17,7 @@ export default async function Page() {
 
   return (
     <div>
-      <PageHeader en="AI CSCA" vi="Hồ sơ năng lực cá nhân">Mỗi bài thi cập nhật hồ sơ kỹ năng của bạn: điểm mạnh, điểm yếu, tốc độ và tiến bộ theo thời gian.</PageHeader>
+      <PageHeader en="Skill Profile" vi="Hồ sơ năng lực cá nhân">Mỗi bài thi cập nhật hồ sơ kỹ năng của bạn: điểm mạnh, điểm yếu, tốc độ và tiến bộ theo thời gian.</PageHeader>
 
       {!p.attempts.length && p.topics.length === 0 ? (
         <div className="card mx-auto max-w-xl text-center"><Icon name="sparkles" className="mx-auto h-10 w-10 text-brand" /><h2 className="mt-3 text-xl font-bold">Chưa có dữ liệu để phân tích</h2><p className="mt-1 text-slate-600">Làm Quick Test 15 phút để AI đánh giá năng lực và dựng hồ sơ cho bạn.</p><Link href="/quick-test" className="btn mt-5">Làm Quick Test</Link></div>

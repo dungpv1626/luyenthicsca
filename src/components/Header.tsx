@@ -13,7 +13,7 @@ export function Header({ me }: { me: Me | null }) {
         <Link href="/" className="mr-1 shrink-0"><Logo light /></Link>
         <DesktopNav />
         <div className="ml-auto flex items-center gap-2 text-sm lg:ml-0">
-          <Link href="/quick-test" className="btn-light hidden !px-4 sm:inline-flex">Thi thử miễn phí</Link>
+          <Link href="/quick-test" className="btn-light hidden !px-4 sm:inline-flex lg:hidden xl:inline-flex">Thi thử miễn phí</Link>
           {me ? (
             <AccountMenu name={me.full_name || me.email} isStaff={me.role !== "student"}>
               <form action={signOut}><button className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-600 hover:bg-slate-100">Đăng xuất</button></form>
