@@ -41,23 +41,23 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const done = (hist ?? []).filter((a) => a.submitted_at);
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-4">
+    <div className="w-form grid gap-4">
       <div className="card space-y-4 !p-6 shadow-soft sm:!p-7">
         <div>
           <p className="eyebrow">{t.sim ? "Đề mô phỏng CSCA" : level ? `Mức ${level.level} · ${level.name}` : "Đề thi thử"}</p>
-          <h1 className="mt-1 text-2xl font-extrabold text-navy">{t.title}</h1>
+          <h1 className="work-title mt-1">{t.title}</h1>
           {t.description && <p className="mt-1 text-slate-600">{t.description}</p>}
         </div>
         <dl className="grid grid-cols-3 gap-2 text-center text-sm">
-          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-slate-500">Số câu</dt><dd className="text-xl font-black text-navy">{qs.length}</dd></div>
-          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-slate-500">Thời gian</dt><dd className="text-xl font-black text-navy">{t.duration_min}′</dd></div>
-          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-slate-500">Giá</dt><dd className={`text-xl font-black ${t.price_vnd ? "text-navy" : "text-emerald-600"}`}>{t.price_vnd ? vnd(t.price_vnd) : "Miễn phí"}</dd></div>
+          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-muted">Số câu</dt><dd className="text-xl font-black text-navy">{qs.length}</dd></div>
+          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-muted">Thời gian</dt><dd className="text-xl font-black text-navy">{t.duration_min}′</dd></div>
+          <div className="rounded-xl bg-mist p-3"><dt className="text-xs text-muted">Giá</dt><dd className={`text-xl font-black ${t.price_vnd ? "text-navy" : "text-emerald-600"}`}>{t.price_vnd ? vnd(t.price_vnd) : "Miễn phí"}</dd></div>
         </dl>
         <div className="grid gap-4 text-sm sm:grid-cols-2">
           {t.sim && t.subject && t.subject in MODULES
             ? <div><p className="font-bold">Cơ cấu theo mô-đun đề cương</p><ul className="mt-1.5 space-y-1">{MODULES[t.subject as SylSubject].filter((m) => byMod[m.key]).map((m) => <li key={m.key} className="flex justify-between gap-3 text-slate-600"><span>{m.name}</span><b className="shrink-0 text-ink">{byMod[m.key]} câu</b></li>)}</ul></div>
             : <div><p className="font-bold">Cơ cấu theo môn</p><ul className="mt-1.5 space-y-1">{Object.entries(bySub).map(([k, n]) => <li key={k} className="flex justify-between text-slate-600"><span>{SUBJECTS[k as Subject]?.split(" (")[0] ?? k}</span><b className="text-ink">{n} câu</b></li>)}</ul></div>}
-          <div><p className="font-bold">Cơ cấu độ khó</p><ul className="mt-1.5 space-y-1">{(["easy", "medium", "hard"] as const).filter((k) => byDiff[k]).map((k) => <li key={k} className="flex justify-between text-slate-600"><span>{DIFFICULTY[k]}</span><b className="text-ink">{byDiff[k]} câu</b></li>)}</ul>{t.sim ? <p className="mt-1 text-xs text-slate-500">Cơ cấu ước lượng: {mixText(SIM_MIX)}</p> : level && <p className="mt-1 text-xs text-slate-500">Mục tiêu của mức: {mixText(level.mix)}</p>}</div>
+          <div><p className="font-bold">Cơ cấu độ khó</p><ul className="mt-1.5 space-y-1">{(["easy", "medium", "hard"] as const).filter((k) => byDiff[k]).map((k) => <li key={k} className="flex justify-between text-slate-600"><span>{DIFFICULTY[k]}</span><b className="text-ink">{byDiff[k]} câu</b></li>)}</ul>{t.sim ? <p className="mt-1 text-xs text-muted">Cơ cấu ước lượng: {mixText(SIM_MIX)}</p> : level && <p className="mt-1 text-xs text-muted">Mục tiêu của mức: {mixText(level.mix)}</p>}</div>
         </div>
 
         {t.sim && t.subject && t.subject in SIM_FORMAT && (
@@ -65,7 +65,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         )}
         <div className="border-t border-slate-100 pt-4">
           {!me ? <Link href={`/dang-nhap?next=/thi-thu/${id}`} className="btn w-full sm:w-auto">Đăng nhập để làm bài</Link>
-            : access ? <form action={startMockAction.bind(null, id)} className="flex flex-wrap items-center gap-3"><SubmitButton className="btn w-full sm:w-auto" pendingText="Đang mở bài thi…">{open ? "Tiếp tục làm bài" : done.some((a) => !(a.breakdown as Breakdown | null)?.insufficient) ? "Làm lại bài này" : "Bắt đầu làm bài"}</SubmitButton>{open && <p className="text-sm text-amber-800">Bạn đang làm dở, còn <b className="font-mono">{String(Math.floor(leftSec / 60)).padStart(2, "0")}:{String(leftSec % 60).padStart(2, "0")}</b>. Đồng hồ vẫn chạy.</p>}</form>
+            : access ? <form action={startMockAction.bind(null, id)} className="flex flex-wrap items-center gap-3"><SubmitButton className="btn w-full sm:w-auto" pendingText="Đang mở bài thi…">{open ? "Tiếp tục làm bài" : done.some((a) => !(a.breakdown as Breakdown | null)?.insufficient) ? "Làm lại bài này" : "Bắt đầu làm bài"}</SubmitButton>{open && <p className="text-sm text-warning">Bạn đang làm dở, còn <b className="font-mono">{String(Math.floor(leftSec / 60)).padStart(2, "0")}:{String(leftSec % 60).padStart(2, "0")}</b>. Đồng hồ vẫn chạy.</p>}</form>
             : <form action={buyTestAction.bind(null, id)}><SubmitButton className="btn w-full sm:w-auto" pendingText="Đang tạo đơn hàng…">Mua đề – {vnd(t.price_vnd)}</SubmitButton></form>}
         </div>
       </div>

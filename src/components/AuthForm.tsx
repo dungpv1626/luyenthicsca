@@ -17,7 +17,7 @@ function ResendBox({ email }: { email: string }) {
   return (
     <div className="space-y-2">
       <button type="button" className="btn-outline w-full" disabled={busy || wait > 0} onClick={async () => { setBusy(true); const r = await resendConfirmationAction(email); setMsg(r); setBusy(false); setWait(60); }}>{busy ? "Đang gửi…" : wait > 0 ? `Gửi lại email (${wait}s)` : "Gửi lại email xác nhận"}</button>
-      {msg && <p role="status" className={`rounded-lg p-2 text-sm ${msg.ok ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-900"}`}>{msg.message}</p>}
+      {msg && <p role="status" className={`rounded-lg p-2 text-sm ${msg.ok ? "bg-success-bg text-emerald-800" : "bg-warning-bg text-amber-900"}`}>{msg.message}</p>}
     </div>
   );
 }
@@ -29,7 +29,7 @@ export function AuthForm({ mode, action, next, audience }: { mode: "login" | "re
   if (state?.pending) return (
     <div className="card mx-auto max-w-md space-y-4 !p-7 text-center shadow-soft" role="status">
       <Logo vertical className="!w-24" />
-      <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-100 text-2xl text-emerald-700" aria-hidden="true">✉</span>
+      <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-100 text-2xl text-success" aria-hidden="true">✉</span>
       <h1 className="text-2xl font-extrabold text-navy">Kiểm tra email của bạn</h1>
       <p className="text-slate-600">Chúng tôi đã gửi email xác nhận tới <b className="break-all text-ink">{state.pending}</b>. Bấm vào liên kết trong email để kích hoạt tài khoản.</p>
       <ul className="space-y-1 rounded-xl bg-mist p-3 text-left text-sm text-slate-600"><li>• Email có thể mất 1–2 phút mới tới.</li><li>• Hãy xem cả mục <b>Spam</b> hoặc <b>Quảng cáo</b> (người gửi: no-reply@luyenthicsca.edu.vn).</li><li>• Nhập sai email? Quay lại và đăng ký lại bằng email đúng.</li></ul>
@@ -59,7 +59,7 @@ export function AuthForm({ mode, action, next, audience }: { mode: "login" | "re
       )}
       <div><label className="label" htmlFor="f-email">Email</label><input id="f-email" type="email" name="email" required defaultValue={v.email} className="input" /></div>
       <div><label className="label" htmlFor="f-password">Mật khẩu</label><input id="f-password" type="password" name="password" required minLength={reg ? 8 : 1} autoComplete={reg ? "new-password" : "current-password"} className="input" />{!reg && <Link href="/quen-mat-khau" className="mt-1 inline-flex min-h-[2.75rem] items-center text-sm font-semibold text-brand hover:underline">Quên mật khẩu?</Link>}</div>
-      {state?.error && <p role="alert" className="rounded bg-red-50 p-2 text-sm text-red-700">{state.error}</p>}
+      {state?.error && <p role="alert" className="rounded bg-danger-bg p-2 text-sm text-danger">{state.error}</p>}
       {state?.unconfirmed && <ResendBox email={state.unconfirmed} />}
       <button disabled={pending} className="btn w-full">{pending ? "Đang xử lý…" : reg ? "Đăng ký" : "Đăng nhập"}</button>
       <p className="text-center text-sm text-slate-600">

@@ -57,6 +57,20 @@ export async function setQuestionStatus(id: string, status: "draft" | "review" |
   revalidatePath("/admin/questions");
 }
 
+/** Đổi trạng thái hàng loạt cho các câu đã tích (tối đa 100 câu một lần). */
+export async function bulkSetQuestionStatus(fd: FormData) {
+  const me = await requireAdmin("questions");
+  const status = String(fd.get("status") ?? "");
+  if (status !== "review" && status !== "approved") return;
+  if (status === "approved" && me.role !== "super_admin" && me.role !== "academic_reviewer") return;
+  const ids = fd.getAll("ids").map(String).filter(Boolean).slice(0, 100);
+  if (!ids.length) return;
+  // Chỉ chuyển nháp -> chờ duyệt, hoặc chưa duyệt -> đã duyệt; không đụng vào câu đã duyệt.
+  const q = adminDb().from("questions").update({ status, reviewer: status === "approved" ? me.id : null }).in("id", ids);
+  await (status === "review" ? q.eq("status", "draft") : q.neq("status", "approved"));
+  revalidatePath("/admin/questions");
+}
+
 export async function createTest(fd: FormData) {
   await requireAdmin("tests");
   const db = adminDb();

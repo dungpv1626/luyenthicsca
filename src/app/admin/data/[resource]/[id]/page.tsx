@@ -31,7 +31,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     <div className="max-w-2xl space-y-4">
       <form action={saveResource.bind(null, resource, isNew ? null : id)} className="card space-y-4">
         <h1 className="text-xl font-bold">{isNew ? "Thêm" : "Sửa"} {r.title.toLowerCase()}</h1>
-        {error && <p className="rounded-lg bg-red-50 p-2 text-sm text-red-700">Vui lòng kiểm tra lại các trường bắt buộc.</p>}
+        {error && <p className="rounded-lg bg-danger-bg p-2 text-sm text-danger">Vui lòng kiểm tra lại các trường bắt buộc.</p>}
         {r.fields.map((f) => (
           <div key={f.name}>
             {f.type !== "checkbox" && <label className="label" htmlFor={`a-${f.name}`}>{f.label}{f.required && " *"}</label>}
@@ -41,12 +41,12 @@ export default async function Page({ params, searchParams }: { params: Promise<{
               : f.type === "ref" ? <select id={`a-${f.name}`} name={f.name} defaultValue={(val(f.name) as string) ?? ""} className="input" required={f.required}><option value="">—</option>{refs[f.name]?.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}</select>
               : f.type === "tags" ? <input id={`a-${f.name}`} name={f.name} defaultValue={((val(f.name) as string[]) ?? []).join(", ")} className="input" />
               : <input id={`a-${f.name}`} name={f.name} type={f.type === "number" ? "number" : f.type === "date" ? "date" : "text"} min={f.min} max={f.max} defaultValue={(val(f.name) as string | number) ?? (f.type === "number" && !f.nullable ? 0 : "")} required={f.required} className="input" />}
-            {f.help && <p className="mt-1 text-xs text-slate-500">{f.help}</p>}
+            {f.help && <p className="mt-1 text-xs text-muted">{f.help}</p>}
           </div>
         ))}
         <button className="btn">Lưu</button>
       </form>
-      {!isNew && <form action={deleteResource.bind(null, resource, id)}><ConfirmButton danger className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 text-sm font-semibold text-red-700 hover:bg-red-50" title="Xóa mục này?" message="Mục này sẽ bị xóa vĩnh viễn và không khôi phục được. Các mục liên quan (vd bài giảng của khóa học) có thể bị ảnh hưởng." confirmText="Xóa vĩnh viễn">Xóa mục này</ConfirmButton></form>}
+      {!isNew && <form action={deleteResource.bind(null, resource, id)}><ConfirmButton danger className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 text-sm font-semibold text-danger hover:bg-danger-bg" title="Xóa mục này?" message="Mục này sẽ bị xóa vĩnh viễn và không khôi phục được. Các mục liên quan (vd bài giảng của khóa học) có thể bị ảnh hưởng." confirmText="Xóa vĩnh viễn">Xóa mục này</ConfirmButton></form>}
     </div>
   );
 }

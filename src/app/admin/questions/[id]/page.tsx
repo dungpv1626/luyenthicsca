@@ -22,7 +22,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   return (
     <form action={saveQuestion.bind(null, isNew ? null : id)} className="card max-w-2xl space-y-3">
       <h1 className="text-xl font-bold">{isNew ? "Câu hỏi mới" : "Sửa câu hỏi"}</h1>
-      {error && <p className="rounded bg-red-50 p-2 text-sm text-red-700">Vui lòng điền đủ chủ đề, nội dung và 4 đáp án.</p>}
+      {error && <p className="rounded bg-danger-bg p-2 text-sm text-danger">Vui lòng điền đủ chủ đề, nội dung và 4 đáp án.</p>}
       <div className="grid grid-cols-2 gap-3">
         <div><label className="label" htmlFor="a-subject">Môn</label>{sel("subject", SUBJECTS, q?.subject)}</div>
         <div><label className="label" htmlFor="a-topic">Chủ đề</label><input id="a-topic" name="topic" defaultValue={q?.topic} className="input" required /></div>
@@ -47,7 +47,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
               <textarea name={`tr_${lg}_body`} rows={3} defaultValue={t.body ?? ""} placeholder="Nội dung câu hỏi" aria-label={`Nội dung câu hỏi (${lg})`} className="input" />
               {(["A", "B", "C", "D"] as const).map((k) => <input key={k} name={`tr_${lg}_opt_${k}`} defaultValue={t.options?.[k] ?? ""} placeholder={`Đáp án ${k}`} aria-label={`Đáp án ${k} (${lg})`} className="input" />)}
               <textarea name={`tr_${lg}_explanation`} rows={3} defaultValue={t.explanation ?? ""} placeholder="Giải thích" aria-label={`Giải thích (${lg})`} className="input" />
-              <p className="text-xs text-slate-500">Thứ tự A–D phải tương đương bản tiếng Việt. Để trống phần nội dung để bỏ bản dịch này.</p>
+              <p className="text-xs text-muted">Thứ tự A–D phải tương đương bản tiếng Việt. Để trống phần nội dung để bỏ bản dịch này.</p>
             </div>
           </details>
         );

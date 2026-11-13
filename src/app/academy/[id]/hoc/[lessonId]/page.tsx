@@ -30,7 +30,7 @@ export default async function Page({ params }: { params: Promise<{ id: string; l
     <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
       <article className="space-y-5">
         <Link href={`/academy/${id}`} className="text-sm font-semibold text-brand hover:underline">← {c.title}</Link>
-        <h1 className="text-2xl font-extrabold">{l.title}</h1>
+        <h1 className="work-title">{l.title}</h1>
         {video ? <div className="aspect-video overflow-hidden rounded-2xl bg-black shadow-soft"><iframe src={video} title={l.title} className="h-full w-full" allow="accelerometer; encrypted-media; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /></div>
           : l.video_url ? <a href={l.video_url} target="_blank" rel="noopener noreferrer" className="btn-outline"><Icon name="play" className="h-4 w-4" />Xem video</a> : null}
         {l.content && <div className="card whitespace-pre-wrap leading-relaxed text-slate-800">{l.content}</div>}
@@ -46,7 +46,7 @@ export default async function Page({ params }: { params: Promise<{ id: string; l
           {me && <form action={toggleLessonAction.bind(null, lessonId, id, !done)}><button className={done ? "btn-outline" : "btn"}>{done ? "✓ Đã hoàn thành (bỏ đánh dấu)" : "Đánh dấu hoàn thành"}</button></form>}
         </div>
       </article>
-      <aside className="card h-fit"><h2 className="mb-2 text-sm font-bold uppercase tracking-wider text-slate-500">Bài học</h2><ol className="space-y-1">{lessons!.map((x, i) => <li key={x.id}><Link href={`/academy/${id}/hoc/${x.id}`} className={`block rounded-lg px-3 py-2 text-sm ${x.id === lessonId ? "bg-brand text-white" : "hover:bg-brand-soft"}`}>{i + 1}. {x.title}</Link></li>)}</ol></aside>
+      <aside className="card h-fit"><h2 className="mb-2 text-sm font-bold uppercase tracking-wider text-muted">Bài học</h2><ol className="space-y-1">{lessons!.map((x, i) => <li key={x.id}><Link href={`/academy/${id}/hoc/${x.id}`} className={`block rounded-lg px-3 py-2 text-sm ${x.id === lessonId ? "bg-brand text-white" : "hover:bg-brand-soft"}`}>{i + 1}. {x.title}</Link></li>)}</ol></aside>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { ReviewHotkeys } from "@/components/admin/ReviewHotkeys";
 import { confirmBatchBySampleAction, disableBatchAction, reviewQuestionAction } from "../actions";
 import { ConfirmButton } from "@/components/ConfirmButton";
 
-const VERIFY = { pass: ["Giải độc lập: ĐẠT", "bg-emerald-50 text-emerald-700"], mismatch: ["Giải độc lập: LỆCH ĐÁP ÁN", "bg-red-50 text-red-700"], invalid: ["Lỗi cấu trúc", "bg-red-50 text-red-700"], unchecked: ["Chưa kiểm tra", "bg-slate-100 text-slate-600"] } as const;
+const VERIFY = { pass: ["Giải độc lập: ĐẠT", "bg-success-bg text-success"], mismatch: ["Giải độc lập: LỆCH ĐÁP ÁN", "bg-danger-bg text-danger"], invalid: ["Lỗi cấu trúc", "bg-danger-bg text-danger"], unchecked: ["Chưa kiểm tra", "bg-slate-100 text-slate-600"] } as const;
 type L = { body: string; options: Record<string, string>; explanation: string };
 type SP = { view?: string; subject?: string; verify?: string; module?: string; difficulty?: string; origin?: string; q?: string; skip?: string; need_note?: string; not_mine?: string };
 
@@ -98,25 +98,25 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
       </form>
 
       {live && <p className="rounded-xl bg-brand-soft p-3 text-sm text-slate-700">Các câu này <b>đang hiển thị cho học sinh</b>. <b>Duyệt</b> = xác nhận đúng. <b>Loại</b> = tắt ngay. Câu bị báo lỗi nhiều xếp lên đầu; đủ 3 lượt báo lỗi sẽ tự gỡ. Với lô lớn, xem đủ số câu mẫu rồi dùng “Xác nhận cả lô theo mẫu” ở cuối trang.</p>}
-      {!canApprove && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Tài khoản của bạn có thể xem và loại câu, nhưng chỉ Academic Reviewer hoặc Super Admin mới được duyệt.</p>}
-      {not_mine && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">Câu này thuộc môn bạn không được gán duyệt.</p>}
+      {!canApprove && <p className="rounded-xl bg-warning-bg p-3 text-sm text-warning">Tài khoản của bạn có thể xem và loại câu, nhưng chỉ Academic Reviewer hoặc Super Admin mới được duyệt.</p>}
+      {not_mine && <p className="rounded-xl bg-danger-bg p-3 text-sm text-danger">Câu này thuộc môn bạn không được gán duyệt.</p>}
 
-      {!q ? <div className="card text-center text-slate-600">Hàng chờ trống{keep.length > 2 ? " với bộ lọc này" : ""}. 🎉</div> : (
+      {!q ? <div className="card text-center text-slate-600">Hàng chờ trống{keep.length > 2 ? " với bộ lọc này" : ""}.</div> : (
         <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
           <div className="min-w-0 space-y-3">
             <div className="card flex flex-wrap items-center gap-2 text-sm">
               <span className="chip">{SUBJECTS[q.subject as Subject]}</span><span className="chip">{moduleName(q.subject, q.module)}</span><span className="chip">{q.topic}</span>{q.subtopic && <span className="chip">{q.subtopic}</span>}<span className="chip">{DIFFICULTY[q.difficulty as keyof typeof DIFFICULTY]}</span>
-              {q.skill && <span className="text-slate-500">Kỹ năng: {q.skill}</span>}<span className="text-slate-500">~{q.est_time_sec}s</span>
+              {q.skill && <span className="text-muted">Kỹ năng: {q.skill}</span>}<span className="text-muted">~{q.est_time_sec}s</span>
               {verifyInfo && <span className={`ml-auto rounded-full px-3 py-1 text-xs font-bold ${verifyInfo[1]}`}>{verifyInfo[0]}</span>}
             </div>
-            {myReports.length > 0 && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800"><b>{myReports.length} lượt báo lỗi từ học sinh:</b><ul className="mt-1 list-disc pl-5">{myReports.map((r, i) => <li key={i}>{({ wrong_answer: "Đáp án sai", unclear: "Đề không rõ", bad_translation: "Dịch sai", other: "Khác" } as Record<string, string>)[r.reason] ?? r.reason}{r.note ? ` – “${r.note}”` : ""}</li>)}</ul></div>}
-            {q.verify_note && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900"><b>Ghi chú tự động:</b> {q.verify_note}</p>}
+            {myReports.length > 0 && <div className="rounded-xl border border-red-200 bg-danger-bg p-3 text-sm text-red-800"><b>{myReports.length} lượt báo lỗi từ học sinh:</b><ul className="mt-1 list-disc pl-5">{myReports.map((r, i) => <li key={i}>{({ wrong_answer: "Đáp án sai", unclear: "Đề không rõ", bad_translation: "Dịch sai", other: "Khác" } as Record<string, string>)[r.reason] ?? r.reason}{r.note ? ` – “${r.note}”` : ""}</li>)}</ul></div>}
+            {q.verify_note && <p className="rounded-xl bg-warning-bg p-3 text-sm text-amber-900"><b>Ghi chú tự động:</b> {q.verify_note}</p>}
             <div className={`grid gap-3 ${cols}`}>
               {langs.map(([k, label, l]) => (
                 <div key={k} className="card min-w-0">
                   <p className="eyebrow mb-2">{label}</p>
                   <div className="font-medium"><Rich text={l.body} /></div>
-                  <ul className="mt-2 space-y-1 text-sm">{(["A", "B", "C", "D"] as const).map((o) => <li key={o} className={o === q.correct_answer ? "rounded-lg bg-emerald-50 px-2 py-1 font-bold text-emerald-800" : "px-2 py-1"}>{o}. <Rich text={l.options[o]} /></li>)}</ul>
+                  <ul className="mt-2 space-y-1 text-sm">{(["A", "B", "C", "D"] as const).map((o) => <li key={o} className={o === q.correct_answer ? "rounded-lg bg-success-bg px-2 py-1 font-bold text-emerald-800" : "px-2 py-1"}>{o}. <Rich text={l.options[o]} /></li>)}</ul>
                   <p className="mt-2 text-sm text-slate-600">💡 <Rich text={l.explanation} /></p>
                 </div>
               ))}
@@ -124,17 +124,17 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
           </div>
 
           <aside className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white p-3 shadow-[0_-4px_16px_rgba(15,23,42,.08)] lg:static lg:z-auto lg:h-fit lg:space-y-3 lg:rounded-2xl lg:border lg:p-4 lg:shadow-none lg:sticky lg:top-20">
-            <p className="hidden text-sm text-slate-600 lg:block">Đáp án soạn: <b className="text-emerald-700">{q.correct_answer}</b>. Kiểm tra cả 3 ngôn ngữ có tương đương và đúng khoa học không.</p>
-            {need_note && <p className="mb-2 rounded-lg bg-red-50 p-2 text-sm text-red-700">Cần nhập lý do khi loại câu.</p>}
+            <p className="hidden text-sm text-slate-600 lg:block">Đáp án soạn: <b className="text-success">{q.correct_answer}</b>. Kiểm tra cả 3 ngôn ngữ có tương đương và đúng khoa học không.</p>
+            {need_note && <p className="mb-2 rounded-lg bg-danger-bg p-2 text-sm text-danger">Cần nhập lý do khi loại câu.</p>}
             <form action={reviewQuestionAction.bind(null, q.id, `/admin/review${qs ? `?${qs}` : ""}`)} className="space-y-2">
               <textarea name="note" rows={2} placeholder="Ghi chú / lý do loại (bắt buộc khi loại)" aria-label="Ghi chú hoặc lý do loại" className="input" />
               <div className="grid grid-cols-2 gap-2">
-                <button name="decision" value="approve" disabled={!canApprove || notMyQ} className="btn min-h-[2.75rem] disabled:opacity-40">{live ? "Xác nhận đúng" : "Duyệt"} <kbd className="ml-1 hidden rounded bg-white/25 px-1.5 text-[11px] lg:inline">A</kbd></button>
-                <button name="decision" value="reject" disabled={notMyQ} className="btn-outline min-h-[2.75rem] !border-red-300 !text-red-700">{live ? "Loại (tắt ngay)" : "Loại"} <kbd className="ml-1 hidden rounded bg-red-50 px-1.5 text-[11px] lg:inline">R</kbd></button>
+                <button name="decision" value="approve" disabled={!canApprove || notMyQ} className="btn min-h-[2.75rem] disabled:opacity-40">{live ? "Xác nhận đúng" : "Duyệt"} <kbd className="ml-1 hidden rounded bg-white/25 px-1.5 text-xs lg:inline">A</kbd></button>
+                <button name="decision" value="reject" disabled={notMyQ} className="btn-outline min-h-[2.75rem] !border-red-300 !text-danger">{live ? "Loại (tắt ngay)" : "Loại"} <kbd className="ml-1 hidden rounded bg-danger-bg px-1.5 text-xs lg:inline">R</kbd></button>
               </div>
             </form>
-            <div className="mt-1 flex justify-between text-sm lg:mt-0"><Link href={`/admin/questions/${q.id}`} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand hover:underline">Sửa <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-[11px] lg:inline">E</kbd></Link><Link href={skipHref} className="inline-flex min-h-[2.5rem] items-center text-slate-500 hover:underline">Bỏ qua <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-[11px] lg:inline">S</kbd></Link></div>
-            <p className="hidden border-t border-slate-100 pt-2 text-xs text-slate-400 lg:block">Phím tắt: A duyệt · R loại (gõ lý do trước, hoặc R để vào ô lý do) · S bỏ qua · E sửa. Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
+            <div className="mt-1 flex justify-between text-sm lg:mt-0"><Link href={`/admin/questions/${q.id}`} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand hover:underline">Sửa <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">E</kbd></Link><Link href={skipHref} className="inline-flex min-h-[2.5rem] items-center text-muted hover:underline">Bỏ qua <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">S</kbd></Link></div>
+            <p className="hidden border-t border-slate-100 pt-2 text-xs text-muted lg:block">Phím tắt: A duyệt · R loại (gõ lý do trước, hoặc R để vào ô lý do) · S bỏ qua · E sửa. Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
           </aside>
           <ReviewHotkeys skipHref={skipHref} editHref={`/admin/questions/${q.id}`} canApprove={canApprove && !notMyQ} />
         </div>
@@ -142,13 +142,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
 
       {live && topBatches.length > 0 && (
         <section className="card space-y-3">
-          <div><h2 className="font-bold">Xử lý theo lô</h2><p className="text-sm text-slate-500">Xác nhận theo mẫu: bạn cần tự xem và xác nhận đủ số câu mẫu của lô (10%, tối thiểu 5, tối đa 20) và không loại câu nào; các câu còn lại được xác nhận hàng loạt và <b>đánh dấu “xác nhận theo mẫu”</b> để phân biệt với câu được xem từng câu. Nếu lô có vấn đề chung, hãy gỡ cả lô.</p></div>
+          <div><h2 className="font-bold">Xử lý theo lô</h2><p className="text-sm text-muted">Xác nhận theo mẫu: bạn cần tự xem và xác nhận đủ số câu mẫu của lô (10%, tối thiểu 5, tối đa 20) và không loại câu nào; các câu còn lại được xác nhận hàng loạt và <b>đánh dấu “xác nhận theo mẫu”</b> để phân biệt với câu được xem từng câu. Nếu lô có vấn đề chung, hãy gỡ cả lô.</p></div>
           <div className="divide-y divide-slate-100">
             {topBatches.map(([b, n]) => { const i = batchInfo(b); const need = sampleNeeded(i.total); const ok = i.done >= need && i.rejected === 0; return (
               <div key={b} className="flex flex-wrap items-center gap-2 py-2 text-sm">
-                <div className="min-w-0 flex-1"><p className="font-semibold">Lô …{b.slice(-9)} · còn {n} câu chờ xác nhận</p><p className="text-xs text-slate-500">Mẫu bạn đã xem: {i.done}/{need}{i.rejected > 0 ? ` · bạn đã loại ${i.rejected} câu → phải xem từng câu` : ""}</p></div>
+                <div className="min-w-0 flex-1"><p className="font-semibold">Lô …{b.slice(-9)} · còn {n} câu chờ xác nhận</p><p className="text-xs text-muted">Mẫu bạn đã xem: {i.done}/{need}{i.rejected > 0 ? ` · bạn đã loại ${i.rejected} câu → phải xem từng câu` : ""}</p></div>
                 <form action={confirmBatchBySampleAction.bind(null, b)}><ConfirmButton disabled={!canApprove || !ok} className="btn-outline min-h-[2.5rem] disabled:opacity-40" title="Xác nhận cả lô theo mẫu?" message={`${n} câu còn lại của lô sẽ được đánh dấu “xác nhận theo mẫu” dựa trên ${i.done} câu bạn đã xem từng câu. Học viên vẫn thấy các câu này.`} confirmText="Xác nhận cả lô">Xác nhận theo mẫu</ConfirmButton></form>
-                <form action={disableBatchAction.bind(null, b)}><ConfirmButton danger className="inline-flex min-h-[2.5rem] items-center rounded-full border border-red-200 px-4 text-xs font-semibold text-red-700 hover:bg-red-50" title="Gỡ cả lô câu hỏi?" message={`Toàn bộ ${n} câu của lô ${b} sẽ bị gỡ khỏi học viên và quay về hàng chờ duyệt. Các đề đã dựng từ những câu này sẽ thiếu câu.`} confirmText="Gỡ cả lô">Gỡ cả lô</ConfirmButton></form>
+                <form action={disableBatchAction.bind(null, b)}><ConfirmButton danger className="inline-flex min-h-[2.5rem] items-center rounded-full border border-red-200 px-4 text-xs font-semibold text-danger hover:bg-danger-bg" title="Gỡ cả lô câu hỏi?" message={`Toàn bộ ${n} câu của lô ${b} sẽ bị gỡ khỏi học viên và quay về hàng chờ duyệt. Các đề đã dựng từ những câu này sẽ thiếu câu.`} confirmText="Gỡ cả lô">Gỡ cả lô</ConfirmButton></form>
               </div>); })}
           </div>
         </section>

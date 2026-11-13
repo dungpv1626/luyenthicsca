@@ -23,7 +23,7 @@ export default async function Page({ params }: { params: Promise<{ resource: str
       <div className="card overflow-x-auto !p-0">
         <table className="w-full text-sm"><thead><tr className="bg-slate-50 text-left">{r.columns.map((c) => <th key={c} className="p-3 font-semibold">{label(c)}</th>)}<th /></tr></thead>
           <tbody>{(data ?? []).map((row) => <tr key={row.id} className="border-t border-slate-100">{r.columns.map((c) => <td key={c} className="p-3">{show(row[c])}</td>)}<td className="p-3 text-right"><Link href={`/admin/data/${resource}/${row.id}`} className="inline-block rounded-lg px-2.5 py-2 font-semibold text-brand hover:bg-brand-soft">Sửa</Link></td></tr>)}</tbody></table>
-        {!data?.length && <p className="p-5 text-slate-500">Chưa có dữ liệu.</p>}
+        {!data?.length && <p className="p-5 text-muted">Chưa có dữ liệu.</p>}
       </div>
     </div>
   );

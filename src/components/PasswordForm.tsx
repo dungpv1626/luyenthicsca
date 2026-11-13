@@ -21,8 +21,8 @@ export function PasswordForm({ title, intro, fields, action, submit, footer }: {
         </div>
       ))}
       {hasPw && <label className="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} />Hiện mật khẩu</label>}
-      {state?.error && <p role="alert" className="rounded-lg bg-red-50 p-2.5 text-sm text-red-700">{state.error}</p>}
-      {state?.ok && <p role="status" className="rounded-lg bg-emerald-50 p-2.5 text-sm text-emerald-800">{state.ok}</p>}
+      {state?.error && <p role="alert" className="rounded-lg bg-danger-bg p-2.5 text-sm text-danger">{state.error}</p>}
+      {state?.ok && <p role="status" className="rounded-lg bg-success-bg p-2.5 text-sm text-emerald-800">{state.ok}</p>}
       <button disabled={pending} className="btn w-full">{pending ? "Đang xử lý…" : submit}</button>
       {footer && <div className="text-center text-sm text-slate-600">{footer}</div>}
     </form>

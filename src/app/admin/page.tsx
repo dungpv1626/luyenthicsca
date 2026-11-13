@@ -73,19 +73,19 @@ export default async function Page() {
 
       {mine && (
         <div className="grid grid-cols-2 gap-3 sm:max-w-md">
-          <div className="card !p-3"><p className="text-xs font-semibold text-slate-500">Bạn đã xử lý hôm nay</p><p className="text-2xl font-extrabold text-navy">{mine.today.toLocaleString("vi-VN")}</p></div>
-          <div className="card !p-3"><p className="text-xs font-semibold text-slate-500">Tổng cộng</p><p className="text-2xl font-extrabold text-navy">{mine.total.toLocaleString("vi-VN")}</p></div>
+          <div className="card !p-3"><p className="text-xs font-semibold text-muted">Bạn đã xử lý hôm nay</p><p className="text-2xl font-extrabold text-navy">{mine.today.toLocaleString("vi-VN")}</p></div>
+          <div className="card !p-3"><p className="text-xs font-semibold text-muted">Tổng cộng</p><p className="text-2xl font-extrabold text-navy">{mine.total.toLocaleString("vi-VN")}</p></div>
         </div>
       )}
 
       <section aria-labelledby="todo">
-        <h2 id="todo" className="mb-2 text-sm font-bold uppercase tracking-wide text-slate-500">Việc cần làm {open.length > 0 && <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{open.length}</span>}</h2>
-        {open.length === 0 ? <div className="card text-sm text-slate-600">Không có việc tồn đọng. ✅</div> : (
+        <h2 id="todo" className="mb-2 text-sm font-bold uppercase tracking-wide text-muted">Việc cần làm {open.length > 0 && <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-warning">{open.length}</span>}</h2>
+        {open.length === 0 ? <div className="card text-sm text-slate-600">Không có việc tồn đọng.</div> : (
           <ul className="card divide-y divide-slate-100 !p-0">
             {open.map((t) => (
               <li key={t.title} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
-                <span className={`grid h-10 min-w-[3.25rem] place-items-center rounded-lg px-2 text-lg font-extrabold ${t.urgent ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-700"}`}>{t.n > 9999 ? "9999+" : t.n.toLocaleString("vi-VN")}</span>
-                <div className="min-w-0 flex-1 basis-56"><p className="font-semibold text-ink">{t.title}</p><p className="text-sm text-slate-500">{t.desc}</p></div>
+                <span className={`grid h-10 min-w-[3.25rem] place-items-center rounded-lg px-2 text-lg font-extrabold ${t.urgent ? "bg-amber-100 text-warning" : "bg-slate-100 text-slate-700"}`}>{t.n > 9999 ? "9999+" : t.n.toLocaleString("vi-VN")}</span>
+                <div className="min-w-0 flex-1 basis-56"><p className="font-semibold text-ink">{t.title}</p><p className="text-sm text-muted">{t.desc}</p></div>
                 <Link href={t.href} className={t.urgent ? "btn" : "btn-outline"}>{t.cta} →</Link>
               </li>
             ))}
@@ -95,10 +95,10 @@ export default async function Page() {
 
       {kpis.length > 0 && (
         <section aria-labelledby="kpi">
-          <h2 id="kpi" className="mb-2 text-sm font-bold uppercase tracking-wide text-slate-500">Số liệu</h2>
+          <h2 id="kpi" className="mb-2 text-sm font-bold uppercase tracking-wide text-muted">Số liệu</h2>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {kpis.map((k) => {
-              const body = <><p className="text-xs font-semibold text-slate-500">{k.label}</p><p className="mt-0.5 text-xl font-extrabold text-ink">{typeof k.value === "number" ? k.value.toLocaleString("vi-VN") : k.value}</p></>;
+              const body = <><p className="text-xs font-semibold text-muted">{k.label}</p><p className="mt-0.5 text-xl font-extrabold text-ink">{typeof k.value === "number" ? k.value.toLocaleString("vi-VN") : k.value}</p></>;
               return k.href ? <Link key={k.label} href={k.href} className="card card-hover block !p-3">{body}</Link> : <div key={k.label} className="card !p-3">{body}</div>;
             })}
           </div>

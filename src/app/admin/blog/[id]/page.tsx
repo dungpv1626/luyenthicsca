@@ -14,13 +14,13 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   if (!data) notFound();
   const p = data as Post;
   const flags = reviewFlags(p.body_md);
-  const len = (s: string, lo: number, hi: number) => (s.length > hi ? `text-amber-700 font-semibold` : s.length < lo ? "text-amber-700" : "text-emerald-700");
+  const len = (s: string, lo: number, hi: number) => (s.length > hi ? `text-amber-700 font-semibold` : s.length < lo ? "text-amber-700" : "text-success");
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-sm text-slate-500"><Link href="/admin/blog" className="hover:text-brand">← Blog SEO</Link></p><h1 className="text-2xl font-bold">{p.title}</h1></div><Link href={`/blog/${p.slug}`} target="_blank" className="btn-outline">Xem trước</Link></div>
-      {sp.ok && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">Đã lưu.</p>}
-      {sp.error && <p role="alert" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{sp.error}</p>}
-      {flags.length > 0 && <div className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900"><p className="font-bold">Cần xử lý trước khi công bố:</p><ul className="mt-1 list-disc pl-5">{flags.map((f) => <li key={f}>{f}</li>)}</ul></div>}
+      <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-sm text-muted"><Link href="/admin/blog" className="hover:text-brand">← Blog SEO</Link></p><h1 className="text-2xl font-bold">{p.title}</h1></div><Link href={`/blog/${p.slug}`} target="_blank" className="btn-outline">Xem trước</Link></div>
+      {sp.ok && <p role="status" className="rounded-xl bg-success-bg p-3 text-sm text-emerald-800">Đã lưu.</p>}
+      {sp.error && <p role="alert" className="rounded-xl bg-warning-bg p-3 text-sm text-amber-900">{sp.error}</p>}
+      {flags.length > 0 && <div className="rounded-xl bg-warning-bg p-3 text-sm text-amber-900"><p className="font-bold">Cần xử lý trước khi công bố:</p><ul className="mt-1 list-disc pl-5">{flags.map((f) => <li key={f}>{f}</li>)}</ul></div>}
       <form action={savePostAction.bind(null, p.id)} className="card space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div><label className="label" htmlFor="b-title">Tiêu đề bài (H1)</label><input id="b-title" name="title" defaultValue={p.title} required className="input" /></div>

@@ -19,11 +19,11 @@ export function AdminShell({ groups, name, roleLabel, children }: { groups: NavG
     <nav aria-label="Menu quản trị" className="space-y-4 text-sm">
       {groups.map((g) => (
         <div key={g.title}>
-          <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">{g.title}</p>
+          <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wider text-muted">{g.title}</p>
           <ul className="space-y-0.5">{g.items.map((i) => (
             <li key={i.href}><Link href={i.href} aria-current={active(i.href) ? "page" : undefined} className={`flex min-h-[2.25rem] items-center justify-between gap-2 rounded-lg px-3 font-medium transition ${active(i.href) ? "bg-brand text-white shadow-sm" : "text-slate-700 hover:bg-brand-soft hover:text-brand"}`}>
               <span>{i.label}</span>
-              {i.badge ? <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${active(i.href) ? "bg-white/25 text-white" : "bg-amber-100 text-amber-800"}`} aria-label={`${i.badge} việc cần xử lý`}>{i.badge > 999 ? "999+" : i.badge}</span> : null}
+              {i.badge ? <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${active(i.href) ? "bg-white/25 text-white" : "bg-amber-100 text-warning"}`} aria-label={`${i.badge} việc cần xử lý`}>{i.badge > 999 ? "999+" : i.badge}</span> : null}
             </Link></li>))}
           </ul>
         </div>
@@ -36,16 +36,16 @@ export function AdminShell({ groups, name, roleLabel, children }: { groups: NavG
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-[92rem] items-center gap-3 px-3 py-2 sm:px-5">
           <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-controls="admin-menu-mobile" className="inline-flex min-h-[2.5rem] items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold md:hidden">
-            ☰ Menu{total > 0 && <span className="rounded-full bg-amber-100 px-1.5 text-[11px] font-bold text-amber-800">{total > 99 ? "99+" : total}</span>}
+            ☰ Menu{total > 0 && <span className="rounded-full bg-amber-100 px-1.5 text-xs font-bold text-warning">{total > 99 ? "99+" : total}</span>}
           </button>
           <Link href="/admin" className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/mark.png" alt="" width={36} height={34} className="h-8 w-auto" />
-            <span className="leading-tight"><b className="block text-[15px] font-extrabold text-navy">Quản trị</b><small className="hidden text-[11px] font-semibold uppercase tracking-wider text-slate-400 sm:block">CSCA Việt Nam</small></span>
+            <span className="leading-tight"><b className="block text-[15px] font-extrabold text-navy">Quản trị</b><small className="hidden text-xs font-semibold uppercase tracking-wider text-muted sm:block">CSCA Việt Nam</small></span>
           </Link>
           <div className="ml-auto flex items-center gap-2 text-sm">
             <Link href="/" className="hidden min-h-[2.5rem] items-center rounded-lg px-3 font-semibold text-brand hover:bg-brand-soft sm:inline-flex">Xem trang học viên ↗</Link>
-            <div className="hidden text-right leading-tight sm:block"><p className="max-w-[12rem] truncate font-semibold">{name}</p><p className="text-[11px] text-slate-500">{roleLabel}</p></div>
+            <div className="hidden text-right leading-tight sm:block"><p className="max-w-[12rem] truncate font-semibold">{name}</p><p className="text-xs text-muted">{roleLabel}</p></div>
             <form action={signOut}><button className="btn-outline !min-h-[2.5rem] !px-4">Đăng xuất</button></form>
           </div>
         </div>

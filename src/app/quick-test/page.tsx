@@ -13,9 +13,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
   return (
     <div className="card mx-auto max-w-xl space-y-4 text-center !p-8 shadow-soft">
       <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-brand text-white"><Icon name="test" className="h-7 w-7" /></span>
-      <h1 className="text-2xl font-extrabold">Quick Test CSCA</h1>
+      <h1 className="work-title">Quick Test CSCA</h1>
       <p>{QUICK_TEST.questions} câu hỏi · {QUICK_TEST.minutes} phút · chấm điểm tự động · AI phân tích ngay sau khi nộp bài.</p>
-      {error && <p className="rounded bg-amber-50 p-2 text-sm text-amber-800">Ngân hàng câu hỏi chưa có câu đã duyệt. Vui lòng quay lại sau.</p>}
+      {error && <p className="rounded bg-warning-bg p-2 text-sm text-warning">Ngân hàng câu hỏi chưa có câu đã duyệt. Vui lòng quay lại sau.</p>}
       {me ? (
         <form action={startQuickTestAction}><SubmitButton className="btn w-full" pendingText="Đang tạo bài thi…">Bắt đầu làm bài</SubmitButton></form>
       ) : (

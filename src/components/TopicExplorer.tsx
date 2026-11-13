@@ -29,7 +29,7 @@ export function TopicExplorer({ subject, stats, track = "science" }: { subject: 
               const n = stats.zhTrack[k], on = track === k;
               return (
                 <Link key={k} href={`/luyen-tap?subject=chinese&track=${k}#chuyen-de`} scroll={false} role="tab" aria-selected={on} className={`block rounded-xl border p-3 ${on ? "border-2 border-brand bg-brand-soft/50" : "border-slate-200 bg-white hover:border-brand"} ${n === 0 ? "border-dashed bg-slate-50" : ""}`}>
-                  <p className="font-bold text-ink">{name} <span className="text-xs font-normal text-slate-500">{zh}</span></p>
+                  <p className="font-bold text-ink">{name} <span className="text-xs font-normal text-muted">{zh}</span></p>
                   <p className="mt-0.5 text-sm text-slate-600">{desc}</p>
                   <span className={`chip mt-2 ${n === 0 ? "!bg-slate-200 !text-slate-600" : ""}`}>{n === 0 ? "Sắp có" : `${n.toLocaleString("vi-VN")} câu`}</span>
                 </Link>
@@ -45,7 +45,7 @@ export function TopicExplorer({ subject, stats, track = "science" }: { subject: 
         const total = isChinese ? topics.reduce((a, t) => a + countOf(t.key), 0) : stats.byModule[subject]?.[m.key] ?? 0;
         return (
           <div key={m.key}>
-            <div className="mb-2 flex flex-wrap items-baseline gap-x-3"><h3 className="font-bold text-ink">{m.name}</h3><span className="text-xs text-slate-500">{total.toLocaleString("vi-VN")} câu</span></div>
+            <div className="mb-2 flex flex-wrap items-baseline gap-x-3"><h3 className="font-bold text-ink">{m.name}</h3><span className="text-xs text-muted">{total.toLocaleString("vi-VN")} câu</span></div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {topics.map((t) => <Card key={t.key} subject={subject} topicKey={t.key} track={isChinese ? track : undefined} vi={t.vi} en={t.en} zh={t.zh} desc={t.desc} n={countOf(t.key)} sample={t.sample} />)}
             </div>
@@ -63,11 +63,11 @@ function Card({ subject, topicKey, track, vi, en, zh, desc, n, sample }: { subje
       <input type="hidden" name="subject" value={subject} /><input type="hidden" name="topic_key" value={topicKey} /><input type="hidden" name="count" value="10" />
       {track && <input type="hidden" name="track" value={track} />}
       <p className="font-bold leading-snug text-ink">{vi}</p>
-      {(en || zh) && <p className="mt-0.5 text-xs text-slate-500">{[en, zh].filter(Boolean).join(" · ")}</p>}
+      {(en || zh) && <p className="mt-0.5 text-xs text-muted">{[en, zh].filter(Boolean).join(" · ")}</p>}
       <p className="mt-1.5 flex-1 text-sm text-slate-600">{desc}</p>
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        <span className={`chip ${soon ? "!bg-slate-200 !text-slate-600" : few ? "!bg-amber-50 !text-amber-800" : ""}`}>{soon ? "Sắp có" : `${n.toLocaleString("vi-VN")} câu`}</span>
-        {sample && <span className="chip !bg-emerald-50 !text-emerald-700" title="Nội dung này xuất hiện trong đề mẫu chính thức của CSC">Có trong đề mẫu chính thức</span>}
+        <span className={`chip ${soon ? "!bg-slate-200 !text-slate-600" : few ? "!bg-warning-bg !text-warning" : ""}`}>{soon ? "Sắp có" : `${n.toLocaleString("vi-VN")} câu`}</span>
+        {sample && <span className="chip !bg-success-bg !text-success" title="Nội dung này xuất hiện trong đề mẫu chính thức của CSC">Có trong đề mẫu chính thức</span>}
       </div>
       <SubmitButton disabled={soon} className="btn mt-3 w-full disabled:opacity-40" pendingText="Đang chọn câu…">{soon ? "Chưa có câu" : `Luyện ${Math.min(10, n)} câu`}</SubmitButton>
     </form>
