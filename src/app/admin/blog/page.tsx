@@ -34,7 +34,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
               <td className="max-w-xs py-3"><Link href={`/admin/blog/${p.id}`} className="font-semibold hover:text-brand-text">{p.title}</Link><p className="text-xs text-muted">/blog/{p.slug}{p.replaces_path ? ` · thay trang ${p.replaces_path}` : ""}</p></td>
               <td className="py-3 text-slate-600">{p.category}</td>
               <td className="py-3 text-slate-600">{fmtDate(p.planned_for)}</td>
-              <td className="py-3"><span className={`chip ${live ? "!bg-success-bg !text-success" : p.status === "scheduled" ? "!bg-sky-50 !text-sky-700" : "!bg-slate-100 !text-slate-600"}`}>{live ? "Đang hiển thị" : p.status === "scheduled" ? `Lịch ${fmtDate(p.publish_at)}` : "Nháp"}</span></td>
+              <td className="py-3"><span className={`chip ${live ? "!bg-success-bg !text-success" : p.status === "scheduled" ? "!bg-brand-soft !text-brand-text" : "!bg-slate-100 !text-slate-600"}`}>{live ? "Đang hiển thị" : p.status === "scheduled" ? `Lịch ${fmtDate(p.publish_at)}` : "Nháp"}</span></td>
               <td className="max-w-xs py-3">{f.length ? <ul className="list-disc pl-4 text-xs text-warning">{f.map((x) => <li key={x}>{x}</li>)}</ul> : <span className="text-xs text-success">Không</span>}</td>
               <td className="py-3 pr-3 text-right"><div className="flex flex-wrap justify-end gap-x-3 gap-y-1">
                 <Link href={`/blog/${p.slug}`} target="_blank" className="inline-flex min-h-[2.5rem] items-center px-1 text-brand-text hover:underline">Xem trước</Link>

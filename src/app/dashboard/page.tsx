@@ -63,7 +63,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       </div>
 
       {onboardSteps.some((x) => !x.done) && (
-        <section className="card !border-brand/30 bg-gradient-to-br from-brand-soft/60 to-white" aria-labelledby="onb">
+        <section className="card !border-brand/30 bg-gradient-to-br from-brand-soft/60 to-surface" aria-labelledby="onb">
           <div className="flex flex-wrap items-center justify-between gap-2"><h2 id="onb" className="text-lg font-extrabold text-navy">Bắt đầu hành trình ôn thi</h2><span className="chip">{onboardSteps.filter((x) => x.done).length}/{onboardSteps.length} bước</span></div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true"><span className="bar-anim block h-full rounded-full bg-brand" style={{ width: `${(onboardSteps.filter((x) => x.done).length / onboardSteps.length) * 100}%` }} /></div>
           <ol className="mt-4 divide-y divide-slate-100">

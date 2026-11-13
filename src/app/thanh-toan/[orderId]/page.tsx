@@ -21,7 +21,7 @@ export default async function Page({ params }: { params: Promise<{ orderId: stri
       <p className="text-3xl font-extrabold text-brand-text">{vnd(o.amount_vnd)}</p>
       {paid ? (
         <>
-          <p className="rounded bg-green-50 p-3 font-medium text-green-700">Đã thanh toán – nội dung đã được mở khóa.</p>
+          <p className="rounded bg-success-bg p-3 font-medium text-success">Đã thanh toán – nội dung đã được mở khóa.</p>
           <Link href={o.course_id ? `/academy/${o.course_id}` : `/thi-thu/${o.test_id}`} className="btn">{o.course_id ? "Vào học ngay" : "Làm bài ngay"}</Link>
         </>
       ) : o.status === "pending" ? (

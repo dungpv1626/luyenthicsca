@@ -96,7 +96,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       <div className="card space-y-3">
         <h2 className="text-lg font-bold">Phân tích AI {ai.source === "claude" ? "" : <span className="text-xs font-normal text-muted">(tự động)</span>}</h2>
         <p>{ai.summary}</p>
-        {ai.strengths.length > 0 && <div><h3 className="font-semibold text-green-700">Điểm mạnh</h3><ul className="list-disc pl-6">{ai.strengths.map((s) => <li key={s}>{s}</li>)}</ul></div>}
+        {ai.strengths.length > 0 && <div><h3 className="font-semibold text-success">Điểm mạnh</h3><ul className="list-disc pl-6">{ai.strengths.map((s) => <li key={s}>{s}</li>)}</ul></div>}
         {ai.weaknesses.length > 0 && <div><h3 className="font-semibold text-danger">Cần cải thiện</h3><ul className="list-disc pl-6">{ai.weaknesses.map((w) => <li key={w.topic}><b>{w.topic}:</b> {w.advice}</li>)}</ul></div>}
         <div><h3 className="font-semibold">Việc nên làm tiếp</h3><ol className="list-decimal pl-6">{ai.next_steps.map((s) => <li key={s}>{s}</li>)}</ol></div>
         {b.weaknesses.length > 0 && <p className="text-sm text-muted">Chủ đề yếu: {b.weaknesses.map(topicLabel).join(" · ")}</p>}
@@ -116,16 +116,16 @@ export default async function Page({ params, searchParams }: { params: Promise<{
             const tr = lang !== "vi" ? (q.translations as Record<string, { body: string; options: Record<string, string>; explanation: string }> | null)?.[lang] : null;
             const view = { body: tr?.body ?? q.body, options: (tr?.options ?? q.options) as Record<string, string>, explanation: tr?.explanation ?? q.explanation };
             return (
-              <details key={q.id} id={`q-${i + 1}`} open={shown.length <= 3} className={`group rounded-xl border ${ok ? "border-green-200 bg-green-50" : "border-red-200 bg-danger-bg"}`}>
+              <details key={q.id} id={`q-${i + 1}`} open={shown.length <= 3} className={`group rounded-xl border ${ok ? "border-success/30 bg-success-bg" : "border-red-200 bg-danger-bg"}`}>
                 <summary className="flex min-h-[3rem] cursor-pointer list-none items-start gap-3 p-3 [&::-webkit-details-marker]:hidden">
                   <span className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-extrabold text-white ${ok ? "bg-green-600" : "bg-red-600"}`} aria-hidden="true">{ok ? "✓" : mine ? "✗" : "–"}</span>
                   <span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-muted">Câu {i + 1} · {SUBJECTS[q.subject as Subject]} · {q.topic} · {ok ? "Đúng" : mine ? `Bạn chọn ${mine}, đáp án ${q.correct_answer}` : `Chưa làm, đáp án ${q.correct_answer}`}</span><span className="mt-0.5 line-clamp-2 block font-medium group-open:line-clamp-none"><Rich text={view.body} /></span></span>
                   <span className="mt-1 text-muted transition group-open:rotate-180" aria-hidden="true">▾</span>
                 </summary>
-                <div className="border-t border-black/5 p-3 pt-2">
+                <div className="border-t border-slate-200 p-3 pt-2">
                   <ul className="text-sm">
                     {Object.entries(view.options).map(([k, v]) => (
-                      <li key={k} className={`py-0.5 ${k === q.correct_answer ? "font-bold text-green-700" : k === mine ? "font-bold text-danger" : ""}`}>{k}. <Rich text={v} />{k === q.correct_answer && " ✓"}{k === mine && k !== q.correct_answer && " ✗ (bạn chọn)"}</li>
+                      <li key={k} className={`py-0.5 ${k === q.correct_answer ? "font-bold text-success" : k === mine ? "font-bold text-danger" : ""}`}>{k}. <Rich text={v} />{k === q.correct_answer && " ✓"}{k === mine && k !== q.correct_answer && " ✗ (bạn chọn)"}</li>
                     ))}
                   </ul>
                   {view.explanation && <p className="mt-2 text-sm text-slate-700">💡 <Rich text={view.explanation} /></p>}

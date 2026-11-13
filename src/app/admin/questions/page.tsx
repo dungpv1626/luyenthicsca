@@ -64,7 +64,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
               <p className="mt-0.5 text-xs text-muted">{SUBJECTS[x.subject as Subject]} · {x.topic}{x.subtopic ? ` › ${x.subtopic}` : ""} · {DIFFICULTY[x.difficulty as keyof typeof DIFFICULTY]} · {moduleName(x.subject, x.module)} · {ORIGIN[x.origin] ?? x.origin}</p>
             </div>
             <span className={`rounded px-2 py-0.5 text-xs font-semibold ${x.status === "approved" ? (x.auto_published ? "bg-warning-bg text-warning" : "bg-success-bg text-success") : "bg-slate-100 text-slate-600"}`}>{x.status === "approved" && x.auto_published ? "Đã công bố, chờ xác nhận" : STATUS_LABEL[x.status as keyof typeof STATUS_LABEL]}</span>
-            {canApprove && x.status !== "approved" && <form action={setQuestionStatus.bind(null, x.id, "approved")}><button className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 text-green-700 hover:bg-green-50">Duyệt</button></form>}
+            {canApprove && x.status !== "approved" && <form action={setQuestionStatus.bind(null, x.id, "approved")}><button className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 text-success hover:bg-green-50">Duyệt</button></form>}
             {x.status === "draft" && <form action={setQuestionStatus.bind(null, x.id, "review")}><button className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 text-amber-700 hover:bg-warning-bg">Gửi duyệt</button></form>}
             <Link href={`/admin/questions/${x.id}`} className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 font-semibold text-brand-text hover:bg-brand-soft">Sửa</Link>
           </div>
