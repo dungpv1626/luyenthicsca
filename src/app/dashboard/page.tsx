@@ -39,7 +39,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const leftText = `${String(Math.floor(leftSec / 60)).padStart(2, "0")}:${String(leftSec % 60).padStart(2, "0")}`;
   // Chỉ một nút chính, đổi theo trạng thái của học viên.
   const primary = openAttempt && leftSec > 0 ? { href: `/thi/${openAttempt.id}`, label: `Tiếp tục bài thi (còn ${leftText})` }
-    : !plan ? { href: "/lo-trinh", label: sk.attempts.length ? "Tạo lộ trình" : "Quick Test" }
+    : !plan ? (sk.attempts.length ? { href: "/lo-trinh", label: "Tạo lộ trình" } : { href: "/quick-test", label: "Quick Test" })
     : todo.length > 0 ? { href: "#nhiem-vu", label: "Làm nhiệm vụ hôm nay" }
     : { href: "/thi-thu", label: "Thi thử" };
   const resume = openAttempt && leftSec > 0 ? (
