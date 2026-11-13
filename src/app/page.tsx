@@ -69,7 +69,7 @@ export default async function Home() {
               {[`${QUICK_TEST.questions} câu`, `${QUICK_TEST.minutes} phút`, "Báo cáo AI ngay"].map((t) => <li key={t} className="flex items-center gap-1.5"><span className="grid h-5 w-5 place-items-center rounded-full bg-brand text-white"><Icon name="check" className="h-3 w-3" /></span>{t}</li>)}
             </ul>
           </div>
-          <div className="rise rise-3">{daily ? <DailyQuestion q={daily} /> : null}</div>
+          <div className="rise rise-3 hidden lg:block">{daily ? <DailyQuestion q={daily} /> : null}</div>
         </div>
       </section>
 
@@ -81,6 +81,8 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {daily && <section className="lg:hidden"><DailyQuestion q={daily} /></section>}
 
       {/* ===== ĐỐI TƯỢNG ===== */}
       <section>

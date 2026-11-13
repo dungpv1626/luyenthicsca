@@ -13,6 +13,16 @@ export const NAV = [
   ["/truong", "Trường & Học bổng"],
 ] as const;
 
+/** Mô tả một dòng cho từng mục, để phân biệt các cửa vào gần nghĩa nhau. */
+const DESC: Record<string, string> = {
+  "/thi-thu": "Đề đầy đủ mô phỏng kỳ thi, chấm điểm và phân tích",
+  "/luyen-tap": "Luyện từng môn, từng chủ đề, làm nhanh",
+  "/lo-trinh": "Kế hoạch học hằng ngày theo điểm yếu",
+  "/ai": "Điểm mạnh, điểm yếu và tiến bộ của bạn",
+  "/gia-su": "Hỏi đáp 24/7 với gia sư AI",
+  "/truong": "Đối chiếu năng lực với yêu cầu từng trường",
+};
+
 /** Nhóm "Khám phá": nội dung giới thiệu và đọc thêm, đi cùng menu thả xuống. */
 export const EXPLORE = [
   ["/csca", "CSCA là gì?"],
@@ -39,7 +49,7 @@ export function DesktopNav() {
   return (
     <nav aria-label="Menu chính" className="hidden flex-1 items-center justify-center gap-1 lg:flex">
       {NAV.map(([href, label]) => (
-        <Link key={href} href={href} aria-current={active(path, href) ? "page" : undefined} className={pill(active(path, href))}>{label}</Link>
+        <Link key={href} href={href} title={DESC[href]} aria-current={active(path, href) ? "page" : undefined} className={pill(active(path, href))}>{label}</Link>
       ))}
       <div ref={box} className="relative">
         <button type="button" aria-expanded={open} aria-haspopup="true" onClick={() => setOpen(!open)} className={`${pill(exploreActive || open)} inline-flex items-center gap-1`}>
@@ -61,7 +71,7 @@ export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const path = usePathname();
   const item = (href: string, label: string) => (
-    <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active(path, href) ? "page" : undefined} className={`rounded-xl px-3 py-2.5 font-semibold ${active(path, href) ? "bg-brand-soft text-brand" : ""}`}>{label}</Link>
+    <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active(path, href) ? "page" : undefined} className={`rounded-xl px-3 py-2.5 font-semibold ${active(path, href) ? "bg-brand-soft text-brand" : ""}`}>{label}{DESC[href] && <span className="block text-xs font-normal text-muted">{DESC[href]}</span>}</Link>
   );
   return (
     <div className="lg:hidden">
@@ -97,7 +107,7 @@ export function BottomNav() {
           <div role="dialog" aria-label="Khám phá" onMouseDown={(e) => e.stopPropagation()} className="absolute inset-x-0 bottom-14 max-h-[70vh] overflow-y-auto rounded-t-3xl border-t border-slate-200 bg-white p-4 pb-6 shadow-2xl">
             <div className="grid gap-1">
               {MORE.map(([href, label]) => (
-                <Link key={href} href={href} aria-current={active(path, href) ? "page" : undefined} className={`rounded-xl px-3 py-3 font-semibold ${active(path, href) ? "bg-brand-soft text-brand" : ""}`}>{label}</Link>
+                <Link key={href} href={href} aria-current={active(path, href) ? "page" : undefined} className={`rounded-xl px-3 py-3 font-semibold ${active(path, href) ? "bg-brand-soft text-brand" : ""}`}>{label}{DESC[href] && <span className="block text-xs font-normal text-muted">{DESC[href]}</span>}</Link>
               ))}
             </div>
           </div>

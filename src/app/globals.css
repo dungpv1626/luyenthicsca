@@ -187,3 +187,8 @@ html[data-admin] :focus-visible { outline: 2px solid var(--color-brand); outline
 /* thanh lọc: ô chọn không được co nhỏ tới mức không đọc được chữ; ô tìm kiếm chiếm cả hàng trên điện thoại */
 html[data-admin] main select.input { min-width: 8.5rem; }
 @media (max-width: 639px) { html[data-admin] main form input[type="search"], html[data-admin] main form input[name="q"] { flex: 1 1 100%; } }
+
+/* Khu quản trị và phòng thi: bỏ hoạt ảnh trang trí để tập trung và đỡ tốn pin */
+html[data-admin] :is(.rise, .page-in, .float, .float-slow, .drift, .twinkle, .spin-slow, .spin-slower, .pop, .caret) { animation: none; }
+html[data-admin] .reveal { opacity: 1; transform: none; transition: none; }
+html[data-exam] :is(.drift, .float, .float-slow, .twinkle, .spin-slow, .spin-slower, .marquee, .hero-slide) { animation: none; }
