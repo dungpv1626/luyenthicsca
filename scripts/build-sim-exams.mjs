@@ -8,7 +8,7 @@
 //   node --env-file=.env.local scripts/build-sim-exams.mjs --math 8 --physics 8 --chemistry 6 --chinese 3
 import { createClient } from "@supabase/supabase-js";
 import { buildModuleSets } from "../src/lib/assemble-modules.ts";
-import { MODULES, moduleQuotas } from "../src/lib/syllabus.ts";
+import { MODULES, moduleQuotas, zhTrackOf } from "../src/lib/syllabus.ts";
 import { SIM_FORMAT, SIM_MIX } from "../src/lib/sim.ts";
 
 const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i < 0 ? d : process.argv[i + 1]?.startsWith("--") || process.argv[i + 1] === undefined ? true : process.argv[i + 1]; };
@@ -18,7 +18,7 @@ const VI = { math: "Toán", physics: "Vật lý", chemistry: "Hóa học", chine
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 
 async function fetchAll(build) { const out = []; for (let from = 0; ; from += 1000) { const { data, error } = await build().range(from, from + 999); if (error) throw new Error(error.message); out.push(...data); if (data.length < 1000) break; } return out; }
-const qs = await fetchAll(() => sb.from("questions").select("id, subject, topic, difficulty, origin, module, template_key").eq("status", "approved").contains("translations", { en: {}, zh: {} }).order("id"));
+const qs = await fetchAll(() => sb.from("questions").select("id, subject, topic, subtopic, difficulty, origin, module, template_key").eq("status", "approved").contains("translations", { en: {}, zh: {} }).order("id"));
 // Chỉ dùng câu thuộc một mô-đun của đề cương (bỏ câu "ngoài phần liệt kê" và chưa phân loại).
 // Câu sinh từ khuôn tham số rất nhiều nhưng na ná nhau: mỗi KHUÔN chỉ đưa vào tối đa --per-template câu (mặc định 8) để đề có nhiều dạng bài khác nhau.
 const PER_TEMPLATE = Number(arg("per-template", 8));
@@ -27,7 +27,8 @@ const pools = {};
 for (const s of Object.keys(SIM_FORMAT)) {
   pools[s] = [];
   for (const m of MODULES[s]) {
-    const all = qs.filter((q) => q.subject === s && q.module === m.key), plain = all.filter((q) => q.origin !== "template");
+    // Tiếng Trung: đề mô phỏng dùng KHỐI KHOA HỌC (理科中文); câu khối văn không được lẫn vào
+    const all = qs.filter((q) => q.subject === s && q.module === m.key && (s !== "chinese" || zhTrackOf(q.subtopic) === "science")), plain = all.filter((q) => q.origin !== "template");
     const byKey = new Map(); for (const q of all.filter((q) => q.origin === "template")) (byKey.get(q.template_key ?? "?") ?? byKey.set(q.template_key ?? "?", []).get(q.template_key ?? "?")).push(q);
     pools[s].push(...plain, ...[...byKey.values()].flatMap((list) => shuf(list).slice(0, PER_TEMPLATE)));
   }
@@ -66,7 +67,7 @@ for (const p of plan) {
   let no = next[p.s];
   for (const set of p.sets) {
     no++;
-    const title = `Đề mô phỏng CSCA · ${VI[p.s]} · Đề ${String(no).padStart(2, "0")}`;
+    const title = `Đề mô phỏng CSCA · ${VI[p.s]}${p.s === "chinese" ? " (khối khoa học)" : ""} · Đề ${String(no).padStart(2, "0")}`;
     const free = no === 1;
     const { data: t, error } = await sb.from("tests").insert({
       title, kind: "mock", sim: true, level: null, scope: "subject", subject: p.s, set_no: no, duration_min: p.f.minutes,

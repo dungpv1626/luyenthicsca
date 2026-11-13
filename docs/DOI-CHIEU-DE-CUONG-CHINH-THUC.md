@@ -72,3 +72,14 @@ Nguồn: trang chính thức https://csca.cn/about/testprep (mục 备考资源 
 
 - **Bổ sung bằng AI (14/11/2026, ~1,1 USD):** 28 câu Hóa cho phản ứng ion và nhận biết (8), tách–tinh chế (8), quy trình công nghiệp (8), an toàn phòng thí nghiệm, phân loại chất, liên kết hóa học (12 trong 3 chủ đề). Tất cả đã được đọc kiểm tay từng bước tính; 3 chuyên đề trống nay đều có câu. Đề mô phỏng Hóa dựng lại, không còn phải bù câu. Tiếng Trung: giao diện hiện hai khối (khoa học có, văn "Sắp có").
 - Còn thiếu: câu Tiếng Trung khối văn; chia Tiếng Trung đủ 6 dạng câu (cần giáo viên hoặc AI gắn nhãn); nhiều chuyên đề Hóa vẫn dưới 30 câu. Ngân sách AI còn khoảng 0,6 USD / 50 USD.
+
+## 6. Đợt dùng ngân sách AI nâng lên 75 USD (13/11/2026)
+
+- Trần tổng nâng từ 50 lên **75 USD** (script, README, `scripts/ai-ledger.mjs`). Đã chi ≈ 71,3 USD, còn ≈ 3,7 USD.
+- **Tiếng Trung theo 6 dạng câu chính thức:** 323 câu cũ được AI gán dạng câu (nhãn ghi vào chủ đề con, giữ chủ đề con cũ; là nhãn gần đúng, cần giáo viên rà); thêm ≈ 270 câu mới cho khối văn (文科中文) và khối khoa học. Đề mô phỏng Tiếng Trung chỉ lấy khối khoa học, tên đề ghi rõ "(khối khoa học)".
+- **Hóa học:** thêm ≈ 340 câu cho các chuyên đề trước đó trống hoặc ít (phản ứng ion, tách–tinh chế, quy trình công nghiệp, khí lí tưởng, Le Chatelier, điện phân, an toàn phòng thí nghiệm…). **Toán/Lý:** thêm cônic, thuyết động học phân tử, mẫu Bo, quang điện.
+- Mọi câu mẫu đã được đọc kiểm tay từng bước tính (khoảng 50 câu): không phát hiện câu sai.
+- **Bài học vận hành:** mỗi lần gọi chỉ nên sinh **3 câu**. Với 5–6 câu mỗi lần và lời giải ba ngôn ngữ, đầu ra vượt 12.000 token nên bị cắt và mất trắng (giai đoạn đầu chỉ lưu 95/256 câu, tốn 5,7 USD).
+- **Cờ "gần giống" sai ở Tiếng Trung:** bộ kiểm tra trùng so khung tiếng Việt giống nhau nên giữ lại nhiều câu hợp lệ ở hàng chờ duyệt. `scripts/release-flagged-zh.mjs` đo lại trên chữ Hán và công bố câu khác hẳn (đã thả ≈ 100 câu, giữ lại 6 câu thực sự giống).
+- Công cụ mới: `topic-coverage.mjs` (độ phủ chuyên đề), `batch-status.mjs` (trạng thái lô), `show-recent.mjs` (đọc kiểm), `label-zh-types.mjs`, `release-flagged-zh.mjs`; chế độ `--plan file.json` của `generate-questions.mjs`.
+- Còn thiếu: khối văn chưa có đề mô phỏng riêng; một số chuyên đề Hóa vẫn dưới 30 câu (khí điều chế 13); toàn bộ câu AI chờ giáo viên xác nhận.
