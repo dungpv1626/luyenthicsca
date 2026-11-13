@@ -50,13 +50,13 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   return (
     <div className="space-y-6" id="top">
       <div className="card flex flex-col items-center text-center shadow-soft">
-        <p className="text-sm text-slate-500">{att.title}</p>
+        <p className="text-sm text-muted">{att.title}</p>
         {!simKey && <p className="eyebrow mt-1">CSCA Readiness Score</p>}
         {insufficient ? (
-          <div className="mt-3 max-w-md rounded-2xl bg-amber-50 p-4 text-sm text-amber-900"><p className="font-extrabold">Chưa đủ dữ liệu để chấm Readiness</p><p className="mt-1">Bạn mới trả lời {Object.keys(ans).length}/{b.total} câu. Bài này không được tính vào tiến bộ và hồ sơ năng lực của bạn.</p></div>
+          <div className="mt-3 max-w-md rounded-2xl bg-warning-bg p-4 text-sm text-amber-900"><p className="font-extrabold">Chưa đủ dữ liệu để chấm Readiness</p><p className="mt-1">Bạn mới trả lời {Object.keys(ans).length}/{b.total} câu. Bài này không được tính vào tiến bộ và hồ sơ năng lực của bạn.</p></div>
         ) : (<>
           {simKey ? (
-            <div className="mt-3 w-full max-w-md space-y-2"><p className="eyebrow">Điểm quy đổi (thang 100)</p><p className="text-6xl font-black text-navy">{score100(att.score ?? 0, b.total)}<span className="text-2xl font-bold text-slate-500">/100</span></p>
+            <div className="mt-3 w-full max-w-md space-y-2"><p className="eyebrow">Điểm quy đổi (thang 100)</p><p className="text-6xl font-black text-navy">{score100(att.score ?? 0, b.total)}<span className="text-2xl font-bold text-muted">/100</span></p>
               <p className="text-sm text-slate-600">Đúng {att.score}/{b.total} câu. Đây là điểm ước tính để tham khảo, không phải điểm chính thức. Readiness: <b>{att.readiness ?? 0}/100</b>.</p>
               <p className="rounded-xl bg-mist p-2.5 text-xs text-slate-600">Thời gian: bạn dùng khoảng {Math.round(spentSec / 60)} phút, trung bình {b.total ? Math.round(spentSec / b.total) : 0} giây/câu (chuẩn thi thật khoảng {secondsPerQuestion(simKey)} giây/câu).</p></div>
           ) : <ScoreRing value={att.readiness ?? 0} size={150} />}
@@ -73,7 +73,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       {simKey && modRows.length > 0 && (
         <div className="card">
           <h2 className="mb-1 text-lg font-bold">Kết quả theo mô-đun đề cương</h2>
-          <p className="mb-3 text-xs text-slate-500">Các mô-đun theo đề cương CSCA; tỉ trọng mỗi mô-đun trong đề là ước lượng của chúng tôi.</p>
+          <p className="mb-3 text-xs text-muted">Các mô-đun theo đề cương CSCA; tỉ trọng mỗi mô-đun trong đề là ước lượng của chúng tôi.</p>
           <div className="space-y-3">{modRows.map((r) => (
             <div key={r.m.key}><div className="flex justify-between gap-3 text-sm"><span className="font-medium">{r.m.name}</span><span className="shrink-0 text-slate-600">{r.ok}/{r.total} ({r.pct}%)</span></div>
               <div className="mt-1 h-2 rounded bg-slate-100"><div className={`h-2 rounded ${r.pct >= 70 ? "bg-emerald-500" : r.pct >= 40 ? "bg-brand" : "bg-red-500"}`} style={{ width: `${r.pct}%` }} /></div></div>))}</div>
@@ -94,21 +94,21 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </div>
 
       <div className="card space-y-3">
-        <h2 className="text-lg font-bold">Phân tích AI {ai.source === "claude" ? "" : <span className="text-xs font-normal text-slate-500">(tự động)</span>}</h2>
+        <h2 className="text-lg font-bold">Phân tích AI {ai.source === "claude" ? "" : <span className="text-xs font-normal text-muted">(tự động)</span>}</h2>
         <p>{ai.summary}</p>
         {ai.strengths.length > 0 && <div><h3 className="font-semibold text-green-700">Điểm mạnh</h3><ul className="list-disc pl-6">{ai.strengths.map((s) => <li key={s}>{s}</li>)}</ul></div>}
-        {ai.weaknesses.length > 0 && <div><h3 className="font-semibold text-red-700">Cần cải thiện</h3><ul className="list-disc pl-6">{ai.weaknesses.map((w) => <li key={w.topic}><b>{w.topic}:</b> {w.advice}</li>)}</ul></div>}
+        {ai.weaknesses.length > 0 && <div><h3 className="font-semibold text-danger">Cần cải thiện</h3><ul className="list-disc pl-6">{ai.weaknesses.map((w) => <li key={w.topic}><b>{w.topic}:</b> {w.advice}</li>)}</ul></div>}
         <div><h3 className="font-semibold">Việc nên làm tiếp</h3><ol className="list-decimal pl-6">{ai.next_steps.map((s) => <li key={s}>{s}</li>)}</ol></div>
-        {b.weaknesses.length > 0 && <p className="text-sm text-slate-500">Chủ đề yếu: {b.weaknesses.map(topicLabel).join(" · ")}</p>}
+        {b.weaknesses.length > 0 && <p className="text-sm text-muted">Chủ đề yếu: {b.weaknesses.map(topicLabel).join(" · ")}</p>}
       </div>
 
       <div className="card" id="xem-lai">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-bold">Xem lại từng câu</h2><p className="text-xs text-slate-500">Ngân hàng câu hỏi đang được mở rộng và rà soát liên tục. Nếu thấy câu nào sai hoặc khó hiểu, hãy bấm “Báo lỗi câu hỏi”.</p></div><div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={href({ lang: k })} scroll={false} className={`inline-flex min-h-[2.25rem] items-center rounded-full px-3 transition ${lang === k ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-bold">Xem lại từng câu</h2><p className="text-xs text-muted">Ngân hàng câu hỏi đang được mở rộng và rà soát liên tục. Nếu thấy câu nào sai hoặc khó hiểu, hãy bấm “Báo lỗi câu hỏi”.</p></div><div className="flex rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{([["vi", "Tiếng Việt"], ["en", "English"], ["zh", "中文"]] as const).map(([k, label]) => <Link key={k} href={href({ lang: k })} scroll={false} className={`inline-flex min-h-[2.25rem] items-center rounded-full px-3 transition ${lang === k ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand"}`}>{label}</Link>)}</div></div>
         <div className="mb-4 flex flex-wrap gap-2 text-sm" role="tablist" aria-label="Lọc câu hỏi">
           {([["need", `Cần xem lại (${nNeed})`], ["right", `Đúng (${nRight})`], ["all", `Tất cả (${review.length})`]] as const).map(([k, label]) => <Link key={k} href={href({ show: k })} scroll={false} role="tab" aria-selected={show === k} className={`inline-flex min-h-[2.75rem] items-center rounded-full border px-4 font-semibold transition ${show === k ? "border-brand bg-brand-soft text-brand" : "border-slate-200 text-slate-600 hover:border-brand"}`}>{label}</Link>)}
-          {nBlank > 0 && <span className="self-center text-xs text-slate-500">trong đó {nBlank} câu chưa làm</span>}
+          {nBlank > 0 && <span className="self-center text-xs text-muted">trong đó {nBlank} câu chưa làm</span>}
         </div>
-        {!shown.length && <p className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">{show === "need" ? "Không có câu nào cần xem lại 🎉" : "Không có câu nào trong mục này."}</p>}
+        {!shown.length && <p className="rounded-xl bg-success-bg p-4 text-sm text-emerald-800">{show === "need" ? "Không có câu nào cần xem lại 🎉" : "Không có câu nào trong mục này."}</p>}
         <div className="space-y-3">
           {shown.map(({ q, i }) => {
             const mine = ans[q.id];
@@ -116,21 +116,21 @@ export default async function Page({ params, searchParams }: { params: Promise<{
             const tr = lang !== "vi" ? (q.translations as Record<string, { body: string; options: Record<string, string>; explanation: string }> | null)?.[lang] : null;
             const view = { body: tr?.body ?? q.body, options: (tr?.options ?? q.options) as Record<string, string>, explanation: tr?.explanation ?? q.explanation };
             return (
-              <details key={q.id} id={`q-${i + 1}`} open={shown.length <= 3} className={`group rounded-xl border ${ok ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}>
+              <details key={q.id} id={`q-${i + 1}`} open={shown.length <= 3} className={`group rounded-xl border ${ok ? "border-green-200 bg-green-50" : "border-red-200 bg-danger-bg"}`}>
                 <summary className="flex min-h-[3rem] cursor-pointer list-none items-start gap-3 p-3 [&::-webkit-details-marker]:hidden">
                   <span className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-extrabold text-white ${ok ? "bg-green-600" : "bg-red-600"}`} aria-hidden="true">{ok ? "✓" : mine ? "✗" : "–"}</span>
-                  <span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-slate-500">Câu {i + 1} · {SUBJECTS[q.subject as Subject]} · {q.topic} · {ok ? "Đúng" : mine ? `Bạn chọn ${mine}, đáp án ${q.correct_answer}` : `Chưa làm, đáp án ${q.correct_answer}`}</span><span className="mt-0.5 line-clamp-2 block font-medium group-open:line-clamp-none"><Rich text={view.body} /></span></span>
-                  <span className="mt-1 text-slate-500 transition group-open:rotate-180" aria-hidden="true">▾</span>
+                  <span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-muted">Câu {i + 1} · {SUBJECTS[q.subject as Subject]} · {q.topic} · {ok ? "Đúng" : mine ? `Bạn chọn ${mine}, đáp án ${q.correct_answer}` : `Chưa làm, đáp án ${q.correct_answer}`}</span><span className="mt-0.5 line-clamp-2 block font-medium group-open:line-clamp-none"><Rich text={view.body} /></span></span>
+                  <span className="mt-1 text-muted transition group-open:rotate-180" aria-hidden="true">▾</span>
                 </summary>
                 <div className="border-t border-black/5 p-3 pt-2">
                   <ul className="text-sm">
                     {Object.entries(view.options).map(([k, v]) => (
-                      <li key={k} className={`py-0.5 ${k === q.correct_answer ? "font-bold text-green-700" : k === mine ? "font-bold text-red-700" : ""}`}>{k}. <Rich text={v} />{k === q.correct_answer && " ✓"}{k === mine && k !== q.correct_answer && " ✗ (bạn chọn)"}</li>
+                      <li key={k} className={`py-0.5 ${k === q.correct_answer ? "font-bold text-green-700" : k === mine ? "font-bold text-danger" : ""}`}>{k}. <Rich text={v} />{k === q.correct_answer && " ✓"}{k === mine && k !== q.correct_answer && " ✗ (bạn chọn)"}</li>
                     ))}
                   </ul>
                   {view.explanation && <p className="mt-2 text-sm text-slate-700">💡 <Rich text={view.explanation} /></p>}
-                  <details className="mt-2"><summary className="inline-flex min-h-[2.5rem] cursor-pointer items-center text-xs font-semibold text-slate-500 hover:text-red-600">{reported.has(q.id) ? "✓ Đã báo lỗi câu này, cảm ơn bạn" : "Báo lỗi câu hỏi"}</summary>
-                    {!reported.has(q.id) && <form action={reportQuestionAction.bind(null, attemptId, q.id)} className="mt-2 flex flex-wrap gap-2"><select name="reason" className="input !w-auto !py-1.5 text-sm"><option value="wrong_answer">Đáp án sai</option><option value="unclear">Đề không rõ</option><option value="bad_translation">Dịch sai</option><option value="other">Khác</option></select><input name="note" maxLength={300} placeholder="Ghi chú (không bắt buộc)" className="input !w-auto min-w-[10rem] flex-1 !py-1.5 text-sm" /><button className="btn-outline !px-4 !py-1.5 text-sm">Gửi</button></form>}
+                  <details className="mt-2"><summary className="inline-flex min-h-[2.5rem] cursor-pointer items-center text-xs font-semibold text-muted hover:text-red-600">{reported.has(q.id) ? "✓ Đã báo lỗi câu này, cảm ơn bạn" : "Báo lỗi câu hỏi"}</summary>
+                    {!reported.has(q.id) && <form action={reportQuestionAction.bind(null, attemptId, q.id)} className="mt-2 flex flex-wrap gap-2"><select name="reason" className="input !w-auto !py-1.5 text-sm"><option value="wrong_answer">Đáp án sai</option><option value="unclear">Đề không rõ</option><option value="bad_translation">Dịch sai</option><option value="other">Khác</option></select><input name="note" maxLength={300} placeholder="Ghi chú (không bắt buộc)" className="input !w-auto min-w-[10rem] flex-1 !py-1.5 text-sm" /><button className="btn-outline btn-sm">Gửi</button></form>}
                   </details>
                   <details className="mt-2"><summary className="cursor-pointer text-sm font-bold text-brand">Hỏi Gia sư AI về câu này</summary><div className="mt-2 rounded-xl border border-slate-200 bg-white"><TutorChat compact ctx={{ attemptId, questionId: q.id }} suggestions={["Giải thích chi tiết từng bước", "Vì sao các đáp án còn lại sai?", "Cho mình một câu tương tự"]} /></div></details>
                 </div>

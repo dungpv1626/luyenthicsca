@@ -20,15 +20,15 @@ export default async function Page() {
             <Link key={c.id} href={`/academy/${c.id}`} className="card card-hover overflow-hidden !p-0">
               <div className="grid h-32 place-items-center bg-gradient-to-br from-navy to-brand text-white"><Icon name="play" className="h-12 w-12 opacity-80" /></div>
               <div className="p-5">
-                <div className="flex gap-1.5">{c.level && <span className="chip">{c.level}</span>}{c.price_vnd === 0 && <span className="chip !bg-emerald-50 !text-emerald-700">Miễn phí</span>}</div>
+                <div className="flex gap-1.5">{c.level && <span className="chip">{c.level}</span>}{c.price_vnd === 0 && <span className="chip !bg-success-bg !text-success">Miễn phí</span>}</div>
                 <h2 className="mt-2 text-lg font-bold">{c.title}</h2><p className="mt-1 line-clamp-2 text-sm text-slate-600">{c.description}</p>
-                <p className="mt-4 flex items-center justify-between text-sm text-slate-500"><span>{t?.name ?? "—"} · {n} bài</span><b className="text-ink">{vnd(c.price_vnd)}</b></p>
+                <p className="mt-4 flex items-center justify-between text-sm text-muted"><span>{t?.name ?? "—"} · {n} bài</span><b className="text-ink">{vnd(c.price_vnd)}</b></p>
               </div>
             </Link>
           );
         })}
       </div>
-      {!data?.length && <p className="py-10 text-center text-slate-500">Chưa có khóa học nào được công bố.</p>}
+      {!data?.length && <p className="py-10 text-center text-muted">Chưa có khóa học nào được công bố.</p>}
     </div>
   );
 }

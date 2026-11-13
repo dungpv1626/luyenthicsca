@@ -26,13 +26,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
   return (
     <div>
       <PageHeader en="Practice" vi="Ngân hàng câu hỏi">Học theo chuyên đề của đề cương CSCA, hoặc tự chọn môn, độ khó và số câu. Mỗi câu có giải thích; câu sai được lưu để luyện lại.</PageHeader>
-      {error && <p className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Chưa có câu hỏi phù hợp với lựa chọn này. Hãy thử bộ lọc khác.</p>}
+      {error && <p className="mb-4 rounded-xl bg-warning-bg p-3 text-sm text-warning">Chưa có câu hỏi phù hợp với lựa chọn này. Hãy thử bộ lọc khác.</p>}
       {sk.weak.length > 0 && (
         <section className="card mb-6 !p-4" aria-label="Chủ đề nên ôn">
-          <p className="text-sm font-extrabold text-navy">Chủ đề nên ôn <span className="font-normal text-slate-500">· dựa trên các bài bạn đã làm, bấm để luyện 10 câu</span></p>
+          <p className="text-sm font-extrabold text-navy">Chủ đề nên ôn <span className="font-normal text-muted">· dựa trên các bài bạn đã làm, bấm để luyện 10 câu</span></p>
           <div className="mt-2 flex flex-wrap gap-2">{sk.weak.map((t) => (
             <form key={t.subject + t.topic} action={startPracticeAction}><input type="hidden" name="subject" value={t.subject} /><input type="hidden" name="topic" value={t.topic} /><input type="hidden" name="count" value="10" />
-              <button className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-800 transition hover:-translate-y-0.5 hover:border-red-400">{t.topic}<span className="text-xs font-bold text-red-600">{t.pct}%</span></button></form>))}
+              <button className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-full border border-red-200 bg-danger-bg px-4 text-sm font-semibold text-red-800 transition hover:-translate-y-0.5 hover:border-red-400">{t.topic}<span className="text-xs font-bold text-red-600">{t.pct}%</span></button></form>))}
           </div>
         </section>
       )}

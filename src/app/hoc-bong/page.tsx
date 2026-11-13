@@ -19,18 +19,18 @@ export default async function Page() {
           return (
             <article key={s.id} className="card card-hover">
               <div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-white"><Icon name="award" /></span>
-                <div><h2 className="font-bold">{s.name}</h2><p className="text-sm text-slate-500">{s.provider}{school && <> · <Link href={`/truong/${school.id}`} className="text-brand hover:underline">{school.name}</Link></>}</p></div></div>
+                <div><h2 className="font-bold">{s.name}</h2><p className="text-sm text-muted">{s.provider}{school && <> · <Link href={`/truong/${school.id}`} className="text-brand hover:underline">{school.name}</Link></>}</p></div></div>
               <p className="mt-3 text-sm text-slate-700"><b>Quyền lợi:</b> {s.coverage}</p>
               {s.requirements && <p className="mt-1 text-sm text-slate-600"><b>Điều kiện:</b> {s.requirements}</p>}
               <div className="mt-4 flex items-center justify-between text-sm">
-                <span className={expired ? "font-semibold text-slate-500" : "font-semibold text-brand"}>{s.deadline ? `${expired ? "Đã hết hạn" : "Hạn nộp"}: ${new Date(s.deadline).toLocaleDateString("vi-VN")}` : "Hạn nộp: theo thông báo"}</span>
+                <span className={expired ? "font-semibold text-muted" : "font-semibold text-brand"}>{s.deadline ? `${expired ? "Đã hết hạn" : "Hạn nộp"}: ${new Date(s.deadline).toLocaleDateString("vi-VN")}` : "Hạn nộp: theo thông báo"}</span>
                 {s.link && <a href={s.link} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand hover:underline">Chi tiết ↗</a>}
               </div>
             </article>
           );
         })}
       </div>
-      {!data?.length && <p className="py-10 text-center text-slate-500">Chưa có học bổng nào.</p>}
+      {!data?.length && <p className="py-10 text-center text-muted">Chưa có học bổng nào.</p>}
     </div>
   );
 }

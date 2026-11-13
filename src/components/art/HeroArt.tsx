@@ -22,7 +22,7 @@ export function HeroArt() {
           <ScoreRing value={72} size={92} />
           <div className="min-w-0 flex-1 space-y-1.5">
             {bars.map(([n, v]) => (
-              <div key={n}><div className="flex justify-between text-xs font-semibold sm:text-xs"><span>{n}</span><span className="text-slate-500">{v}%</span></div>
+              <div key={n}><div className="flex justify-between text-xs font-semibold sm:text-xs"><span>{n}</span><span className="text-muted">{v}%</span></div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="bar-anim h-full rounded-full bg-gradient-to-r from-brand to-accent" style={{ width: `${v}%` }} /></div></div>
             ))}
           </div>
@@ -39,9 +39,9 @@ export function HeroArt() {
 
       {/* nhiệm vụ hôm nay */}
       <div className="float float-d2 absolute -right-1 bottom-[1%] w-[47%] rounded-2xl bg-white/95 p-3 text-ink shadow-xl">
-        <div className="flex items-center justify-between"><span className="text-xs font-bold">Hôm nay</span><span className="text-xs font-semibold text-slate-500">2/3</span></div>
+        <div className="flex items-center justify-between"><span className="text-xs font-bold">Hôm nay</span><span className="text-xs font-semibold text-muted">2/3</span></div>
         {[["20 câu Đại số", true], ["Xem lại câu sai", true], ["Mini Test", false]].map(([t, d], i) => (
-          <div key={String(t)} className="mt-1.5 flex items-center gap-2 text-xs"><span className={`pop grid h-4 w-4 shrink-0 place-items-center rounded-full ${d ? "bg-emerald-500 text-white" : "border border-slate-300"}`} style={{ animationDelay: `${0.6 + i * 0.25}s` }}>{d ? <Icon name="check" className="h-3 w-3" /> : null}</span><span className={d ? "text-slate-500 line-through" : "font-medium"}>{t}</span></div>
+          <div key={String(t)} className="mt-1.5 flex items-center gap-2 text-xs"><span className={`pop grid h-4 w-4 shrink-0 place-items-center rounded-full ${d ? "bg-emerald-500 text-white" : "border border-slate-300"}`} style={{ animationDelay: `${0.6 + i * 0.25}s` }}>{d ? <Icon name="check" className="h-3 w-3" /> : null}</span><span className={d ? "text-muted line-through" : "font-medium"}>{t}</span></div>
         ))}
       </div>
 

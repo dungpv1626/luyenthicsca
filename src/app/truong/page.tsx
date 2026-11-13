@@ -35,16 +35,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
           {list.map((s) => (
             <div key={s.id} className="card card-hover group relative flex flex-col overflow-hidden">
               {s.image_url && <div className="-mx-5 -mt-5 mb-4"><SchoolPhoto url={s.image_url} credit={s.image_credit} alt={s.name} className="h-36" /></div>}
-              <label className="absolute right-2 top-2 flex min-h-[2.75rem] cursor-pointer items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-slate-500 hover:bg-brand-soft"><input type="checkbox" name="ids" value={s.id} />So sánh</label>
+              <label className="absolute right-2 top-2 flex min-h-[2.75rem] cursor-pointer items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-muted hover:bg-brand-soft"><input type="checkbox" name="ids" value={s.id} />So sánh</label>
               <p className="text-3xl font-black text-brand/25">{s.name_zh}</p>
               <Link href={`/truong/${s.id}`} className="mt-1 inline-block py-1 text-lg font-bold hover:text-brand">{s.name}</Link>
-              <p className="mt-1 flex items-center gap-1 text-sm text-slate-500"><Icon name="map" className="h-4 w-4" />{s.city}{s.kind ? ` · ${s.kind}` : ""}</p>
+              <p className="mt-1 flex items-center gap-1 text-sm text-muted"><Icon name="map" className="h-4 w-4" />{s.city}{s.kind ? ` · ${s.kind}` : ""}</p>
               <p className="mt-3 line-clamp-2 flex-1 text-sm text-slate-600">{s.description}</p>
-              <div className="mt-4 flex flex-wrap gap-1.5">{s.csca_required && <span className="chip">Yêu cầu CSCA</span>}{reqCount(s) > 0 ? <span className="chip !bg-emerald-50 !text-emerald-700">Có mức chuẩn</span> : <span className="chip !bg-slate-100 !text-slate-500">Đang cập nhật</span>}</div>
+              <div className="mt-4 flex flex-wrap gap-1.5">{s.csca_required && <span className="chip">Yêu cầu CSCA</span>}{reqCount(s) > 0 ? <span className="chip !bg-success-bg !text-success">Có mức chuẩn</span> : <span className="chip !bg-slate-100 !text-muted">Đang cập nhật</span>}</div>
             </div>
           ))}
         </div>
-        {!list.length && <p className="py-10 text-center text-slate-500">Không tìm thấy trường phù hợp.</p>}
+        {!list.length && <p className="py-10 text-center text-muted">Không tìm thấy trường phù hợp.</p>}
         {list.length > 1 && <div className="sticky bottom-20 mt-6 flex justify-center lg:bottom-4"><button className="btn !px-6">So sánh các trường đã chọn (tối đa 3)</button></div>}
       </form>
     </div>

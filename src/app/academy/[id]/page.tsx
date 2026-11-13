@@ -44,19 +44,19 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                       <span className="flex-1 font-medium">{l.title}</span>{!access && <span className="chip">Học thử</span>}
                     </Link>
                   ) : (
-                    <div className="flex items-center gap-3 p-4 text-slate-500"><span className="grid h-8 w-8 place-items-center rounded-full bg-slate-100"><Icon name="lock" className="h-4 w-4" /></span><span className="flex-1">{l.title}</span></div>
+                    <div className="flex items-center gap-3 p-4 text-muted"><span className="grid h-8 w-8 place-items-center rounded-full bg-slate-100"><Icon name="lock" className="h-4 w-4" /></span><span className="flex-1">{l.title}</span></div>
                   )}
                 </li>
               );
             })}
           </ol>
-          {!total && <p className="p-5 text-sm text-slate-500">Khóa học đang được cập nhật bài giảng.</p>}
+          {!total && <p className="p-5 text-sm text-muted">Khóa học đang được cập nhật bài giảng.</p>}
         </section>
         <aside className="space-y-4">
           <div className="card">
             <p className="text-3xl font-black text-brand">{vnd(c.price_vnd)}</p>
             {access && me ? (<>
-              <div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div><p className="mt-1 text-xs text-slate-500">Tiến độ {pct}% ({doneSet.size}/{total})</p>
+              <div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div><p className="mt-1 text-xs text-muted">Tiến độ {pct}% ({doneSet.size}/{total})</p>
               {first && <Link href={`/academy/${id}/hoc/${first.id}`} className="btn mt-4 w-full">{doneSet.size ? "Tiếp tục học" : "Bắt đầu học"}</Link>}
             </>) : me ? (
               <form action={buyCourseAction.bind(null, id)}><SubmitButton className="btn mt-4 w-full" pendingText="Đang xử lý…">Đăng ký khóa học</SubmitButton></form>

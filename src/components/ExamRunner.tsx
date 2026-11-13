@@ -133,18 +133,18 @@ export function ExamRunner({ attemptId, title, questions, deadline, draft, draft
       ))}
     </div>
   );
-  const legend = <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500"><span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-brand" />Đã làm</span><span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-slate-200" />Chưa làm</span><span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-full bg-gold" />Xem lại</span></p>;
+  const legend = <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted"><span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-brand" />Đã làm</span><span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-slate-200" />Chưa làm</span><span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-full bg-gold" />Xem lại</span></p>;
   const saveText = save === "saving" ? "Đang lưu…" : save === "saved" ? "Đã lưu ✓" : save === "error" ? "Chưa lưu được, đang thử lại" : "";
 
   return (
     <div className="space-y-4 pb-24 md:pb-0">
       <div className="card sticky top-2 z-30 grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-2 !p-3 shadow-md sm:flex sm:flex-wrap sm:justify-between sm:!p-4">
-        <div className="col-span-2 min-w-0 sm:col-auto"><h1 className="truncate text-sm font-bold sm:text-base">{title}</h1><p className="text-xs text-slate-500 sm:text-sm">Đã trả lời {done}/{questions.length}{saveText && <span className={`ml-2 ${save === "error" ? "font-semibold text-red-600" : "text-slate-500"}`} role="status">{saveText}</span>}</p></div>
+        <div className="col-span-2 min-w-0 sm:col-auto"><h1 className="truncate text-sm font-bold sm:text-base">{title}</h1><p className="text-xs text-muted sm:text-sm">Đã trả lời {done}/{questions.length}{saveText && <span className={`ml-2 ${save === "error" ? "font-semibold text-red-600" : "text-muted"}`} role="status">{saveText}</span>}</p></div>
         {hasTr && <div className="flex w-fit rounded-full border border-slate-200 p-0.5 text-xs font-semibold">{LANGS.map(([k, label, short]) => <button key={k} onClick={() => pickLang(k)} aria-label={label} className={`min-h-[2.25rem] rounded-full px-2.5 transition sm:px-3 ${lang === k ? "bg-brand text-white shadow" : "text-slate-600 hover:text-brand"}`}><span className="sm:hidden">{short}</span><span className="hidden sm:inline">{label}</span></button>)}</div>}
         <div className="flex items-center gap-2">
-          <div className={`rounded-lg px-3 py-1.5 font-mono text-xl font-bold sm:px-4 sm:text-2xl ${left < 60 ? "bg-red-100 text-red-700" : "bg-slate-100"}`} aria-label="Thời gian còn lại" role="timer">{fmt(left)}</div>
-          <button className="btn !px-3 !py-2 text-xs md:hidden" disabled={pending} onClick={() => setDlg("submit")}>Nộp bài</button>
-          <button className="hidden rounded-lg px-2 py-2 text-xs font-semibold text-slate-500 hover:text-brand md:block" onClick={() => setDlg("leave")}>Thoát</button>
+          <div className={`rounded-lg px-3 py-1.5 font-mono text-xl font-bold sm:px-4 sm:text-2xl ${left < 60 ? "bg-red-100 text-danger" : "bg-slate-100"}`} aria-label="Thời gian còn lại" role="timer">{fmt(left)}</div>
+          <button className="btn btn-sm md:hidden" disabled={pending} onClick={() => setDlg("submit")}>Nộp bài</button>
+          <button className="hidden rounded-lg px-2 py-2 text-xs font-semibold text-muted hover:text-brand md:block" onClick={() => setDlg("leave")}>Thoát</button>
         </div>
       </div>
 
@@ -152,7 +152,7 @@ export function ExamRunner({ attemptId, title, questions, deadline, draft, draft
         <div className="card space-y-4">
           <div className="flex items-start justify-between gap-3">
             <p className="text-xs font-semibold uppercase text-brand">{SUBJECTS[q.subject as Subject]} · {q.topic}</p>
-            <button onClick={toggleFlag} aria-pressed={isFlag} className={`inline-flex min-h-[2.5rem] shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isFlag ? "border-gold bg-amber-50 text-amber-800" : "border-slate-200 text-slate-500 hover:border-gold hover:text-amber-800"}`}>{isFlag ? "🚩 Đã đánh dấu" : "🏳 Đánh dấu xem lại"}</button>
+            <button onClick={toggleFlag} aria-pressed={isFlag} className={`inline-flex min-h-[2.5rem] shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isFlag ? "border-gold bg-warning-bg text-warning" : "border-slate-200 text-muted hover:border-gold hover:text-warning"}`}>{isFlag ? "🚩 Đã đánh dấu" : "🏳 Đánh dấu xem lại"}</button>
           </div>
           <p className="text-lg">Câu {idx + 1}. <Rich text={view.body} /></p>
           <div className="space-y-2" role="radiogroup" aria-label={`Đáp án câu ${idx + 1}`}>
@@ -191,12 +191,12 @@ export function ExamRunner({ attemptId, title, questions, deadline, draft, draft
         <h2 className="text-xl font-extrabold text-navy">Nộp bài?</h2>
         <p className="mt-1 text-sm text-slate-600">Còn lại <b className="font-mono">{fmt(left)}</b>. Sau khi nộp bạn không thể sửa đáp án.</p>
         <dl className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
-          <div className="rounded-xl bg-emerald-50 p-2"><dt className="text-xs text-emerald-700">Đã làm</dt><dd className="text-xl font-black text-emerald-700">{done}</dd></div>
-          <div className={`rounded-xl p-2 ${unanswered.length ? "bg-red-50" : "bg-slate-50"}`}><dt className={`text-xs ${unanswered.length ? "text-red-700" : "text-slate-500"}`}>Chưa làm</dt><dd className={`text-xl font-black ${unanswered.length ? "text-red-700" : "text-slate-500"}`}>{unanswered.length}</dd></div>
-          <div className="rounded-xl bg-amber-50 p-2"><dt className="text-xs text-amber-800">Đánh dấu</dt><dd className="text-xl font-black text-amber-800">{flagged.length}</dd></div>
+          <div className="rounded-xl bg-success-bg p-2"><dt className="text-xs text-success">Đã làm</dt><dd className="text-xl font-black text-success">{done}</dd></div>
+          <div className={`rounded-xl p-2 ${unanswered.length ? "bg-danger-bg" : "bg-slate-50"}`}><dt className={`text-xs ${unanswered.length ? "text-danger" : "text-muted"}`}>Chưa làm</dt><dd className={`text-xl font-black ${unanswered.length ? "text-danger" : "text-muted"}`}>{unanswered.length}</dd></div>
+          <div className="rounded-xl bg-warning-bg p-2"><dt className="text-xs text-warning">Đánh dấu</dt><dd className="text-xl font-black text-warning">{flagged.length}</dd></div>
         </dl>
-        {unanswered.length > 0 && <div className="mt-3"><p className="text-xs font-semibold text-slate-500">Câu chưa làm (bấm để nhảy tới):</p><div className="mt-1.5 flex flex-wrap gap-1.5">{unanswered.slice(0, 40).map((n) => <button key={n} onClick={() => jump(n)} className="min-h-[2.25rem] min-w-[2.25rem] rounded-lg bg-red-50 px-2 text-sm font-semibold text-red-700 hover:bg-red-100">{n}</button>)}{unanswered.length > 40 && <span className="self-center text-xs text-slate-500">…và {unanswered.length - 40} câu nữa</span>}</div></div>}
-        {flagged.length > 0 && <div className="mt-3"><p className="text-xs font-semibold text-slate-500">Câu đánh dấu xem lại:</p><div className="mt-1.5 flex flex-wrap gap-1.5">{flagged.map((n) => <button key={n} onClick={() => jump(n)} className="min-h-[2.25rem] min-w-[2.25rem] rounded-lg bg-amber-50 px-2 text-sm font-semibold text-amber-800 hover:bg-amber-100">{n}</button>)}</div></div>}
+        {unanswered.length > 0 && <div className="mt-3"><p className="text-xs font-semibold text-muted">Câu chưa làm (bấm để nhảy tới):</p><div className="mt-1.5 flex flex-wrap gap-1.5">{unanswered.slice(0, 40).map((n) => <button key={n} onClick={() => jump(n)} className="min-h-[2.25rem] min-w-[2.25rem] rounded-lg bg-danger-bg px-2 text-sm font-semibold text-danger hover:bg-red-100">{n}</button>)}{unanswered.length > 40 && <span className="self-center text-xs text-muted">…và {unanswered.length - 40} câu nữa</span>}</div></div>}
+        {flagged.length > 0 && <div className="mt-3"><p className="text-xs font-semibold text-muted">Câu đánh dấu xem lại:</p><div className="mt-1.5 flex flex-wrap gap-1.5">{flagged.map((n) => <button key={n} onClick={() => jump(n)} className="min-h-[2.25rem] min-w-[2.25rem] rounded-lg bg-warning-bg px-2 text-sm font-semibold text-warning hover:bg-amber-100">{n}</button>)}</div></div>}
         <div className="mt-5 flex gap-2"><button autoFocus className="btn-outline flex-1" onClick={() => setDlg(null)}>Làm tiếp</button><button className="btn flex-1" disabled={pending} onClick={() => { setDlg(null); submit(); }}>{pending ? "Đang chấm…" : "Nộp bài"}</button></div>
       </Modal>
 

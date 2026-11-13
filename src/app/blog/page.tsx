@@ -39,7 +39,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ c
                 <span className="chip w-fit">{p.category}</span>
                 <h2 className="mt-3 text-lg font-extrabold leading-snug text-navy group-hover:text-brand">{p.title}</h2>
                 <p className="mt-2 line-clamp-3 flex-1 text-sm text-slate-600">{p.meta_description}</p>
-                <p className="mt-4 flex items-center justify-between text-xs text-slate-500"><span>{fmtDate(p.publish_at)} · {p.read_minutes} phút đọc</span><Icon name="arrow" className="h-4 w-4 text-brand transition group-hover:translate-x-1" /></p>
+                <p className="mt-4 flex items-center justify-between text-xs text-muted"><span>{fmtDate(p.publish_at)} · {p.read_minutes} phút đọc</span><Icon name="arrow" className="h-4 w-4 text-brand transition group-hover:translate-x-1" /></p>
               </Link>
             ))}
           </div>

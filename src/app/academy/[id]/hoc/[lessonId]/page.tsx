@@ -46,7 +46,7 @@ export default async function Page({ params }: { params: Promise<{ id: string; l
           {me && <form action={toggleLessonAction.bind(null, lessonId, id, !done)}><button className={done ? "btn-outline" : "btn"}>{done ? "✓ Đã hoàn thành (bỏ đánh dấu)" : "Đánh dấu hoàn thành"}</button></form>}
         </div>
       </article>
-      <aside className="card h-fit"><h2 className="mb-2 text-sm font-bold uppercase tracking-wider text-slate-500">Bài học</h2><ol className="space-y-1">{lessons!.map((x, i) => <li key={x.id}><Link href={`/academy/${id}/hoc/${x.id}`} className={`block rounded-lg px-3 py-2 text-sm ${x.id === lessonId ? "bg-brand text-white" : "hover:bg-brand-soft"}`}>{i + 1}. {x.title}</Link></li>)}</ol></aside>
+      <aside className="card h-fit"><h2 className="mb-2 text-sm font-bold uppercase tracking-wider text-muted">Bài học</h2><ol className="space-y-1">{lessons!.map((x, i) => <li key={x.id}><Link href={`/academy/${id}/hoc/${x.id}`} className={`block rounded-lg px-3 py-2 text-sm ${x.id === lessonId ? "bg-brand text-white" : "hover:bg-brand-soft"}`}>{i + 1}. {x.title}</Link></li>)}</ol></aside>
     </div>
   );
 }

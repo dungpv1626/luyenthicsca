@@ -52,7 +52,7 @@ export default async function Home() {
   return (
     <div className="space-y-14 sm:space-y-20">
       {/* ===== HERO ===== */}
-      <section className="mesh-navy relative isolate overflow-hidden rounded-[1.75rem] text-white shadow-[0_30px_80px_-30px_rgb(30_58_138/0.7)] sm:rounded-[2.25rem]">
+      <section className="mesh-navy relative isolate overflow-hidden rounded-3xl text-white shadow-[0_30px_80px_-30px_rgb(30_58_138/0.7)] sm:rounded-[2rem]">
         <HeroSlides />
         <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-60" />
         <div className="drift pointer-events-none absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl" />
@@ -62,8 +62,8 @@ export default async function Home() {
             <h1 className="hero-title rise rise-2 mt-5">Bạn đã sẵn sàng thi <span className="text-gradient">CSCA</span>?</h1>
             <p className="rise rise-3 mt-5 max-w-lg text-base text-white/85 sm:text-lg">Kiểm tra năng lực miễn phí, biết ngay điểm mạnh – điểm yếu, nhận lộ trình ôn thi cá nhân hóa và gia sư AI bên cạnh bạn.</p>
             <div className="rise rise-4 mt-7 flex flex-wrap gap-3">
-              <Link href="/quick-test" className="btn-light !px-6 !py-3 text-base">Thi thử miễn phí <Icon name="arrow" className="h-4 w-4" /></Link>
-              <Link href="/csca" className="btn-ghost-light !px-6 !py-3 text-base">Tìm hiểu CSCA</Link>
+              <Link href="/quick-test" className="btn-light btn-lg">Thi thử miễn phí <Icon name="arrow" className="h-4 w-4" /></Link>
+              <Link href="/csca" className="btn-ghost-light btn-lg">Tìm hiểu CSCA</Link>
             </div>
             <ul className="rise rise-4 mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
               {[`${QUICK_TEST.questions} câu`, `${QUICK_TEST.minutes} phút`, "Báo cáo AI ngay"].map((t) => <li key={t} className="flex items-center gap-1.5"><span className="grid h-5 w-5 place-items-center rounded-full bg-brand text-white"><Icon name="check" className="h-3 w-3" /></span>{t}</li>)}
@@ -77,14 +77,14 @@ export default async function Home() {
       <section className="-mt-14 px-1 sm:-mt-16 sm:px-6">
         <div className="relative z-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           {stats.map(([v, suf, label], i) => (
-            <Reveal key={label} delay={i * 90}><div className="glass rounded-2xl p-4 text-center sm:p-5"><p className="text-3xl font-black text-navy sm:text-4xl"><CountUp value={v} suffix={suf} /></p><p className="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-500 sm:text-xs">{label}</p></div></Reveal>
+            <Reveal key={label} delay={i * 90}><div className="glass rounded-2xl p-4 text-center sm:p-5"><p className="text-3xl font-black text-navy sm:text-4xl"><CountUp value={v} suffix={suf} /></p><p className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted sm:text-xs">{label}</p></div></Reveal>
           ))}
         </div>
       </section>
 
       {/* ===== ĐỐI TƯỢNG ===== */}
       <section>
-        <Reveal><p className="mb-4 text-center text-sm font-semibold text-slate-500">Bạn là ai? Chọn để chúng tôi gợi ý phù hợp</p></Reveal>
+        <Reveal><p className="mb-4 text-center text-sm font-semibold text-muted">Bạn là ai? Chọn để chúng tôi gợi ý phù hợp</p></Reveal>
         <div className="flex flex-wrap justify-center gap-2.5">
           {Object.entries(AUDIENCES).map(([k, v], i) => <Reveal key={k} delay={i * 60}><Link href={`/dang-ky?audience=${k}`} className="inline-flex min-h-[2.5rem] items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:bg-brand-soft hover:text-brand hover:shadow-md">{v}</Link></Reveal>)}
         </div>
@@ -117,7 +117,7 @@ export default async function Home() {
       </section>
 
       {/* ===== QUY TRÌNH ===== */}
-      <section className="relative isolate overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2.25rem] sm:px-10 sm:py-14">
+      <section className="relative isolate overflow-hidden rounded-3xl border border-slate-200/70 bg-white px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2rem] sm:px-10 sm:py-14">
         <Reveal><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="eyebrow">How it works</p><h2 className="mt-2 max-w-xl text-navy text-3xl font-extrabold leading-tight sm:text-4xl">Từ bài thi đầu tiên đến ngày bạn sẵn sàng</h2></div><Link href="/quick-test" className="btn">Bắt đầu ngay <Icon name="arrow" className="h-4 w-4" /></Link></div></Reveal>
         <ol className="relative mt-12 grid gap-x-4 gap-y-9 md:grid-cols-5">
           <span className="pointer-events-none absolute left-[10%] right-[10%] top-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-brand/0 via-brand/40 to-brand/0 md:block" aria-hidden="true" />
@@ -184,8 +184,8 @@ export default async function Home() {
                 <span className="chip">Mức {l.level}</span>
                 <h3 className="mt-3 text-lg font-extrabold text-navy">{l.name}</h3><p className="mt-1 min-h-[2.5rem] text-sm text-slate-600">{l.tagline}</p>
                 <div className="mt-4 flex h-2.5 overflow-hidden rounded-full bg-slate-100" title={mixText(l.mix)}><span className="bg-sky-300" style={{ width: `${l.mix.easy}%` }} /><span className="bg-brand" style={{ width: `${l.mix.medium}%` }} /><span className="bg-navy" style={{ width: `${l.mix.hard}%` }} /></div>
-                <p className="mt-1.5 text-xs font-medium text-slate-500">{mixText(l.mix)}</p>
-                <p className="mt-3 flex items-center justify-between text-sm"><span className="text-slate-500">{l.range}</span><b className={l.price ? "text-ink" : "text-emerald-600"}>{l.price ? vnd(l.price) : "Miễn phí"}</b></p>
+                <p className="mt-1.5 text-xs font-medium text-muted">{mixText(l.mix)}</p>
+                <p className="mt-3 flex items-center justify-between text-sm"><span className="text-muted">{l.range}</span><b className={l.price ? "text-ink" : "text-emerald-600"}>{l.price ? vnd(l.price) : "Miễn phí"}</b></p>
               </Link>
             </Reveal>
           ))}
@@ -193,7 +193,7 @@ export default async function Home() {
       </section>
 
       {/* ===== GIA SƯ AI ===== */}
-      <section className="relative isolate overflow-hidden rounded-[1.75rem] border border-brand/15 bg-brand-soft px-5 py-10 sm:rounded-[2.25rem] sm:px-12 sm:py-14">
+      <section className="relative isolate overflow-hidden rounded-3xl border border-brand/15 bg-brand-soft px-5 py-10 sm:rounded-[2rem] sm:px-12 sm:py-14">
         <div className="grid items-center gap-10 md:grid-cols-2">
           <Reveal>
             <p className="eyebrow">AI Tutor</p><h2 className="mt-2 text-navy text-3xl font-extrabold leading-tight sm:text-4xl">Gia sư AI giải thích đến khi bạn hiểu</h2>
@@ -212,7 +212,7 @@ export default async function Home() {
       </section>
 
       {/* ===== TRƯỜNG ===== */}
-      <section className="relative isolate overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2.25rem] sm:px-12 sm:py-14">
+      <section className="relative isolate overflow-hidden rounded-3xl border border-slate-200/70 bg-white px-5 py-10 shadow-[var(--shadow-card)] sm:rounded-[2rem] sm:px-12 sm:py-14">
         <div className="flex flex-wrap items-end justify-between gap-3"><Reveal><SectionTitle en="Universities" vi="Trường & học bổng" /></Reveal><Reveal><Link href="/truong" className="btn-outline">Khám phá trường <Icon name="arrow" className="h-4 w-4" /></Link></Reveal></div>
         <div className="relative z-10 mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
           {(schools ?? []).map((s, i) => (
@@ -225,16 +225,16 @@ export default async function Home() {
             </Link></Reveal>
           ))}
         </div>
-        {scholarships?.[0] && <Reveal><Link href="/hoc-bong" className="relative z-10 mt-5 flex items-center gap-3 rounded-2xl border border-brand/20 bg-brand-soft p-4 text-ink transition hover:-translate-y-0.5"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold text-white"><Icon name="award" /></span><span className="min-w-0 text-sm"><b className="block truncate">{scholarships[0].name}</b><span className="text-slate-500">Xem các học bổng đang mở</span></span><Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-brand" /></Link></Reveal>}
+        {scholarships?.[0] && <Reveal><Link href="/hoc-bong" className="relative z-10 mt-5 flex items-center gap-3 rounded-2xl border border-brand/20 bg-brand-soft p-4 text-ink transition hover:-translate-y-0.5"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold text-white"><Icon name="award" /></span><span className="min-w-0 text-sm"><b className="block truncate">{scholarships[0].name}</b><span className="text-muted">Xem các học bổng đang mở</span></span><Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-brand" /></Link></Reveal>}
       </section>
 
       {/* ===== KÊU GỌI ===== */}
       <Reveal>
-        <section className="relative isolate overflow-hidden rounded-[1.75rem] bg-gradient-to-r from-brand via-indigo to-navy px-5 py-12 text-center text-white sm:rounded-[2.25rem] sm:py-16">
+        <section className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-r from-brand via-indigo to-navy px-5 py-12 text-center text-white sm:rounded-[2rem] sm:py-16">
           <div className="drift pointer-events-none absolute -left-10 -top-10 -z-10 h-56 w-56 rounded-full bg-white/15 blur-2xl" /><div className="drift pointer-events-none absolute -bottom-16 right-0 -z-10 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" style={{ animationDelay: "-6s" }} />
           <h2 className="mx-auto max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl">Biết mình đang ở đâu chỉ sau 15 phút</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/85">Làm Quick Test miễn phí, nhận Readiness Score và lộ trình cá nhân hóa ngay hôm nay.</p>
-          <div className="mt-7 flex flex-wrap justify-center gap-3"><Link href="/quick-test" className="btn-light !px-7 !py-3 text-base">Bắt đầu miễn phí <Icon name="arrow" className="h-4 w-4" /></Link><Link href="/thi-thu" className="btn-ghost-light !px-7 !py-3 text-base">Xem các đề thi</Link></div>
+          <div className="mt-7 flex flex-wrap justify-center gap-3"><Link href="/quick-test" className="btn-light btn-lg">Bắt đầu miễn phí <Icon name="arrow" className="h-4 w-4" /></Link><Link href="/thi-thu" className="btn-ghost-light btn-lg">Xem các đề thi</Link></div>
         </section>
       </Reveal>
     </div>

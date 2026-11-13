@@ -19,7 +19,7 @@ export default function Page() {
       <section>
         <h2 className="mb-4 text-xl font-bold">Các môn thi</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{Object.values(SUBJECTS).map((s) => <div key={s} className="card card-hover text-center"><span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-brand text-white"><Icon name="book" /></span><p className="mt-3 font-bold">{s}</p></div>)}</div>
-        <p className="mt-3 text-sm text-slate-500">Cấu trúc, lịch thi và quy định chi tiết: vui lòng đối chiếu thông báo chính thức của đơn vị tổ chức kỳ thi.</p>
+        <p className="mt-3 text-sm text-muted">Cấu trúc, lịch thi và quy định chi tiết: vui lòng đối chiếu thông báo chính thức của đơn vị tổ chức kỳ thi.</p>
       </section>
       <section>
         <h2 className="mb-4 text-xl font-bold">Câu hỏi thường gặp</h2>

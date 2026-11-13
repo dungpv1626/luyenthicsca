@@ -27,7 +27,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
     return (
       <div>
         <PageHeader en="Study Plan" vi="Lộ trình học cá nhân">AI dựng kế hoạch theo ngày dựa trên điểm yếu của bạn. {sk.topics.length ? "" : "Bạn chưa có dữ liệu thi nên lộ trình sẽ bắt đầu từ nền tảng, hãy làm Quick Test để cá nhân hóa hơn."}</PageHeader>
-        {error && <p className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Không tạo được lộ trình. Hãy thử lại.</p>}
+        {error && <p className="mb-4 rounded-xl bg-warning-bg p-3 text-sm text-warning">Không tạo được lộ trình. Hãy thử lại.</p>}
         <form action={createPlanAction} className="card mx-auto max-w-xl space-y-4">
           <div><label className="label" htmlFor="f-goal">Mục tiêu</label><input id="f-goal" name="goal" defaultValue={prof?.target ?? ""} placeholder="vd: Toán ≥ 80, vào Đại học Chiết Giang" className="input" /></div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -59,13 +59,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
     <div className="space-y-6">
       <PageHeader en="Study Plan" vi="Lộ trình học cá nhân">{plan.summary}</PageHeader>
       <div className="grid gap-4 md:grid-cols-4">
-        <div className="card md:col-span-2"><p className="eyebrow">Tiến độ</p><p className="mt-1 text-3xl font-black">{pct}%<span className="ml-2 text-sm font-medium text-slate-500">{done}/{tasks.length} nhiệm vụ</span></p><div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div></div>
-        <div className="card"><p className="eyebrow">Mục tiêu</p><p className="mt-1 text-3xl font-black">{plan.target_readiness}<span className="text-sm text-slate-500">/100</span></p><p className="text-xs text-slate-500">{plan.goal || "—"}</p></div>
-        <div className="card"><p className="eyebrow">Quá hạn</p><p className={`mt-1 text-3xl font-black ${overdue ? "text-red-600" : ""}`}>{overdue}</p><p className="text-xs text-slate-500">{plan.weeks} tuần · {plan.minutes_per_day} phút/ngày</p></div>
+        <div className="card md:col-span-2"><p className="eyebrow">Tiến độ</p><p className="mt-1 text-3xl font-black">{pct}%<span className="ml-2 text-sm font-medium text-muted">{done}/{tasks.length} nhiệm vụ</span></p><div className="mt-3 h-2.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} /></div></div>
+        <div className="card"><p className="eyebrow">Mục tiêu</p><p className="mt-1 text-3xl font-black">{plan.target_readiness}<span className="text-sm text-muted">/100</span></p><p className="text-xs text-muted">{plan.goal || "—"}</p></div>
+        <div className="card"><p className="eyebrow">Quá hạn</p><p className={`mt-1 text-3xl font-black ${overdue ? "text-red-600" : ""}`}>{overdue}</p><p className="text-xs text-muted">{plan.weeks} tuần · {plan.minutes_per_day} phút/ngày</p></div>
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">{offset === 0 ? "Tuần này" : `Tuần ${offset > 0 ? "+" : ""}${offset}`} <span className="text-sm font-normal text-slate-500">({new Date(week[0].date).toLocaleDateString("vi-VN")} – {new Date(week[6].date).toLocaleDateString("vi-VN")})</span></h2>
+        <h2 className="text-lg font-bold">{offset === 0 ? "Tuần này" : `Tuần ${offset > 0 ? "+" : ""}${offset}`} <span className="text-sm font-normal text-muted">({new Date(week[0].date).toLocaleDateString("vi-VN")} – {new Date(week[6].date).toLocaleDateString("vi-VN")})</span></h2>
         <div className="flex gap-2"><Link href={`/lo-trinh?w=${offset - 1}`} className="btn-outline !px-3">←</Link>{offset !== 0 && <Link href="/lo-trinh" className="btn-outline">Hôm nay</Link>}<Link href={`/lo-trinh?w=${offset + 1}`} className="btn-outline !px-3">→</Link></div>
       </div>
 
@@ -75,18 +75,18 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
           const isToday = d.date === today;
           return (
             <div key={d.date} className={`rounded-2xl border p-3 ${isToday ? "border-brand bg-brand-soft/50" : "border-slate-200 bg-white"}`}>
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{d.name}</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-muted">{d.name}</p>
               <p className={`text-sm font-semibold ${isToday ? "text-brand" : ""}`}>{new Date(d.date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}</p>
               <div className="mt-2 space-y-2">
-                {list.length === 0 && <p className="text-xs text-slate-500">Nghỉ</p>}
+                {list.length === 0 && <p className="text-xs text-muted">Nghỉ</p>}
                 {list.map((t) => (
                   <div key={t.id} className={`rounded-xl border bg-white p-2.5 text-sm ${t.done_at ? "border-emerald-200 opacity-70" : t.due_date < today ? "border-red-300" : "border-slate-200"}`}>
                     <span className="chip !text-xs">{KIND[t.kind as keyof typeof KIND]}</span>
                     <p className={`mt-1 font-semibold leading-snug ${t.done_at ? "line-through" : ""}`}>{t.title}</p>
-                    {t.subject && <p className="text-xs text-slate-500">{subjectName(t.subject)}</p>}
+                    {t.subject && <p className="text-xs text-muted">{subjectName(t.subject)}</p>}
                     <div className="mt-2 flex items-center gap-1.5">
                       {!t.done_at && <form action={startTaskAction.bind(null, t.id)}><SubmitButton className="inline-flex min-h-[2.5rem] items-center rounded-full bg-brand px-4 text-xs font-bold text-white hover:bg-brand-dark" pendingText="Đang mở…">Làm ngay</SubmitButton></form>}
-                      <form action={toggleTaskAction.bind(null, t.id, !t.done_at)}><button title={t.done_at ? "Bỏ đánh dấu" : "Đánh dấu xong"} className={`grid h-6 w-6 place-items-center rounded-full border ${t.done_at ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-300 text-transparent hover:text-slate-500"}`}><Icon name="check" className="h-3.5 w-3.5" /></button></form>
+                      <form action={toggleTaskAction.bind(null, t.id, !t.done_at)}><button title={t.done_at ? "Bỏ đánh dấu" : "Đánh dấu xong"} className={`grid h-6 w-6 place-items-center rounded-full border ${t.done_at ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-300 text-transparent hover:text-muted"}`}><Icon name="check" className="h-3.5 w-3.5" /></button></form>
                     </div>
                   </div>
                 ))}
@@ -103,11 +103,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
             <ul className="divide-y divide-slate-100">{upcoming.map((t) => (
               <li key={t.id} className="flex items-center gap-3 py-2.5 text-sm">
                 <span className="w-24 shrink-0 font-semibold text-brand">{new Date(t.due_date).toLocaleDateString("vi-VN", { weekday: "short", day: "2-digit", month: "2-digit" })}</span>
-                <span className="chip !text-xs">{KIND[t.kind as keyof typeof KIND]}</span><span className="flex-1 font-medium">{t.title}</span><span className="hidden text-xs text-slate-500 sm:block">{subjectName(t.subject)}</span>
+                <span className="chip !text-xs">{KIND[t.kind as keyof typeof KIND]}</span><span className="flex-1 font-medium">{t.title}</span><span className="hidden text-xs text-muted sm:block">{subjectName(t.subject)}</span>
               </li>))}</ul></section>
         );
       })()}
-      <div className="flex justify-between text-sm text-slate-500"><span>Lộ trình do {plan.source === "claude" ? "AI (Claude)" : "hệ thống (theo luật)"} tạo.</span>
+      <div className="flex justify-between text-sm text-muted"><span>Lộ trình do {plan.source === "claude" ? "AI (Claude)" : "hệ thống (theo luật)"} tạo.</span>
         <form action={endPlanAction}><button className="font-semibold text-brand hover:underline">Kết thúc & tạo lộ trình mới</button></form></div>
     </div>
   );
