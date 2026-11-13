@@ -16,7 +16,7 @@ export default async function Page({ params }: { params: Promise<{ orderId: stri
 
   return (
     <div className="card mx-auto max-w-md space-y-3 text-center">
-      <h1 className="text-xl font-bold">Thanh toán đơn hàng</h1>
+      <h1 className="work-title">Thanh toán đơn hàng</h1>
       <p>{(o.tests as { title: string } | null)?.title ?? (o.courses as { title: string } | null)?.title}</p>
       <p className="text-3xl font-extrabold text-brand">{vnd(o.amount_vnd)}</p>
       {paid ? (

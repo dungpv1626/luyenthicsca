@@ -59,6 +59,13 @@ img, svg, video { max-width: 100%; }
   .text-gradient { @apply bg-gradient-to-r from-sky-300 via-cyan-200 to-white bg-clip-text text-transparent; }
   .text-gradient-brand { @apply bg-gradient-to-r from-brand via-indigo to-accent bg-clip-text text-transparent; }
 
+  /* ===== quy ước bề rộng và tiêu đề trang =====
+     .w-read: cột đọc/hội thoại (42rem) · .w-form: biểu mẫu, chi tiết một đề (48rem) · trang thường: max-w-6xl của <main> · bảng quản trị: không giới hạn.
+     .work-title: h1 của trang làm việc (Dashboard, Quick Test, Đơn hàng...); banner PageHeader chỉ dùng cho trang giới thiệu. */
+  .w-read { @apply mx-auto w-full max-w-2xl; }
+  .w-form { @apply mx-auto w-full max-w-3xl; }
+  .work-title { @apply text-2xl font-extrabold leading-tight tracking-tight text-navy md:text-[1.75rem]; }
+
   /* ===== nền trang trí ===== */
   .mesh-navy {
     background:

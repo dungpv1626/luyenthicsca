@@ -41,11 +41,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const done = (hist ?? []).filter((a) => a.submitted_at);
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-4">
+    <div className="w-form grid gap-4">
       <div className="card space-y-4 !p-6 shadow-soft sm:!p-7">
         <div>
           <p className="eyebrow">{t.sim ? "Đề mô phỏng CSCA" : level ? `Mức ${level.level} · ${level.name}` : "Đề thi thử"}</p>
-          <h1 className="mt-1 text-2xl font-extrabold text-navy">{t.title}</h1>
+          <h1 className="work-title mt-1">{t.title}</h1>
           {t.description && <p className="mt-1 text-slate-600">{t.description}</p>}
         </div>
         <dl className="grid grid-cols-3 gap-2 text-center text-sm">

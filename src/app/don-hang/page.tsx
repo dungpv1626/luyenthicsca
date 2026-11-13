@@ -12,7 +12,7 @@ export default async function Page() {
   const { data } = await adminDb().from("orders").select("id, code, amount_vnd, status, created_at, tests(title), courses(title)").eq("user_id", me.id).order("created_at", { ascending: false });
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Đơn hàng</h1>
+      <h1 className="work-title">Đơn hàng</h1>
       {!data?.length && <p className="text-slate-500">Bạn chưa có đơn hàng nào.</p>}
       {data?.map((o) => (
         <Link key={o.id} href={`/thanh-toan/${o.id}`} className="card flex items-center justify-between hover:border-brand">

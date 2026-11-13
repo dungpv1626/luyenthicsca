@@ -54,7 +54,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       {pw === "reset" && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm font-medium text-emerald-800">Đã đặt mật khẩu mới. Các thiết bị khác đã bị đăng xuất.</p>}
       {resume}
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div><p className="eyebrow">Dashboard</p><h1 className="text-2xl font-extrabold md:text-3xl">Xin chào, {me.full_name || me.email}</h1></div>
+        <div><p className="eyebrow">Dashboard</p><h1 className="work-title">Xin chào, {me.full_name || me.email}</h1></div>
         <div className="flex flex-wrap gap-2">
           {primary ? <Link href={primary.href} className="btn">{primary.label}</Link> : null}
           {primary?.href !== "/quick-test" && <Link href="/quick-test" className="btn-outline">Quick Test</Link>}
