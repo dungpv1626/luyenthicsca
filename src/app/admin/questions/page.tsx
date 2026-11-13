@@ -34,7 +34,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-bold">Ngân hàng câu hỏi</h1><Link href="/admin/questions/new" className="btn">+ Câu hỏi mới</Link></div>
+      <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-bold">Ngân hàng câu hỏi <span className="text-base font-semibold text-slate-500">({(count ?? 0).toLocaleString("vi-VN")}{filtered ? " khớp bộ lọc" : ""})</span></h1><Link href="/admin/questions/new" className="btn">+ Câu hỏi mới</Link></div>
+      <nav aria-label="Bộ lọc nhanh" className="flex flex-wrap gap-2 text-sm">
+        {([["Tất cả", "/admin/questions", !filtered], ["Chờ duyệt", "/admin/questions?status=review", sp.status === "review"], ["Nháp", "/admin/questions?status=draft", sp.status === "draft"], ["Đã duyệt", "/admin/questions?status=approved", sp.status === "approved"], ["Chưa phân loại", "/admin/questions?module=none", sp.module === "none"]] as const).map(([label, href, on]) => (
+          <Link key={label} href={href} aria-current={on ? "true" : undefined} className={`inline-flex min-h-[2.25rem] items-center rounded-lg border px-3 font-semibold ${on ? "border-brand bg-brand text-white" : "border-slate-200 bg-white text-slate-700 hover:border-brand hover:text-brand"}`}>{label}</Link>
+        ))}
+      </nav>
       <form className="card flex flex-wrap items-center gap-2 text-sm">
         <input name="q" defaultValue={term} aria-label="Tìm trong nội dung, chủ đề" placeholder="Tìm trong nội dung, chủ đề…" className="input min-w-[12rem] flex-1" type="search" />
         <select name="subject" aria-label="Lọc theo môn" defaultValue={sp.subject ?? ""} className={sel}><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
