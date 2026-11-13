@@ -96,7 +96,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
       )}
 
       <section>
-        <div className="grid gap-4 md:grid-cols-3"><Link href="/quick-test" className="card card-hover !border-brand/30 bg-gradient-to-br from-brand-soft to-white"><span className="chip">MIỄN PHÍ</span><h3 className="mt-2 font-bold">Quick Test</h3><p className="mt-1 text-sm text-slate-600">{QUICK_TEST.questions} câu · {QUICK_TEST.minutes} phút · AI phân tích ngay. Bắt đầu từ đây để biết cấp của bạn.</p></Link></div>
+        <div className="grid gap-4 md:grid-cols-3"><Link href="/quick-test" className="card card-hover !border-brand/30 bg-gradient-to-br from-brand-soft to-surface"><span className="chip">MIỄN PHÍ</span><h3 className="mt-2 font-bold">Quick Test</h3><p className="mt-1 text-sm text-slate-600">{QUICK_TEST.questions} câu · {QUICK_TEST.minutes} phút · AI phân tích ngay. Bắt đầu từ đây để biết cấp của bạn.</p></Link></div>
       </section>
 
       {leveled.map(({ l, list }) => (
