@@ -2,6 +2,7 @@ import { adminDb } from "./supabase/admin";
 import { generateReport } from "./ai";
 import { scoreAttempt, type ScoredQuestion } from "./scoring";
 import { QUICK_TEST, SUBJECT_KEYS, type Difficulty, type Subject } from "./constants";
+import { classify, topicByKey } from "./syllabus";
 
 function shuffle<T>(a: T[]): T[] {
   const r = [...a];
@@ -13,14 +14,22 @@ function shuffle<T>(a: T[]): T[] {
 }
 
 /** Chọn ngẫu nhiên câu hỏi đã duyệt, chia đều theo môn. */
-export async function pickQuestions(opts: { subjects?: Subject[]; topic?: string; module?: string; difficulty?: Difficulty; count: number }) {
+export async function pickQuestions(opts: { subjects?: Subject[]; topic?: string; module?: string; topicKey?: string; difficulty?: Difficulty; count: number }) {
   const db = adminDb();
   const subjects = opts.subjects?.length ? opts.subjects : SUBJECT_KEYS;
   let q = db.from("questions").select("id, subject").eq("status", "approved").in("subject", subjects);
   if (opts.topic) q = q.eq("topic", opts.topic);
   if (opts.module) q = q.eq("module", opts.module);
   if (opts.difficulty) q = q.eq("difficulty", opts.difficulty);
-  const { data } = await q;
+  let { data } = await q;
+  // chuyên đề theo đề cương: lọc theo mô-đun trong DB rồi phân loại từng câu (chuyên đề được tính, không lưu)
+  if (opts.topicKey && opts.subjects?.length === 1) {
+    const top = topicByKey(opts.subjects[0], opts.topicKey);
+    if (!top) return [];
+    const { data: rows } = await db.from("questions").select("id, subject, topic, subtopic").eq("status", "approved").eq("subject", opts.subjects[0]).eq("module", top.module).limit(1000);
+    const ok = new Set((rows ?? []).filter((r) => classify(r).topic === opts.topicKey).map((r) => r.id));
+    data = (data ?? []).filter((r) => ok.has(r.id));
+  }
   const pool = shuffle(data ?? []);
   // round-robin theo môn để bài thi cân bằng
   const by: Record<string, string[]> = {};

@@ -20,7 +20,7 @@ test("moduleOf: các trường hợp chính", () => {
   assert.equal(moduleOf({ subject: "math", topic: "Hàm số", subtopic: "Hàm số bậc hai" }), "function");
   assert.equal(moduleOf({ subject: "math", topic: "Giải tích", subtopic: "Đạo hàm của đa thức" }), "function");
   assert.equal(moduleOf({ subject: "math", topic: "Giải tích", subtopic: "Tích phân xác định" }), OUT);
-  assert.equal(moduleOf({ subject: "math", topic: "Đại số", subtopic: "Hệ thức Vi-ét" }), "set_ineq");
+  assert.equal(moduleOf({ subject: "math", topic: "Đại số", subtopic: "Hệ thức Vi-ét" }), OUT); // đề cương chính thức không liệt kê: chỉ để luyện thêm
   assert.equal(moduleOf({ subject: "math", topic: "Đại số", subtopic: "Phương trình lôgarit" }), "function");
   assert.equal(moduleOf({ subject: "physics", topic: "Sóng", subtopic: "Sóng dừng" }), "mechanics");
   assert.equal(moduleOf({ subject: "physics", topic: "Sóng", subtopic: "giao thoa ánh sáng" }), "optics");

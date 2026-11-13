@@ -22,6 +22,7 @@ export async function startPracticeAction(fd: FormData) {
   const difficulty = String(fd.get("difficulty") ?? "");
   const topic = String(fd.get("topic") ?? "").trim();
   const mod = String(fd.get("module") ?? "").trim();
+  const topicKey = String(fd.get("topic_key") ?? "").trim();
   const count = Math.min(50, Math.max(5, Number(fd.get("count")) || 10));
   const wrongMode = fd.get("mode") === "wrong";
   const ids = wrongMode
@@ -31,6 +32,7 @@ export async function startPracticeAction(fd: FormData) {
         difficulty: ["easy", "medium", "hard"].includes(difficulty) ? (difficulty as Difficulty) : undefined,
         topic: topic || undefined,
         module: /^[a-z_]{2,20}$/.test(mod) ? mod : undefined,
+        topicKey: /^[a-z_]{2,24}$/.test(topicKey) ? topicKey : undefined,
         count,
       });
   if (!ids.length) redirect("/luyen-tap?error=empty");

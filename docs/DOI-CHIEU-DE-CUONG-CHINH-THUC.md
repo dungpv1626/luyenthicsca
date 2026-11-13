@@ -59,3 +59,11 @@ Nguồn: trang chính thức https://csca.cn/about/testprep (mục 备考资源 
 3. Viết khuôn tham số cho các mảng trống tính toán được (khí lí tưởng, cảm ứng từ và lực Lo-ren-xơ, Fa-ra-đây, động lượng, cơ năng, hấp dẫn, tập hợp và bất phương trình, cônic, số phức, phân phối chuẩn). Mảng khái niệm (phản ứng ion, tách–tinh chế, tổng hợp amoniac, tiếng Trung) cần AI hoặc giáo viên soạn.
 4. Dựng lại đề mô phỏng theo mục nhỏ sau khi hoàn tất. Do nhiều mô-đun sẽ giảm số câu hợp lệ, một số đề có thể tạm không dựng được cho tới khi bổ sung.
 5. Mở rộng giao diện học viên theo **chuyên đề** (như csca.app): mỗi mô-đun hiện danh sách chủ đề với tên ba ngôn ngữ, mô tả ngắn, số câu, và nhãn mức độ liên quan tới đề thi.
+
+## 5. Đã thực hiện (13/11/2026)
+
+- `src/lib/syllabus.ts`: danh sách **50 chuyên đề** (Toán 15, Vật lý 18, Hóa 17) theo đề cương chính thức, tên Việt–Anh–Trung, mô tả, nhãn "có trong đề mẫu chính thức"; hàm `classify()` gán mô-đun + chuyên đề cho từng câu (chuyên đề được tính, không lưu trong DB).
+- Đã sửa gán mô-đun trong DB (587 câu): điện phân vào Lý thuyết; chuẩn độ và pha chế vào Khái niệm cơ bản và tính toán; nhiệt lượng, thấu kính, Vi-ét, xác suất có điều kiện/nhị thức, diện tích tam giác, tích phân được gom vào "ngoài phạm vi liệt kê" (vẫn luyện thêm được, không vào đề mô phỏng).
+- Học viên: `/luyen-tap` có mục **Học theo chuyên đề** (thẻ chuyên đề, số câu, "Sắp có", luyện 10 câu); bộ lọc tự do cũ vẫn chạy song song.
+- Quản trị: Admin → Phủ đề cương có bảng **phủ theo chuyên đề** (Thiếu / Ít / Đủ).
+- Chưa làm: Tiếng Trung theo 6 dạng câu và hai khối; khuôn cho các chuyên đề còn trống; dựng lại đề mô phỏng theo chuyên đề.

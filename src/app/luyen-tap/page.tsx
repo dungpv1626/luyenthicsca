@@ -5,6 +5,9 @@ import { wrongQuestionIds } from "@/lib/exam";
 import { getSkillProfile } from "@/lib/skills";
 import { PracticeFilters } from "@/components/PracticeFilters";
 import { MODULES } from "@/lib/syllabus";
+import { topicStats } from "@/lib/topic-stats";
+import { TopicExplorer } from "@/components/TopicExplorer";
+import type { Subject as SylSubject } from "@/lib/syllabus";
 import { DIFFICULTY, SUBJECTS } from "@/lib/constants";
 import { PageHeader } from "@/components/Section";
 import { Icon } from "@/components/Icon";
@@ -15,13 +18,14 @@ export const metadata = { title: "Luyện tập theo chủ đề" };
 export default async function Page({ searchParams }: { searchParams: Promise<{ error?: string; subject?: string; module?: string }> }) {
   const me = await requireMe("/luyen-tap");
   const { error, subject: qSubject = "", module: qModule = "" } = await searchParams;
-  const [{ data: topics }, wrong, sk] = await Promise.all([adminDb().from("questions").select("subject, topic").eq("status", "approved").limit(20000), wrongQuestionIds(me.id), getSkillProfile(me.id)]);
+  const [{ data: topics }, wrong, sk, stats] = await Promise.all([adminDb().from("questions").select("subject, topic").eq("status", "approved").limit(20000), wrongQuestionIds(me.id), getSkillProfile(me.id), topicStats()]);
+  const tsub = (["math", "physics", "chemistry", "chinese"].includes(qSubject) ? qSubject : "math") as SylSubject;
   const bySubject: Record<string, string[]> = {};
   for (const t of topics ?? []) { const a = (bySubject[t.subject] ??= []); if (!a.includes(t.topic)) a.push(t.topic); }
   for (const k of Object.keys(bySubject)) bySubject[k].sort((a, b) => a.localeCompare(b, "vi"));
   return (
     <div>
-      <PageHeader en="Practice" vi="Ngân hàng câu hỏi">Chọn môn, chủ đề, độ khó và số câu. Mỗi câu có giải thích; câu sai được lưu để luyện lại.</PageHeader>
+      <PageHeader en="Practice" vi="Ngân hàng câu hỏi">Học theo chuyên đề của đề cương CSCA, hoặc tự chọn môn, độ khó và số câu. Mỗi câu có giải thích; câu sai được lưu để luyện lại.</PageHeader>
       {error && <p className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Chưa có câu hỏi phù hợp với lựa chọn này. Hãy thử bộ lọc khác.</p>}
       {sk.weak.length > 0 && (
         <section className="card mb-6 !p-4" aria-label="Chủ đề nên ôn">
@@ -32,6 +36,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
           </div>
         </section>
       )}
+      <TopicExplorer subject={tsub} stats={stats} />
+      <h2 className="mb-3 text-lg font-extrabold text-navy">Hoặc chọn bộ lọc tự do</h2>
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <form action={startPracticeAction} className="card space-y-4">
           <PracticeFilters bySubject={bySubject} subjects={SUBJECTS} difficulties={DIFFICULTY} modules={Object.fromEntries(Object.entries(MODULES).map(([k, v]) => [k, v.map((m) => ({ key: m.key, name: m.name }))]))} defaultSubject={qSubject} defaultModule={qModule} />
