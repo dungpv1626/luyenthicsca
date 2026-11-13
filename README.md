@@ -138,4 +138,4 @@ Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration
 
 - Logic thuần: `src/lib/journey.ts` (có test). Ngưỡng chỉnh ở đầu file: `PRACTICE_GOAL` (6 buổi luyện chuyên đề), `LEVEL_GOAL` (3 đề theo mức), `LEVEL_PASS` (60/100), `SIM_GOAL` (2 đề mô phỏng). Điểm mục tiêu lấy từ lộ trình AI (mặc định 80).
 - Dữ liệu: `src/lib/journey-data.ts` (bài đã nộp, hồ sơ, lộ trình, chủ đề yếu). Giao diện: `src/components/JourneyPipeline.tsx`.
-- Chặng "Vá lỗ hổng" chỉ xong khi đủ buổi luyện VÀ hết chuyên đề yếu (< 60
+- Chặng "Vá lỗ hổng" chỉ xong khi đủ buổi luyện VÀ hết chuyên đề yếu (dưới 60%); chặng "Luyện đề theo mức" cần 3 đề và đạt từ 60/100.
