@@ -80,7 +80,7 @@ export default async function Page() {
 
       <section aria-labelledby="todo">
         <h2 id="todo" className="mb-2 text-sm font-bold uppercase tracking-wide text-muted">Việc cần làm {open.length > 0 && <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-warning">{open.length}</span>}</h2>
-        {open.length === 0 ? <div className="card text-sm text-slate-600">Không có việc tồn đọng. ✅</div> : (
+        {open.length === 0 ? <div className="card text-sm text-slate-600">Không có việc tồn đọng.</div> : (
           <ul className="card divide-y divide-slate-100 !p-0">
             {open.map((t) => (
               <li key={t.title} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">

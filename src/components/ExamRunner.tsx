@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { saveDraftAction, submitExamAction } from "@/app/exam-actions";
 import { SUBJECTS, type Subject } from "@/lib/constants";
 import { Rich } from "./Rich";
+import { Icon } from "./Icon";
 
 type Q = { id: string; subject: string; topic: string; body: string; options: Record<string, string>; tr?: Record<string, { body: string; options: Record<string, string> }> };
 const LANGS = [["vi", "Tiếng Việt", "VI"], ["en", "English", "EN"], ["zh", "中文", "中文"]] as const;
@@ -152,7 +153,7 @@ export function ExamRunner({ attemptId, title, questions, deadline, draft, draft
         <div className="card space-y-4">
           <div className="flex items-start justify-between gap-3">
             <p className="text-xs font-semibold uppercase text-brand">{SUBJECTS[q.subject as Subject]} · {q.topic}</p>
-            <button onClick={toggleFlag} aria-pressed={isFlag} className={`inline-flex min-h-[2.5rem] shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isFlag ? "border-gold bg-warning-bg text-warning" : "border-slate-200 text-muted hover:border-gold hover:text-warning"}`}>{isFlag ? "🚩 Đã đánh dấu" : "🏳 Đánh dấu xem lại"}</button>
+            <button onClick={toggleFlag} aria-pressed={isFlag} className={`inline-flex min-h-[2.5rem] shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition ${isFlag ? "border-gold bg-warning-bg text-warning" : "border-slate-200 text-muted hover:border-gold hover:text-warning"}`}><Icon name="flag" className="h-4 w-4" />{isFlag ? "Đã đánh dấu" : "Đánh dấu xem lại"}</button>
           </div>
           <p className="text-lg">Câu {idx + 1}. <Rich text={view.body} /></p>
           <div className="space-y-2" role="radiogroup" aria-label={`Đáp án câu ${idx + 1}`}>

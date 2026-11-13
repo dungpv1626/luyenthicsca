@@ -84,7 +84,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       <section id="nhiem-vu" className="card scroll-mt-20">
         <div className="mb-3 flex items-center justify-between"><h2 className="font-bold">Nhiệm vụ hôm nay</h2><Link href="/lo-trinh" className="inline-block py-2 text-sm font-semibold text-brand hover:underline">Lộ trình →</Link></div>
         {!plan ? <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-brand-soft p-4"><p className="text-sm">Chưa có lộ trình học. Để AI lên kế hoạch theo điểm yếu của bạn.</p><Link href="/lo-trinh" className="btn"><Icon name="sparkles" className="h-4 w-4" />Tạo lộ trình</Link></div>
-          : todo.length === 0 ? <p className="text-sm text-slate-600">Bạn đã hoàn thành nhiệm vụ hôm nay. 🎉</p>
+          : todo.length === 0 ? <p className="text-sm text-slate-600">Bạn đã hoàn thành nhiệm vụ hôm nay.</p>
           : <ul className="divide-y divide-slate-100">{todo.slice(0, 6).map((t) => (
               <li key={t.id} className="flex items-center gap-3 py-2.5">
                 <form action={toggleTaskAction.bind(null, t.id, true)}><button className="grid h-6 w-6 place-items-center rounded-full border border-slate-300 text-transparent hover:border-brand hover:text-brand" aria-label="Hoàn thành"><Icon name="check" className="h-3.5 w-3.5" /></button></form>
@@ -94,7 +94,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       </section>
 
       {sk.attempts.length > 0 && <div className="grid gap-4 md:grid-cols-3">
-        <div className="card flex items-center gap-5"><ScoreRing value={sk.latestReadiness ?? 0} size={110} /><div><p className="eyebrow">Readiness</p><p className="text-sm text-slate-600">{sk.latestReadiness === null ? "Chưa có bài thi" : plan && gap !== null ? (gap > 0 ? `Còn ${gap} điểm tới mục tiêu ${plan.target_readiness}` : "Đã đạt mục tiêu 🎉") : "Điểm sẵn sàng gần nhất"}</p></div></div>
+        <div className="card flex items-center gap-5"><ScoreRing value={sk.latestReadiness ?? 0} size={110} /><div><p className="eyebrow">Readiness</p><p className="text-sm text-slate-600">{sk.latestReadiness === null ? "Chưa có bài thi" : plan && gap !== null ? (gap > 0 ? `Còn ${gap} điểm tới mục tiêu ${plan.target_readiness}` : "Đã đạt mục tiêu") : "Điểm sẵn sàng gần nhất"}</p></div></div>
         <div className="card"><p className="eyebrow">Mục tiêu & kỳ thi</p><p className="mt-2 font-bold">{prof?.target || "Chưa đặt mục tiêu"}</p><p className="text-sm text-slate-600">{prof?.exam_date ? `${new Date(prof.exam_date).toLocaleDateString("vi-VN")}${days !== null && days >= 0 ? ` · còn ${days} ngày` : ""}` : "Chưa đặt ngày thi"}</p><Link href="/lo-trinh" className="mt-2 inline-block rounded-lg py-2 text-sm font-semibold text-brand hover:underline">{prof?.target || prof?.exam_date ? "Cập nhật mục tiêu →" : "Đặt mục tiêu →"}</Link></div>
         <div className="card"><p className="eyebrow">Điểm yếu hàng đầu</p>{sk.weak.length ? <ol className="mt-2 space-y-1 text-sm">{sk.weak.slice(0, 3).map((t, i) => <li key={t.subject + t.topic} className="flex justify-between"><span><b className="text-brand">{i + 1}.</b> {t.topic}</span><span className="text-muted">{t.pct}%</span></li>)}</ol> : <p className="mt-2 text-sm text-muted">Chưa đủ dữ liệu.</p>}<Link href="/ai" className="mt-2 inline-block rounded-lg py-2 text-sm font-semibold text-brand hover:underline">Xem hồ sơ AI →</Link></div>
       </div>}

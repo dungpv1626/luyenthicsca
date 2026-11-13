@@ -32,7 +32,7 @@ export function DailyQuestion({ q }: { q: DailyQ }) {
         </div>
         {done ? (
           <div className="pop mt-4 space-y-3" role="status">
-            <p className={`text-sm font-extrabold ${ok ? "text-emerald-600" : "text-red-600"}`}>{ok ? "Chính xác! 🎉" : `Chưa đúng — đáp án là ${q.correct}.`}</p>
+            <p className={`text-sm font-extrabold ${ok ? "text-emerald-600" : "text-red-600"}`}>{ok ? "Chính xác!" : `Chưa đúng — đáp án là ${q.correct}.`}</p>
             <p className="max-h-28 overflow-y-auto rounded-xl bg-mist p-3 text-xs leading-relaxed text-slate-600"><Rich text={q.explanation} /></p>
             <Link href="/quick-test" className="btn w-full">Làm Quick Test 15 phút <Icon name="arrow" className="h-4 w-4" /></Link>
           </div>

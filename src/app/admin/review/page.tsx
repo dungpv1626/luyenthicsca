@@ -101,7 +101,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
       {!canApprove && <p className="rounded-xl bg-warning-bg p-3 text-sm text-warning">Tài khoản của bạn có thể xem và loại câu, nhưng chỉ Academic Reviewer hoặc Super Admin mới được duyệt.</p>}
       {not_mine && <p className="rounded-xl bg-danger-bg p-3 text-sm text-danger">Câu này thuộc môn bạn không được gán duyệt.</p>}
 
-      {!q ? <div className="card text-center text-slate-600">Hàng chờ trống{keep.length > 2 ? " với bộ lọc này" : ""}. 🎉</div> : (
+      {!q ? <div className="card text-center text-slate-600">Hàng chờ trống{keep.length > 2 ? " với bộ lọc này" : ""}.</div> : (
         <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
           <div className="min-w-0 space-y-3">
             <div className="card flex flex-wrap items-center gap-2 text-sm">

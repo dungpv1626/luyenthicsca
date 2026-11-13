@@ -108,7 +108,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           {([["need", `Cần xem lại (${nNeed})`], ["right", `Đúng (${nRight})`], ["all", `Tất cả (${review.length})`]] as const).map(([k, label]) => <Link key={k} href={href({ show: k })} scroll={false} role="tab" aria-selected={show === k} className={`inline-flex min-h-[2.75rem] items-center rounded-full border px-4 font-semibold transition ${show === k ? "border-brand bg-brand-soft text-brand" : "border-slate-200 text-slate-600 hover:border-brand"}`}>{label}</Link>)}
           {nBlank > 0 && <span className="self-center text-xs text-muted">trong đó {nBlank} câu chưa làm</span>}
         </div>
-        {!shown.length && <p className="rounded-xl bg-success-bg p-4 text-sm text-emerald-800">{show === "need" ? "Không có câu nào cần xem lại 🎉" : "Không có câu nào trong mục này."}</p>}
+        {!shown.length && <p className="rounded-xl bg-success-bg p-4 text-sm text-emerald-800">{show === "need" ? "Không có câu nào cần xem lại" : "Không có câu nào trong mục này."}</p>}
         <div className="space-y-3">
           {shown.map(({ q, i }) => {
             const mine = ans[q.id];

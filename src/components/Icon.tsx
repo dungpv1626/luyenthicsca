@@ -20,6 +20,7 @@ const P: Record<string, string> = {
   play: "M6 4l14 8-14 8z",
   send: "M22 2 11 13 M22 2l-7 20-4-9-9-4z",
   compass: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M16 8l-2 6-6 2 2-6z",
+  flag: "M4 22V4 M4 4h13l-2 4 2 4H4",
   lock: "M5 11h14v10H5z M8 11V7a4 4 0 0 1 8 0v4",
 };
 
