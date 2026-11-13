@@ -9,6 +9,9 @@ import { headers } from "next/headers";
 import { ChromeSync } from "@/components/ChromeSync";
 import { AttributionTracker } from "@/components/AttributionTracker";
 import Script from "next/script";
+import { Be_Vietnam_Pro } from "next/font/google";
+
+const beVietnam = Be_Vietnam_Pro({ subsets: ["vietnamese", "latin"], weight: ["400", "500", "600", "700", "800", "900"], display: "swap", variable: "--font-be-vietnam" });
 
 // Mã công khai, đặt trong .env.local (xem .env.example); không có mã thì không gắn gì.
 const CF_BEACON = process.env.NEXT_PUBLIC_CF_BEACON_TOKEN;
@@ -27,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const me = await getMe();
   const isAdmin = ((await headers()).get("x-pathname") ?? "").startsWith("/admin");
   return (
-    <html lang="vi" data-admin={isAdmin ? "1" : undefined}>
+    <html lang="vi" data-admin={isAdmin ? "1" : undefined} className={beVietnam.variable}>
       <body className="flex min-h-screen flex-col">
         <ChromeSync />
         <AttributionTracker />

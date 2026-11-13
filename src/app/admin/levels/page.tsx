@@ -47,7 +47,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
           <div><label className="label" htmlFor="a-price">Giá (VNĐ, 0 = miễn phí)</label><input id="a-price" type="number" name="price" min={0} step={1000} defaultValue={0} className="input" /><p className="mt-1 text-xs text-slate-500">Gợi ý: {LEVELS.map((l) => `Mức ${l.level}: ${vnd(l.price)}`).join(" · ")}</p></div>
         </div>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="publish" />Công bố ngay (mặc định tạo ở trạng thái ẩn để kiểm tra trước)</label>
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="relaxed" />Cho phép bù độ khó / dùng lại câu khi thiếu <span className="text-slate-400">(chất lượng thấp hơn, chỉ dùng khi ngân hàng còn nhỏ)</span></label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="relaxed" />Cho phép bù độ khó / dùng lại câu khi thiếu <span className="text-slate-500">(chất lượng thấp hơn, chỉ dùng khi ngân hàng còn nhỏ)</span></label>
         <button className="btn">Tạo đề theo mức</button>
       </form>
 

@@ -13,7 +13,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ i
     db.from("scholarships").select("school_id").eq("is_active", true),
   ]);
   const cols = list.map((id) => schools?.find((s) => s.id === id)).filter(Boolean) as NonNullable<typeof schools>;
-  const pct = (v: number | null) => (v === null ? <span className="text-slate-400">Đang cập nhật</span> : <b>{v}%</b>);
+  const pct = (v: number | null) => (v === null ? <span className="text-slate-500">Đang cập nhật</span> : <b>{v}%</b>);
   const rows: [string, (s: (typeof cols)[number]) => React.ReactNode][] = [
     ["Thành phố", (s) => s.city ?? "—"], ["Loại hình", (s) => s.kind ?? "—"],
     ["Yêu cầu CSCA", (s) => (s.csca_required ? "Có" : "Không")],

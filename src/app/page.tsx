@@ -58,7 +58,7 @@ export default async function Home() {
         <div className="drift pointer-events-none absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl" />
         <div className="grid items-center gap-8 px-5 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.05fr_1fr] lg:gap-6 lg:px-14 lg:py-16">
           <div>
-            <span className="rise inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] backdrop-blur sm:text-xs"><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" /></span>Ôn thi CSCA · Việt – Anh – 中文</span>
+            <span className="rise inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.16em] backdrop-blur sm:text-xs"><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" /></span>Ôn thi CSCA · Việt – Anh – 中文</span>
             <h1 className="hero-title rise rise-2 mt-5">Bạn đã sẵn sàng thi <span className="text-gradient">CSCA</span>?</h1>
             <p className="rise rise-3 mt-5 max-w-lg text-base text-white/85 sm:text-lg">Kiểm tra năng lực miễn phí, biết ngay điểm mạnh – điểm yếu, nhận lộ trình ôn thi cá nhân hóa và gia sư AI bên cạnh bạn.</p>
             <div className="rise rise-4 mt-7 flex flex-wrap gap-3">
@@ -77,7 +77,7 @@ export default async function Home() {
       <section className="-mt-14 px-1 sm:-mt-16 sm:px-6">
         <div className="relative z-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           {stats.map(([v, suf, label], i) => (
-            <Reveal key={label} delay={i * 90}><div className="glass rounded-2xl p-4 text-center sm:p-5"><p className="text-3xl font-black text-navy sm:text-4xl"><CountUp value={v} suffix={suf} /></p><p className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 sm:text-xs">{label}</p></div></Reveal>
+            <Reveal key={label} delay={i * 90}><div className="glass rounded-2xl p-4 text-center sm:p-5"><p className="text-3xl font-black text-navy sm:text-4xl"><CountUp value={v} suffix={suf} /></p><p className="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-500 sm:text-xs">{label}</p></div></Reveal>
           ))}
         </div>
       </section>
@@ -158,7 +158,7 @@ export default async function Home() {
 
           <Reveal delay={220}><Link href="/luyen-tap" className="card card-hover group flex h-full flex-col justify-between !rounded-3xl">
             <h3 className="flex items-center gap-2 font-extrabold text-navy"><Icon name="book" className="h-5 w-5 text-brand" />Ngân hàng đề</h3>
-            <div><p className="text-3xl font-black text-navy"><CountUp value={nQ ?? 0} suffix="+" /></p><div className="mt-1 flex gap-1 text-[10px] font-bold"><span className="chip">VI</span><span className="chip">EN</span><span className="chip">中文</span></div></div>
+            <div><p className="text-3xl font-black text-navy"><CountUp value={nQ ?? 0} suffix="+" /></p><div className="mt-1 flex gap-1 text-xs font-bold"><span className="chip">VI</span><span className="chip">EN</span><span className="chip">中文</span></div></div>
           </Link></Reveal>
 
           <Reveal delay={120} className="md:col-span-2"><Link href="/truong" className="card card-hover group flex h-full items-center justify-between gap-4 overflow-hidden !rounded-3xl">
@@ -184,7 +184,7 @@ export default async function Home() {
                 <span className="chip">Mức {l.level}</span>
                 <h3 className="mt-3 text-lg font-extrabold text-navy">{l.name}</h3><p className="mt-1 min-h-[2.5rem] text-sm text-slate-600">{l.tagline}</p>
                 <div className="mt-4 flex h-2.5 overflow-hidden rounded-full bg-slate-100" title={mixText(l.mix)}><span className="bg-sky-300" style={{ width: `${l.mix.easy}%` }} /><span className="bg-brand" style={{ width: `${l.mix.medium}%` }} /><span className="bg-navy" style={{ width: `${l.mix.hard}%` }} /></div>
-                <p className="mt-1.5 text-[11px] font-medium text-slate-500">{mixText(l.mix)}</p>
+                <p className="mt-1.5 text-xs font-medium text-slate-500">{mixText(l.mix)}</p>
                 <p className="mt-3 flex items-center justify-between text-sm"><span className="text-slate-500">{l.range}</span><b className={l.price ? "text-ink" : "text-emerald-600"}>{l.price ? vnd(l.price) : "Miễn phí"}</b></p>
               </Link>
             </Reveal>

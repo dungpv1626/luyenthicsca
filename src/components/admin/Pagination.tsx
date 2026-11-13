@@ -14,7 +14,7 @@ export function Pagination({ base, params, page, total, perPage }: { base: strin
         <nav aria-label="Phân trang" className="flex flex-wrap items-center gap-1">
           {page > 1 && <Link href={href(page - 1)} className={`${cls} border-slate-200 hover:border-brand hover:text-brand`}>← Trước</Link>}
           {window.map((p, i) => (
-            <span key={p} className="flex items-center gap-1">{i > 0 && p - window[i - 1] > 1 && <span className="px-1 text-slate-400">…</span>}
+            <span key={p} className="flex items-center gap-1">{i > 0 && p - window[i - 1] > 1 && <span className="px-1 text-slate-500">…</span>}
               <Link href={href(p)} aria-current={p === page ? "page" : undefined} className={`${cls} ${p === page ? "border-brand bg-brand text-white" : "border-slate-200 hover:border-brand hover:text-brand"}`}>{p}</Link></span>))}
           {page < pages && <Link href={href(page + 1)} className={`${cls} border-slate-200 hover:border-brand hover:text-brand`}>Sau →</Link>}
         </nav>

@@ -12,7 +12,7 @@
   --color-accent: #06b6d4;       /* nhấn lạnh cho minh họa */
   --color-gold: #f59e0b;         /* điểm nhấn ấm (huy hiệu, sao) */
   --color-indigo: #4f46e5;
-  --font-sans: "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-be-vietnam), "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --shadow-soft: 0 10px 30px -12px rgb(30 58 138 / 0.28);
   --shadow-glow: 0 18px 44px -18px rgb(37 99 235 / 0.55);
   --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 10px 28px -14px rgb(15 23 42 / 0.16);
@@ -29,7 +29,7 @@ body::before {
     radial-gradient(40rem 28rem at 60% 110%, rgb(79 70 229 / 0.07), transparent 60%);
 }
 ::selection { background: #2563eb; color: white; }
-:focus-visible { outline: 3px solid rgb(37 99 235 / 0.45); outline-offset: 2px; border-radius: 0.5rem; }
+:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; border-radius: 0.5rem; }
 img, svg, video { max-width: 100%; }
 
 @layer components {
@@ -37,7 +37,7 @@ img, svg, video { max-width: 100%; }
   .btn { @apply relative inline-flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-gradient-to-b from-brand to-brand-dark px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition duration-200 hover:shadow-[var(--shadow-glow)] hover:brightness-110 active:brightness-95 disabled:opacity-50; min-height: 2.5rem; }
   .btn::after { content: ""; @apply pointer-events-none absolute inset-y-0 -left-full w-1/2 -skew-x-12 bg-white/30 transition-all duration-700; }
   .btn:hover::after { left: 130%; }
-  .btn-outline { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition duration-200 hover:border-brand hover:text-brand hover:shadow-md active:bg-slate-50; min-height: 2.5rem; }
+  .btn-outline { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-slate-400 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition duration-200 hover:border-brand hover:text-brand hover:shadow-md active:bg-slate-50; min-height: 2.5rem; }
   .btn-light { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-5 py-2.5 text-sm font-bold text-navy shadow-lg transition duration-200 hover:bg-brand-soft hover:shadow-xl active:bg-slate-100; min-height: 2.5rem; }
   .btn-ghost-light { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/50 bg-white/5 px-5 py-2.5 text-sm font-bold text-white backdrop-blur transition duration-200 hover:bg-white/15 active:bg-white/25; min-height: 2.5rem; }
 
@@ -47,7 +47,7 @@ img, svg, video { max-width: 100%; }
   .card-hover:hover { box-shadow: var(--shadow-glow); }
   .glass { @apply border border-white/60 bg-white/70 backdrop-blur-xl; box-shadow: var(--shadow-card); }
   .glass-dark { @apply border border-white/15 bg-white/10 backdrop-blur-xl; }
-  .input { @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10 sm:text-sm; min-height: 2.5rem; }
+  .input { @apply w-full rounded-xl border border-slate-400 bg-white px-3.5 py-2.5 text-base outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10 sm:text-sm; min-height: 2.5rem; }
   .label { @apply mb-1.5 block text-sm font-medium text-slate-700; }
   .chip { @apply inline-flex items-center rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-semibold text-brand; }
 

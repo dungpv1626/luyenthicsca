@@ -41,7 +41,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
         {view.map((u) => (
           <div key={u.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 p-3 text-sm">
             <div className="min-w-0 flex-1 basis-60">
-              <p className="font-semibold">{u.full_name || <span className="font-normal text-slate-400">(chưa có tên)</span>}</p>
+              <p className="font-semibold">{u.full_name || <span className="font-normal text-slate-500">(chưa có tên)</span>}</p>
               <p className="break-all text-slate-600">{u.email || "—"}</p>
               <p className="text-xs text-slate-500">{u.phone ?? "—"} · {AUDIENCES[u.audience as keyof typeof AUDIENCES] ?? "—"}{u.target ? ` · mục tiêu: ${u.target}` : ""} · tạo {fmt(u.created_at)} · đăng nhập gần nhất {fmt(u.last)}</p>
             </div>

@@ -129,12 +129,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
             <form action={reviewQuestionAction.bind(null, q.id, `/admin/review${qs ? `?${qs}` : ""}`)} className="space-y-2">
               <textarea name="note" rows={2} placeholder="Ghi chú / lý do loại (bắt buộc khi loại)" aria-label="Ghi chú hoặc lý do loại" className="input" />
               <div className="grid grid-cols-2 gap-2">
-                <button name="decision" value="approve" disabled={!canApprove || notMyQ} className="btn min-h-[2.75rem] disabled:opacity-40">{live ? "Xác nhận đúng" : "Duyệt"} <kbd className="ml-1 hidden rounded bg-white/25 px-1.5 text-[11px] lg:inline">A</kbd></button>
-                <button name="decision" value="reject" disabled={notMyQ} className="btn-outline min-h-[2.75rem] !border-red-300 !text-red-700">{live ? "Loại (tắt ngay)" : "Loại"} <kbd className="ml-1 hidden rounded bg-red-50 px-1.5 text-[11px] lg:inline">R</kbd></button>
+                <button name="decision" value="approve" disabled={!canApprove || notMyQ} className="btn min-h-[2.75rem] disabled:opacity-40">{live ? "Xác nhận đúng" : "Duyệt"} <kbd className="ml-1 hidden rounded bg-white/25 px-1.5 text-xs lg:inline">A</kbd></button>
+                <button name="decision" value="reject" disabled={notMyQ} className="btn-outline min-h-[2.75rem] !border-red-300 !text-red-700">{live ? "Loại (tắt ngay)" : "Loại"} <kbd className="ml-1 hidden rounded bg-red-50 px-1.5 text-xs lg:inline">R</kbd></button>
               </div>
             </form>
-            <div className="mt-1 flex justify-between text-sm lg:mt-0"><Link href={`/admin/questions/${q.id}`} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand hover:underline">Sửa <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-[11px] lg:inline">E</kbd></Link><Link href={skipHref} className="inline-flex min-h-[2.5rem] items-center text-slate-500 hover:underline">Bỏ qua <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-[11px] lg:inline">S</kbd></Link></div>
-            <p className="hidden border-t border-slate-100 pt-2 text-xs text-slate-400 lg:block">Phím tắt: A duyệt · R loại (gõ lý do trước, hoặc R để vào ô lý do) · S bỏ qua · E sửa. Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
+            <div className="mt-1 flex justify-between text-sm lg:mt-0"><Link href={`/admin/questions/${q.id}`} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand hover:underline">Sửa <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">E</kbd></Link><Link href={skipHref} className="inline-flex min-h-[2.5rem] items-center text-slate-500 hover:underline">Bỏ qua <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">S</kbd></Link></div>
+            <p className="hidden border-t border-slate-100 pt-2 text-xs text-slate-500 lg:block">Phím tắt: A duyệt · R loại (gõ lý do trước, hoặc R để vào ô lý do) · S bỏ qua · E sửa. Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
           </aside>
           <ReviewHotkeys skipHref={skipHref} editHref={`/admin/questions/${q.id}`} canApprove={canApprove && !notMyQ} />
         </div>

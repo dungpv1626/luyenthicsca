@@ -42,7 +42,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
               <div className="space-y-3">
                 {reqs.map(([label, key, v]) => {
                   const mine = skills && skills.bySubject[key as keyof typeof skills.bySubject].total ? skills.bySubject[key as keyof typeof skills.bySubject].pct : null;
-                  if (v === null) return <div key={key} className="flex justify-between text-sm"><span>{label}</span><span className="text-slate-400">Đang cập nhật</span></div>;
+                  if (v === null) return <div key={key} className="flex justify-between text-sm"><span>{label}</span><span className="text-slate-500">Đang cập nhật</span></div>;
                   const ok = mine !== null && mine >= v;
                   return (
                     <div key={key}>

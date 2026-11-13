@@ -58,7 +58,7 @@ export default async function Page() {
       <section className="card"><h2 className="mb-3 font-bold">Độ chính xác theo chủ đề</h2>
         {(() => { const m = new Map<string, { s: string; shown: number; correct: number }>(); for (const q of (qs ?? []) as QStat[]) { const k = `${q.subject}|${q.topic}`; const e = m.get(k) ?? { s: q.subject, shown: 0, correct: 0 }; e.shown += q.shown; e.correct += q.correct; m.set(k, e); }
           const rows = [...m.entries()].filter(([, v]) => v.shown > 0).map(([k, v]) => ({ k, ...v, acc: Math.round((v.correct / v.shown) * 100) })).sort((a, b) => a.acc - b.acc);
-          return rows.length ? <div className="grid gap-2 sm:grid-cols-2">{rows.map((r) => <div key={r.k} className="flex items-center justify-between rounded-xl border border-slate-200 p-3 text-sm"><span>{r.k.split("|")[1]} <span className="text-xs text-slate-400">{SUBJECTS[r.s as Subject]}</span></span><b className={r.acc < 50 ? "text-red-600" : ""}>{r.acc}% <span className="text-xs font-normal text-slate-400">({r.shown})</span></b></div>)}</div> : <p className="text-sm text-slate-500">Chưa có dữ liệu bài làm.</p>; })()}</section>
+          return rows.length ? <div className="grid gap-2 sm:grid-cols-2">{rows.map((r) => <div key={r.k} className="flex items-center justify-between rounded-xl border border-slate-200 p-3 text-sm"><span>{r.k.split("|")[1]} <span className="text-xs text-slate-500">{SUBJECTS[r.s as Subject]}</span></span><b className={r.acc < 50 ? "text-red-600" : ""}>{r.acc}% <span className="text-xs font-normal text-slate-500">({r.shown})</span></b></div>)}</div> : <p className="text-sm text-slate-500">Chưa có dữ liệu bài làm.</p>; })()}</section>
     </div>
   );
 }

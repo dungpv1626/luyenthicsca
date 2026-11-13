@@ -23,7 +23,7 @@ export function AccountMenu({ name, isStaff, children }: { name: string; isStaff
       </button>
       {open && (
         <div className="absolute right-0 top-full z-40 mt-2 w-56 rounded-2xl border border-slate-200 bg-white p-2 text-ink shadow-xl">
-          <p className="truncate px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">{name}</p>
+          <p className="truncate px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{name}</p>
           <Link href="/dashboard" className={item}>Dashboard</Link>
           <Link href="/lo-trinh" className={item}>Lộ trình của tôi</Link>
           <Link href="/khoa-hoc-cua-toi" className={item}>Khóa học của tôi</Link>

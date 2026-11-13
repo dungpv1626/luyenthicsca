@@ -8,7 +8,7 @@ export function ScoreRing({ value, size = 140, label = "/100", light = false }: 
       </svg>
       <div className="text-center leading-none">
         <b className={`block text-4xl font-black ${light ? "text-white" : "text-ink"}`}>{value}</b>
-        <span className={`text-xs font-semibold ${light ? "text-white/70" : "text-slate-400"}`}>{label}</span>
+        <span className={`text-xs font-semibold ${light ? "text-white/70" : "text-slate-500"}`}>{label}</span>
       </div>
     </div>
   );

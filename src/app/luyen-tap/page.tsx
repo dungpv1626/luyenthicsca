@@ -32,7 +32,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
           <p className="text-sm font-extrabold text-navy">Chủ đề nên ôn <span className="font-normal text-slate-500">· dựa trên các bài bạn đã làm, bấm để luyện 10 câu</span></p>
           <div className="mt-2 flex flex-wrap gap-2">{sk.weak.map((t) => (
             <form key={t.subject + t.topic} action={startPracticeAction}><input type="hidden" name="subject" value={t.subject} /><input type="hidden" name="topic" value={t.topic} /><input type="hidden" name="count" value="10" />
-              <button className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-800 transition hover:-translate-y-0.5 hover:border-rose-400">{t.topic}<span className="text-xs font-bold text-rose-600">{t.pct}%</span></button></form>))}
+              <button className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-800 transition hover:-translate-y-0.5 hover:border-red-400">{t.topic}<span className="text-xs font-bold text-red-600">{t.pct}%</span></button></form>))}
           </div>
         </section>
       )}

@@ -48,7 +48,7 @@ export function TutorChat({ ctx, suggestions = [], compact = false }: { ctx?: { 
         <input value={text} onChange={(e) => setText(e.target.value)} maxLength={1000} placeholder="Nhập câu hỏi…" className="input !rounded-full" />
         <button disabled={pending || !text.trim()} className="btn !px-4" aria-label="Gửi"><Icon name="send" className="h-4 w-4" /></button>
       </form>
-      {left !== null && <p className="px-4 pb-2 text-right text-[11px] text-slate-400">Còn {left} lượt hỏi hôm nay</p>}
+      {left !== null && <p className="px-4 pb-2 text-right text-xs text-slate-500">Còn {left} lượt hỏi hôm nay</p>}
     </div>
   );
 }

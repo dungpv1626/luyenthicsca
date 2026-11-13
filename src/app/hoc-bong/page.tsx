@@ -23,7 +23,7 @@ export default async function Page() {
               <p className="mt-3 text-sm text-slate-700"><b>Quyền lợi:</b> {s.coverage}</p>
               {s.requirements && <p className="mt-1 text-sm text-slate-600"><b>Điều kiện:</b> {s.requirements}</p>}
               <div className="mt-4 flex items-center justify-between text-sm">
-                <span className={expired ? "font-semibold text-slate-400" : "font-semibold text-brand"}>{s.deadline ? `${expired ? "Đã hết hạn" : "Hạn nộp"}: ${new Date(s.deadline).toLocaleDateString("vi-VN")}` : "Hạn nộp: theo thông báo"}</span>
+                <span className={expired ? "font-semibold text-slate-500" : "font-semibold text-brand"}>{s.deadline ? `${expired ? "Đã hết hạn" : "Hạn nộp"}: ${new Date(s.deadline).toLocaleDateString("vi-VN")}` : "Hạn nộp: theo thông báo"}</span>
                 {s.link && <a href={s.link} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand hover:underline">Chi tiết ↗</a>}
               </div>
             </article>

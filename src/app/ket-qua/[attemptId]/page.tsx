@@ -56,7 +56,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           <div className="mt-3 max-w-md rounded-2xl bg-amber-50 p-4 text-sm text-amber-900"><p className="font-extrabold">Chưa đủ dữ liệu để chấm Readiness</p><p className="mt-1">Bạn mới trả lời {Object.keys(ans).length}/{b.total} câu. Bài này không được tính vào tiến bộ và hồ sơ năng lực của bạn.</p></div>
         ) : (<>
           {simKey ? (
-            <div className="mt-3 w-full max-w-md space-y-2"><p className="eyebrow">Điểm quy đổi (thang 100)</p><p className="text-6xl font-black text-navy">{score100(att.score ?? 0, b.total)}<span className="text-2xl font-bold text-slate-400">/100</span></p>
+            <div className="mt-3 w-full max-w-md space-y-2"><p className="eyebrow">Điểm quy đổi (thang 100)</p><p className="text-6xl font-black text-navy">{score100(att.score ?? 0, b.total)}<span className="text-2xl font-bold text-slate-500">/100</span></p>
               <p className="text-sm text-slate-600">Đúng {att.score}/{b.total} câu. Đây là điểm ước tính để tham khảo, không phải điểm chính thức. Readiness: <b>{att.readiness ?? 0}/100</b>.</p>
               <p className="rounded-xl bg-mist p-2.5 text-xs text-slate-600">Thời gian: bạn dùng khoảng {Math.round(spentSec / 60)} phút, trung bình {b.total ? Math.round(spentSec / b.total) : 0} giây/câu (chuẩn thi thật khoảng {secondsPerQuestion(simKey)} giây/câu).</p></div>
           ) : <ScoreRing value={att.readiness ?? 0} size={150} />}
@@ -76,7 +76,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           <p className="mb-3 text-xs text-slate-500">Các mô-đun theo đề cương CSCA; tỉ trọng mỗi mô-đun trong đề là ước lượng của chúng tôi.</p>
           <div className="space-y-3">{modRows.map((r) => (
             <div key={r.m.key}><div className="flex justify-between gap-3 text-sm"><span className="font-medium">{r.m.name}</span><span className="shrink-0 text-slate-600">{r.ok}/{r.total} ({r.pct}%)</span></div>
-              <div className="mt-1 h-2 rounded bg-slate-100"><div className={`h-2 rounded ${r.pct >= 70 ? "bg-emerald-500" : r.pct >= 40 ? "bg-brand" : "bg-rose-500"}`} style={{ width: `${r.pct}%` }} /></div></div>))}</div>
+              <div className="mt-1 h-2 rounded bg-slate-100"><div className={`h-2 rounded ${r.pct >= 70 ? "bg-emerald-500" : r.pct >= 40 ? "bg-brand" : "bg-red-500"}`} style={{ width: `${r.pct}%` }} /></div></div>))}</div>
           {weakMod && weakMod.pct < 70 && <Link href={`/luyen-tap?subject=${simKey}&module=${weakMod.m.key}`} className="btn mt-4">Luyện mô-đun yếu nhất: {weakMod.m.name}</Link>}
         </div>
       )}
@@ -94,7 +94,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </div>
 
       <div className="card space-y-3">
-        <h2 className="text-lg font-bold">Phân tích AI {ai.source === "claude" ? "" : <span className="text-xs font-normal text-slate-400">(tự động)</span>}</h2>
+        <h2 className="text-lg font-bold">Phân tích AI {ai.source === "claude" ? "" : <span className="text-xs font-normal text-slate-500">(tự động)</span>}</h2>
         <p>{ai.summary}</p>
         {ai.strengths.length > 0 && <div><h3 className="font-semibold text-green-700">Điểm mạnh</h3><ul className="list-disc pl-6">{ai.strengths.map((s) => <li key={s}>{s}</li>)}</ul></div>}
         {ai.weaknesses.length > 0 && <div><h3 className="font-semibold text-red-700">Cần cải thiện</h3><ul className="list-disc pl-6">{ai.weaknesses.map((w) => <li key={w.topic}><b>{w.topic}:</b> {w.advice}</li>)}</ul></div>}
@@ -120,7 +120,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                 <summary className="flex min-h-[3rem] cursor-pointer list-none items-start gap-3 p-3 [&::-webkit-details-marker]:hidden">
                   <span className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-extrabold text-white ${ok ? "bg-green-600" : "bg-red-600"}`} aria-hidden="true">{ok ? "✓" : mine ? "✗" : "–"}</span>
                   <span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-slate-500">Câu {i + 1} · {SUBJECTS[q.subject as Subject]} · {q.topic} · {ok ? "Đúng" : mine ? `Bạn chọn ${mine}, đáp án ${q.correct_answer}` : `Chưa làm, đáp án ${q.correct_answer}`}</span><span className="mt-0.5 line-clamp-2 block font-medium group-open:line-clamp-none"><Rich text={view.body} /></span></span>
-                  <span className="mt-1 text-slate-400 transition group-open:rotate-180" aria-hidden="true">▾</span>
+                  <span className="mt-1 text-slate-500 transition group-open:rotate-180" aria-hidden="true">▾</span>
                 </summary>
                 <div className="border-t border-black/5 p-3 pt-2">
                   <ul className="text-sm">

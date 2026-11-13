@@ -54,7 +54,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
       <Link href={`/thi-thu/${t.id}`} aria-label={`${t.title}${o ? ", đang làm dở" : b !== undefined ? `, đã làm, điểm cao nhất ${b}` : t.price_vnd ? `, ${vnd(t.price_vnd)}` : ", chưa làm"}`}
         className={`inline-flex min-h-[2.75rem] items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition hover:-translate-y-0.5 ${o ? "border-amber-400 bg-amber-50 text-amber-900" : b !== undefined ? "border-emerald-300 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-white hover:border-brand hover:text-brand"}`}>
         Đề {t.set_no ?? "·"}
-        {o ? <span className="text-[11px] font-bold">▶ đang làm</span> : b !== undefined ? <span className="text-[11px] font-bold">✓ {t.sim ? (bestSim.get(t.id) ?? 0) : b}/100</span> : t.price_vnd ? <span className="text-[11px] text-slate-500">{vnd(t.price_vnd)}</span> : null}
+        {o ? <span className="text-xs font-bold">▶ đang làm</span> : b !== undefined ? <span className="text-xs font-bold">✓ {t.sim ? (bestSim.get(t.id) ?? 0) : b}/100</span> : t.price_vnd ? <span className="text-xs text-slate-500">{vnd(t.price_vnd)}</span> : null}
       </Link>
     );
   };

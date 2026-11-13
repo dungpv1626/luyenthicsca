@@ -40,7 +40,7 @@ export function ConfirmButton({ children, className = "", title, message, confir
             <p className="mt-2 text-sm leading-relaxed text-slate-600">{text}</p>
             <div className="mt-5 flex flex-wrap justify-end gap-2">
               <button type="button" autoFocus className="btn-outline" onClick={() => setOpen(false)}>Hủy</button>
-              <button type="button" className={danger ? "inline-flex min-h-[2.5rem] items-center justify-center rounded-full bg-rose-600 px-5 text-sm font-semibold text-white transition hover:bg-rose-700" : "btn"}
+              <button type="button" className={danger ? "inline-flex min-h-[2.5rem] items-center justify-center rounded-full bg-red-600 px-5 text-sm font-semibold text-white transition hover:bg-red-700" : "btn"}
                 onClick={() => { setOpen(false); confirmed.current = true; const form = ref.current?.closest("form"); if (form && ref.current) form.requestSubmit(ref.current); }}>{confirmText}</button>
             </div>
           </div>

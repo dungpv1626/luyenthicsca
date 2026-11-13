@@ -38,7 +38,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
       {error && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{error}</p>}
 
       <div className="flex flex-wrap items-center gap-2">
-        {subjects.map((x) => tab(`?s=${x}${st ? `&st=${st}` : ""}`, cur === x, <>{SUBJECTS[x].split(" (")[0]}{pendingIn(x) > 0 && <span className={`rounded-full px-1.5 text-[11px] font-bold ${cur === x ? "bg-white/25" : "bg-amber-100 text-amber-800"}`}>{pendingIn(x)} chờ duyệt</span>}</>))}
+        {subjects.map((x) => tab(`?s=${x}${st ? `&st=${st}` : ""}`, cur === x, <>{SUBJECTS[x].split(" (")[0]}{pendingIn(x) > 0 && <span className={`rounded-full px-1.5 text-xs font-bold ${cur === x ? "bg-white/25" : "bg-amber-100 text-amber-800"}`}>{pendingIn(x)} chờ duyệt</span>}</>))}
         <span className="mx-1 hidden h-5 w-px bg-slate-200 sm:block" />
         {([["", "Tất cả"], ["pending", "Chờ duyệt"], ["approved", "Đã duyệt"], ["rejected", "Đã loại"]] as const).map(([v, l]) => tab(`?s=${cur}${v ? `&st=${v}` : ""}`, st === v, l))}
       </div>
@@ -53,7 +53,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
                 <article key={t.key} className="card min-w-0 space-y-3">
                   <header className="flex flex-wrap items-center gap-2">
                     <span className="chip">{t.topic}</span><span className="chip !bg-slate-100 !text-slate-600">{DIFF[t.difficulty]}</span>
-                    <span className={`chip ${status === "approved" ? "!bg-emerald-50 !text-emerald-700" : status === "rejected" ? "!bg-rose-50 !text-rose-700" : "!bg-amber-50 !text-amber-800"}`}>{status === "approved" ? "Giáo viên đã duyệt" : status === "rejected" ? "Đã loại" : "Chờ giáo viên duyệt"}</span>
+                    <span className={`chip ${status === "approved" ? "!bg-emerald-50 !text-emerald-700" : status === "rejected" ? "!bg-red-50 !text-red-700" : "!bg-amber-50 !text-amber-800"}`}>{status === "approved" ? "Giáo viên đã duyệt" : status === "rejected" ? "Đã loại" : "Chờ giáo viên duyệt"}</span>
                     <span className="ml-auto text-xs text-slate-500">{c?.live ?? 0} biến thể đang công bố</span>
                   </header>
                   <p className="text-xs text-slate-500"><code>{t.key}</code> · {t.subtopic}</p>
@@ -68,7 +68,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
                   <form action={reviewTemplateAction.bind(null, t.key)} className="flex flex-wrap items-center gap-2">
                     <input name="note" className="input !w-auto min-w-0 flex-1" placeholder="Ghi chú (bắt buộc khi loại)" />
                     <ConfirmButton name="decision" value="approve" className="btn !py-2" title="Duyệt khuôn này?" message="Toàn bộ biến thể sinh từ khuôn này sẽ được đánh dấu giáo viên đã xác nhận (có thể hàng chục đến hàng trăm câu). Chỉ duyệt khi đề bài, công thức và lời giải của khuôn đúng." confirmText="Duyệt khuôn">Duyệt khuôn</ConfirmButton>
-                    <ConfirmButton danger name="decision" value="reject" className="btn-outline !border-rose-300 !py-2 !text-rose-700" title="Loại khuôn này?" message="Toàn bộ biến thể sinh từ khuôn này sẽ bị gỡ khỏi học viên. Cần ghi lý do ở ô ghi chú bên cạnh." confirmText="Loại khuôn">Loại khuôn</ConfirmButton>
+                    <ConfirmButton danger name="decision" value="reject" className="btn-outline !border-red-300 !py-2 !text-red-700" title="Loại khuôn này?" message="Toàn bộ biến thể sinh từ khuôn này sẽ bị gỡ khỏi học viên. Cần ghi lý do ở ô ghi chú bên cạnh." confirmText="Loại khuôn">Loại khuôn</ConfirmButton>
                   </form>
                 </article>
               );

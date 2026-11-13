@@ -88,7 +88,7 @@ export function BottomNav() {
   useEffect(() => setMore(false), [path]);
   if (path.startsWith("/thi/") || path.startsWith("/admin")) return null;
   const moreActive = MORE.some(([href]) => active(path, href));
-  const tab = (on: boolean) => `relative flex min-h-[3.5rem] flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition ${on ? "text-brand" : "text-slate-500"}`;
+  const tab = (on: boolean) => `relative flex min-h-[3.5rem] flex-col items-center justify-center gap-0.5 text-xs font-semibold transition ${on ? "text-brand" : "text-slate-500"}`;
   const bar = (on: boolean) => on && <span className="absolute top-0 h-0.5 w-8 rounded-full bg-brand" />;
   return (
     <>

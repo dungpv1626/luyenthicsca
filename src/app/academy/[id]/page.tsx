@@ -44,7 +44,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                       <span className="flex-1 font-medium">{l.title}</span>{!access && <span className="chip">Học thử</span>}
                     </Link>
                   ) : (
-                    <div className="flex items-center gap-3 p-4 text-slate-400"><span className="grid h-8 w-8 place-items-center rounded-full bg-slate-100"><Icon name="lock" className="h-4 w-4" /></span><span className="flex-1">{l.title}</span></div>
+                    <div className="flex items-center gap-3 p-4 text-slate-500"><span className="grid h-8 w-8 place-items-center rounded-full bg-slate-100"><Icon name="lock" className="h-4 w-4" /></span><span className="flex-1">{l.title}</span></div>
                   )}
                 </li>
               );

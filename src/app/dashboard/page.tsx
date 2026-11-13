@@ -72,7 +72,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
               return (
                 <li key={x.title} className="flex flex-wrap items-center gap-3 py-3">
                   <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-extrabold ${x.done ? "bg-emerald-500 text-white" : primary ? "bg-brand text-white" : "bg-slate-100 text-slate-500"}`} aria-hidden="true">{x.done ? "✓" : i + 1}</span>
-                  <div className="min-w-0 flex-1"><p className={`font-bold ${x.done ? "text-slate-400 line-through" : ""}`}>{x.title}</p><p className="text-sm text-slate-500">{x.desc}</p></div>
+                  <div className="min-w-0 flex-1"><p className={`font-bold ${x.done ? "text-slate-500 line-through" : ""}`}>{x.title}</p><p className="text-sm text-slate-500">{x.desc}</p></div>
                   {!x.done && <Link href={x.href} className={primary ? "btn" : "btn-outline"}>{x.cta}</Link>}
                 </li>
               );
@@ -104,7 +104,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
         <section className="card"><h2 className="mb-3 font-bold">Kết quả theo môn</h2><SubjectBars profile={sk} /></section>
       </div>
 
-      {!!recent?.length && <section className="card"><h2 className="mb-2 font-bold">Bài làm gần đây</h2><ul className="divide-y divide-slate-100">{recent.map((a) => <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex min-h-[2.75rem] items-center justify-between gap-3 py-2 hover:text-brand"><span>{a.title} <span className="text-xs text-slate-400">{new Date(a.submitted_at!).toLocaleDateString("vi-VN")}</span></span>{(a.breakdown as { insufficient?: boolean } | null)?.insufficient ? <span className="shrink-0 text-xs font-semibold text-amber-700">Chưa đủ câu để chấm</span> : <b className="shrink-0">{a.readiness}/100</b>}</Link></li>)}</ul></section>}
+      {!!recent?.length && <section className="card"><h2 className="mb-2 font-bold">Bài làm gần đây</h2><ul className="divide-y divide-slate-100">{recent.map((a) => <li key={a.id}><Link href={`/ket-qua/${a.id}`} className="flex min-h-[2.75rem] items-center justify-between gap-3 py-2 hover:text-brand"><span>{a.title} <span className="text-xs text-slate-500">{new Date(a.submitted_at!).toLocaleDateString("vi-VN")}</span></span>{(a.breakdown as { insufficient?: boolean } | null)?.insufficient ? <span className="shrink-0 text-xs font-semibold text-amber-700">Chưa đủ câu để chấm</span> : <b className="shrink-0">{a.readiness}/100</b>}</Link></li>)}</ul></section>}
     </div>
   );
 }
