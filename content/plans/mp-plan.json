@@ -1,0 +1,72 @@
+[
+ {
+  "subject": "physics",
+  "topic": "Nhiệt học",
+  "subtopic": "Thuyết động học phân tử: mô hình và đặc điểm",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "physics",
+  "topic": "Nhiệt học",
+  "subtopic": "Thuyết động học phân tử: mô hình và đặc điểm",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "physics",
+  "topic": "Nhiệt học",
+  "subtopic": "Thuyết động học phân tử: mô hình và đặc điểm",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "physics",
+  "topic": "Vật lý hiện đại",
+  "subtopic": "Cấu tạo nguyên tử: mẫu Bo và quang phổ",
+  "difficulty": "easy",
+  "count": 5
+ },
+ {
+  "subject": "physics",
+  "topic": "Vật lý hiện đại",
+  "subtopic": "Cấu tạo nguyên tử: mẫu Bo và quang phổ",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "physics",
+  "topic": "Vật lý hiện đại",
+  "subtopic": "Cấu tạo nguyên tử: mẫu Bo và quang phổ",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "physics",
+  "topic": "Vật lý hiện đại",
+  "subtopic": "Hiệu ứng quang điện: khái niệm và đồ thị",
+  "difficulty": "easy",
+  "count": 5
+ },
+ {
+  "subject": "physics",
+  "topic": "Vật lý hiện đại",
+  "subtopic": "Hiệu ứng quang điện: khái niệm và đồ thị",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "math",
+  "topic": "Hình học",
+  "subtopic": "Elip, hyperbol, parabol: phương trình và tính chất",
+  "difficulty": "easy",
+  "count": 5
+ },
+ {
+  "subject": "math",
+  "topic": "Hình học",
+  "subtopic": "Elip, hyperbol, parabol: phương trình và tính chất",
+  "difficulty": "medium",
+  "count": 5
+ }
+]

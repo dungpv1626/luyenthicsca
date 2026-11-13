@@ -5,6 +5,7 @@
 // Cách chạy (cần SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_SUPABASE_URL, ANTHROPIC_API_KEY trong .env.local):
 //   node --env-file=.env.local scripts/generate-questions.mjs --pilot            # lô thử 40 câu (10/môn)
 //   node --env-file=.env.local scripts/generate-questions.mjs --subject math --topic "Đại số" --difficulty easy --count 5
+//   node --env-file=.env.local scripts/generate-questions.mjs --plan plan.json --publish --concurrency 4 --budget-usd 8
 //   node --env-file=.env.local scripts/generate-questions.mjs --fill --subject math --max 60 [--overshoot 1.3] [--publish] [--budget-usd 25]
 import Anthropic from "@anthropic-ai/sdk";
 import { moduleOf } from "../src/lib/syllabus.ts";
@@ -30,8 +31,8 @@ const usage = { in: 0, out: 0, calls: 0 };
 const PRICE_IN = Number(process.env.PRICE_IN ?? 2), PRICE_OUT = Number(process.env.PRICE_OUT ?? 10);
 const BUDGET = Number(arg("budget-usd", Infinity)); // dừng khi chi phí ước tính vượt mức này
 const spent = () => (usage.in * PRICE_IN + usage.out * PRICE_OUT) / 1e6;
-// Trần TỔNG chi tiêu (mọi lần chạy) lưu trong bảng ai_spend; mặc định $50. Đổi bằng AI_TOTAL_CAP_USD.
-const TOTAL_CAP = Number(process.env.AI_TOTAL_CAP_USD ?? 50);
+// Trần TỔNG chi tiêu (mọi lần chạy) lưu trong bảng ai_spend; mặc định $75 (đã nâng từ $50 theo quyết định của chủ dự án). Đổi bằng AI_TOTAL_CAP_USD.
+const TOTAL_CAP = Number(process.env.AI_TOTAL_CAP_USD ?? 75);
 let LIMIT = BUDGET; // ngân sách hiệu lực của lần chạy này (≤ phần còn lại của trần tổng)
 
 // ---------- schema trả về của Claude (tool use → luôn là JSON hợp lệ) ----------
@@ -66,7 +67,7 @@ QUY TẮC BẮT BUỘC
 6. Giải thích (explanation): ngắn gọn, từng bước, nêu vì sao đáp án đúng và (nếu cần) vì sao một đáp án nhiễu sai.
    TUYỆT ĐỐI KHÔNG viết chữ cái đáp án trần (A, B, C, D) trong explanation, vì hệ thống sẽ xáo trộn thứ tự lựa chọn. Khi cần nhắc tới một lựa chọn, dùng ký hiệu [[A]], [[B]], [[C]], [[D]] theo đúng chữ cái bạn đã gán trong câu đó (hệ thống sẽ tự đổi sang chữ cái cuối cùng), hoặc mô tả nội dung lựa chọn (ví dụ "kết quả 0,40 M sai vì…"). Không viết "đáp án đúng là B".
 7. BA PHIÊN BẢN vi / en / zh phải TƯƠNG ĐƯƠNG TUYỆT ĐỐI về nội dung, số liệu và THỨ TỰ lựa chọn (A–D giống nhau ở cả ba). "zh" là tiếng Trung giản thể, văn phong học thuật chuẩn.
-8. Môn Professional Chinese: kiểm tra năng lực hiểu tiếng Trung học thuật khoa học–kỹ thuật. Giữ NGUYÊN văn bản tiếng Trung được hỏi trong cả ba phiên bản; chỉ dịch phần hướng dẫn và các lựa chọn (bản zh dùng giải thích/đáp án bằng tiếng Trung đơn giản). Trong explanation luôn kèm pinyin cho từ khóa.
+8. Môn Professional Chinese: kiểm tra năng lực hiểu tiếng Trung học thuật chuyên ngành. Mặc định ngữ liệu thuộc khoa học–kỹ thuật (khối khoa học 理科中文); nếu trường huong_dan_them yêu cầu khối văn (文科中文) thì ngữ liệu thuộc văn học, triết học, luật, giáo dục, lịch sử, nghệ thuật… và TUYỆT ĐỐI không dùng ngữ liệu khoa học–kỹ thuật. Giữ NGUYÊN văn bản tiếng Trung được hỏi trong cả ba phiên bản; chỉ dịch phần hướng dẫn và các lựa chọn (bản zh dùng giải thích/đáp án bằng tiếng Trung đơn giản). Trong explanation luôn kèm pinyin cho từ khóa.
 9. est_time_sec: thời gian hợp lý cho học sinh (20–180). skill: kỹ năng được kiểm tra (vài từ).
 10. Không dùng nội dung nhạy cảm chính trị/tôn giáo.
 Chỉ trả kết quả bằng công cụ submit_questions.`;
@@ -133,7 +134,7 @@ async function loadKnown(subject) {
 }
 const PUBLISH = !!arg("publish", false); // công bố ngay câu đã qua kiểm tra tự động (giáo viên xác nhận sau)
 
-async function runTask({ subject, topic, subtopic, difficulty, count, hints }) {
+async function runTask({ subject, topic, subtopic, difficulty, count, hints, extra, mon }) {
   const stats = { gen: 0, pass: 0, mismatch: 0, invalid: 0, dupSkipped: 0, saved: 0 };
   const { data: prior } = await sb.from("questions").select("body").eq("subject", subject).eq("topic", topic).order("created_at", { ascending: false }).limit(25);
   const res = await call({
@@ -141,7 +142,7 @@ async function runTask({ subject, topic, subtopic, difficulty, count, hints }) {
     system: SYSTEM,
     tools: [GEN_TOOL],
     messages: [{ role: "user", content: JSON.stringify({
-      mon: SUBJECTS[subject], chu_de: topic, chu_de_con: subtopic || undefined, do_kho: DIFF[difficulty], so_cau: count,
+      mon: mon ?? SUBJECTS[subject], huong_dan_them: extra || undefined, chu_de: topic, chu_de_con: subtopic || undefined, do_kho: DIFF[difficulty], so_cau: count,
       goi_y_chu_de_con_de_da_dang: subtopic ? undefined : (hints || undefined),
       huong_dan: subtopic
         ? `Mọi câu thuộc chủ đề con "${subtopic}" nhưng mỗi câu dùng DẠNG BÀI, NGỮ CẢNH và SỐ LIỆU khác nhau (vd: tính toán, nhận biết, so sánh, tình huống thực tế, tìm lỗi sai).`
@@ -276,7 +277,12 @@ async function mainInner() {
   const hintsOf = (s, t) => bp.find((b) => b.subject === s && b.topic === t)?.hints ?? "";
   let tasks = [];
 
-  if (arg("pilot", false)) {
+  if (arg("plan", false)) {
+    // --plan file.json: mảng nhiệm vụ {subject, topic, subtopic, difficulty, count, extra?, mon?}; chạy song song theo --concurrency
+    const { readFileSync } = await import("node:fs");
+    tasks = JSON.parse(readFileSync(String(arg("plan", "")), "utf8")).map((t) => ({ ...t, hints: hintsOf(t.subject, t.topic) }));
+    for (const t of tasks) if (!SUBJECTS[t.subject] || !t.topic || !DIFF[t.difficulty] || !(t.count > 0)) { console.error("Nhiệm vụ không hợp lệ:", JSON.stringify(t)); process.exit(1); }
+  } else if (arg("pilot", false)) {
     const pattern = ["easy", "medium", "medium", "hard", "easy"];
     for (const subject of Object.keys(SUBJECTS)) {
       const topics = [...new Set(bp.filter((b) => b.subject === subject).map((b) => b.topic))].slice(0, 5);

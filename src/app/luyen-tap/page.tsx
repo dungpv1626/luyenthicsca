@@ -15,9 +15,9 @@ import { startPracticeAction } from "../exam-actions";
 
 export const metadata = { title: "Luyện tập theo chủ đề" };
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ error?: string; subject?: string; module?: string }> }) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ error?: string; subject?: string; module?: string; track?: string }> }) {
   const me = await requireMe("/luyen-tap");
-  const { error, subject: qSubject = "", module: qModule = "" } = await searchParams;
+  const { error, subject: qSubject = "", module: qModule = "", track: qTrack = "" } = await searchParams;
   const [{ data: topics }, wrong, sk, stats] = await Promise.all([adminDb().from("questions").select("subject, topic").eq("status", "approved").limit(20000), wrongQuestionIds(me.id), getSkillProfile(me.id), topicStats()]);
   const tsub = (["math", "physics", "chemistry", "chinese"].includes(qSubject) ? qSubject : "math") as SylSubject;
   const bySubject: Record<string, string[]> = {};
@@ -36,7 +36,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
           </div>
         </section>
       )}
-      <TopicExplorer subject={tsub} stats={stats} />
+      <TopicExplorer subject={tsub} stats={stats} track={qTrack === "humanities" ? "humanities" : "science"} />
       <h2 className="mb-3 text-lg font-extrabold text-navy">Hoặc chọn bộ lọc tự do</h2>
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <form action={startPracticeAction} className="card space-y-4">

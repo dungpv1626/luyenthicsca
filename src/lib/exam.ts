@@ -2,7 +2,7 @@ import { adminDb } from "./supabase/admin";
 import { generateReport } from "./ai";
 import { scoreAttempt, type ScoredQuestion } from "./scoring";
 import { QUICK_TEST, SUBJECT_KEYS, type Difficulty, type Subject } from "./constants";
-import { classify, topicByKey } from "./syllabus";
+import { classify, topicByKey, zhTrackOf, type ZhTrack } from "./syllabus";
 
 function shuffle<T>(a: T[]): T[] {
   const r = [...a];
@@ -14,7 +14,7 @@ function shuffle<T>(a: T[]): T[] {
 }
 
 /** Chọn ngẫu nhiên câu hỏi đã duyệt, chia đều theo môn. */
-export async function pickQuestions(opts: { subjects?: Subject[]; topic?: string; module?: string; topicKey?: string; difficulty?: Difficulty; count: number }) {
+export async function pickQuestions(opts: { subjects?: Subject[]; topic?: string; module?: string; topicKey?: string; track?: ZhTrack; difficulty?: Difficulty; count: number }) {
   const db = adminDb();
   const subjects = opts.subjects?.length ? opts.subjects : SUBJECT_KEYS;
   let q = db.from("questions").select("id, subject").eq("status", "approved").in("subject", subjects);
@@ -27,7 +27,7 @@ export async function pickQuestions(opts: { subjects?: Subject[]; topic?: string
     const top = topicByKey(opts.subjects[0], opts.topicKey);
     if (!top) return [];
     const { data: rows } = await db.from("questions").select("id, subject, topic, subtopic").eq("status", "approved").eq("subject", opts.subjects[0]).eq("module", top.module).limit(1000);
-    const ok = new Set((rows ?? []).filter((r) => classify(r).topic === opts.topicKey).map((r) => r.id));
+    const ok = new Set((rows ?? []).filter((r) => classify(r).topic === opts.topicKey && (!opts.track || zhTrackOf(r.subtopic) === opts.track)).map((r) => r.id));
     data = (data ?? []).filter((r) => ok.has(r.id));
   }
   const pool = shuffle(data ?? []);

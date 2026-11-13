@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { classify, TOPICS, MODULES, topicByKey, OUT } from "./syllabus.ts";
+import { classify, TOPICS, MODULES, topicByKey, OUT, zhTrackOf } from "./syllabus.ts";
 import { GAP_TEMPLATES } from "./templates/gaps.ts";
 
 const c = (subject: string, topic: string, subtopic: string | null = null) => classify({ subject, topic, subtopic });
@@ -60,4 +60,18 @@ test("mỗi khuôn lấp chuyên đề rơi đúng vào một chuyên đề củ
 test("khuôn lấp chuyên đề: mỗi chuyên đề ban đầu trống nay có ít nhất một khuôn", () => {
   const covered = new Set(GAP_TEMPLATES.map((t) => `${t.subject}.${classify({ subject: t.subject, topic: t.topic, subtopic: t.subtopic }).topic}`));
   for (const k of ["math.sets", "math.ineq", "math.conics", "math.complex", "math.normal", "physics.magnetic", "physics.induction", "physics.kinetic", "physics.momentum", "physics.energy", "physics.circular_gravity", "physics.electrostatics", "physics.first_law", "chemistry.ideal_gas_chem", "chemistry.equations"]) assert.ok(covered.has(k), `chưa có khuôn cho ${k}`);
+});
+
+test("Tiếng Trung: dạng câu chính thức và khối được đọc từ chủ đề con", () => {
+  assert.deepEqual(c("chinese", "Đọc hiểu", "阅读理解 · khối khoa học · mô tả thí nghiệm"), { module: "reading", topic: "zh_reading" });
+  assert.deepEqual(c("chinese", "Từ vựng chuyên ngành", "识解汉字 · khối văn"), { module: "vocab", topic: "zh_char" });
+  assert.deepEqual(c("chinese", "Ngữ pháp", "选词成段 · khối khoa học"), { module: "grammar", topic: "zh_passage" });
+  assert.deepEqual(c("chinese", "Ngữ pháp", "补全语句 · khối văn · liên từ"), { module: "grammar", topic: "zh_sentence" });
+  assert.deepEqual(c("chinese", "Từ vựng chuyên ngành", "辨析词语"), { module: "vocab", topic: "zh_diff" });
+  assert.deepEqual(c("chinese", "Từ vựng chuyên ngành", "选词填空 · khối khoa học"), { module: "vocab", topic: "zh_cloze" });
+  assert.deepEqual(c("chinese", "Đọc hiểu", null), { module: "reading", topic: null }); // chưa gắn nhãn dạng câu
+  assert.equal(zhTrackOf("阅读理解 · khối văn · văn học"), "humanities");
+  assert.equal(zhTrackOf("阅读理解 · khối khoa học"), "science");
+  assert.equal(zhTrackOf(null), "science");
+  assert.equal(TOPICS.chinese.length, 6);
 });

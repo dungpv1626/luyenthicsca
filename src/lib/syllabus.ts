@@ -94,7 +94,7 @@ export function moduleQuotas(subject: Subject, n: number): Record<string, number
 export type Topic = { key: string; module: string; vi: string; en: string; zh: string; desc: string; sample?: boolean };
 const T = (key: string, module: string, vi: string, en: string, zh: string, desc: string, sample = false): Topic => ({ key, module, vi, en, zh, desc, sample });
 
-export const TOPICS: Record<"math" | "physics" | "chemistry", Topic[]> = {
+export const TOPICS: Record<"math" | "physics" | "chemistry" | "chinese", Topic[]> = {
   math: [
     T("sets", "set_ineq", "Tập hợp", "Sets", "集合", "Định nghĩa, phép toán và cách biểu diễn tập hợp"),
     T("ineq", "set_ineq", "Bất phương trình", "Inequalities", "不等式", "Tính chất, bất phương trình bậc hai, phân thức", true),
@@ -151,16 +151,34 @@ export const TOPICS: Record<"math" | "physics" | "chemistry", Topic[]> = {
     T("separation", "experiment", "Tách và tinh chế chất", "Separation and purification", "物质分离提纯方法", "Lọc, chưng cất, kết tinh, loại tạp chất", true),
     T("industrial", "experiment", "Quy trình công nghiệp", "Industrial processes", "工业化工流程分析", "Ví dụ tổng hợp amoniac"),
   ],
+  // Tiếng Trung chuyên ngành: 6 DẠNG câu của đề cương chính thức (dùng chung cho khối khoa học 理科中文 và khối văn 文科中文).
+  // Dạng câu và khối được ghi trong chủ đề con: "<dạng Hán> · khối khoa học|khối văn · ...".
+  chinese: [
+    T("zh_char", "vocab", "Nhận biết chữ Hán", "Character recognition", "识解汉字", "Nhận biết, hiểu nghĩa chữ Hán và từ trong ngữ cảnh"),
+    T("zh_cloze", "vocab", "Chọn từ điền chỗ trống", "Word choice cloze", "选词填空", "Chọn từ thích hợp điền vào chỗ trống trong câu"),
+    T("zh_diff", "vocab", "Phân biệt từ", "Word discrimination", "辨析词语", "Phân biệt từ gần nghĩa, dùng từ đúng ngữ cảnh"),
+    T("zh_passage", "grammar", "Chọn từ thành đoạn", "Passage cloze", "选词成段", "Chọn từ điền vào nhiều chỗ trống trong một đoạn văn"),
+    T("zh_sentence", "grammar", "Hoàn thành câu", "Sentence completion", "补全语句", "Chọn câu thích hợp để hoàn thành đoạn văn"),
+    T("zh_reading", "reading", "Đọc hiểu", "Reading comprehension", "阅读理解", "Đọc đoạn văn rồi trả lời câu hỏi"),
+  ],
 };
 
 export const topicList = (subject: string): Topic[] => (TOPICS as Record<string, Topic[]>)[subject] ?? [];
 export const topicByKey = (subject: string, key: string | null | undefined): Topic | undefined => topicList(subject).find((t) => t.key === key);
 
 const norm = (s: string | null | undefined) => (s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "d").toLowerCase();
+/** Khối Tiếng Trung chuyên ngành của một câu: ghi trong chủ đề con ("khối văn" hoặc 文科 → văn; còn lại → khoa học). */
+export type ZhTrack = "science" | "humanities";
+export const zhTrackOf = (subtopic: string | null | undefined): ZhTrack => (/khoi van|文科/.test(norm(subtopic)) ? "humanities" : "science");
 /** [chủ đề, chủ đề con (null = bất kỳ), khóa chuyên đề hoặc OUT]. Quy tắc đầu tiên khớp sẽ thắng. */
 type Rule = [RegExp, RegExp | null, string];
 const ANY = /./;
 const RULES: Record<string, Rule[]> = {
+  // Tiếng Trung: dạng câu được ghi bằng tên Hán trong chủ đề con (xem TOPICS.chinese)
+  chinese: [
+    [ANY, /识解汉字/, "zh_char"], [ANY, /选词填空/, "zh_cloze"], [ANY, /辨析词语/, "zh_diff"],
+    [ANY, /选词成段/, "zh_passage"], [ANY, /补全语句/, "zh_sentence"], [ANY, /阅读理解/, "zh_reading"],
+  ],
   math: [
     // nội dung KHÔNG được liệt kê trong đề cương: vẫn luyện được, không đưa vào đề mô phỏng
     [ANY, /tich phan|nguyen ham|gioi han|vi-?et|co dieu kien|doc lap|nhi thuc|phep thu lap|dien tich tam giac|he thuc trong tam giac|tam giac-duong tron|hinh hoc phang/, OUT],

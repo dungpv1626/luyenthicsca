@@ -1,0 +1,324 @@
+[
+ {
+  "subject": "chemistry",
+  "topic": "Dung dịch",
+  "subtopic": "Phân loại và trạng thái chất: đơn chất, hợp chất, hỗn hợp",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Dung dịch",
+  "subtopic": "Phân loại và trạng thái chất: đơn chất, hợp chất, hỗn hợp",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Dung dịch",
+  "subtopic": "Phân loại và trạng thái chất: đồng vị, thù hình, chuyển trạng thái",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Dung dịch",
+  "subtopic": "Phân loại và trạng thái chất: đồng vị, thù hình, chuyển trạng thái",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Dung dịch",
+  "subtopic": "Phân loại và trạng thái chất: dung dịch, huyền phù, hệ keo",
+  "difficulty": "easy",
+  "count": 4
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Dung dịch",
+  "subtopic": "Phân loại và trạng thái chất: dung dịch, huyền phù, hệ keo",
+  "difficulty": "medium",
+  "count": 4
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Cân bằng phương trình hóa học: phản ứng oxi hóa–khử",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Cân bằng phương trình hóa học: phản ứng oxi hóa–khử",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Cân bằng phương trình hóa học: phản ứng trao đổi và nhiệt phân",
+  "difficulty": "easy",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Cân bằng phương trình hóa học: phản ứng trao đổi và nhiệt phân",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Phương trình khí lí tưởng: áp suất, thể tích, nhiệt độ",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Phương trình khí lí tưởng: áp suất, thể tích, nhiệt độ",
+  "difficulty": "hard",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Phương trình khí lí tưởng: hỗn hợp khí và tỉ khối",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Phương trình khí lí tưởng: hỗn hợp khí và tỉ khối",
+  "difficulty": "hard",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Tính theo mol và khối lượng; hiệu suất",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Tính theo mol và khối lượng; hiệu suất",
+  "difficulty": "hard",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "An toàn phòng thí nghiệm: hóa chất độc hại và bảo quản",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "An toàn phòng thí nghiệm: hóa chất độc hại và bảo quản",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "An toàn phòng thí nghiệm: dụng cụ thủy tinh và cách dùng",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "An toàn phòng thí nghiệm: dụng cụ thủy tinh và cách dùng",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "An toàn phòng thí nghiệm: xử lí chất thải và sơ cứu",
+  "difficulty": "easy",
+  "count": 4
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "An toàn phòng thí nghiệm: xử lí chất thải và sơ cứu",
+  "difficulty": "medium",
+  "count": 4
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Phản ứng ion: phương trình ion rút gọn",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Phản ứng ion: phương trình ion rút gọn",
+  "difficulty": "hard",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Nhận biết ion: thuốc thử và hiện tượng",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Nhận biết ion: thuốc thử và hiện tượng",
+  "difficulty": "hard",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Tách và tinh chế: chưng cất, chiết, kết tinh và lọc",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Tách và tinh chế: chưng cất, chiết, kết tinh và lọc",
+  "difficulty": "hard",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Tách và tinh chế: loại tạp chất khỏi chất khí và chất rắn",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Tách và tinh chế: loại tạp chất khỏi chất khí và chất rắn",
+  "difficulty": "hard",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Quy trình công nghiệp: sản xuất axit sunfuric và axit nitric",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Quy trình công nghiệp: sản xuất axit sunfuric và axit nitric",
+  "difficulty": "hard",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Quy trình công nghiệp: luyện gang, thép và sản xuất phân bón",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Quy trình công nghiệp: luyện gang, thép và sản xuất phân bón",
+  "difficulty": "hard",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Điều chế khí: oxi, cacbonic, clo, amoniac trong phòng thí nghiệm",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Thí nghiệm và ứng dụng",
+  "subtopic": "Điều chế khí: oxi, cacbonic, clo, amoniac trong phòng thí nghiệm",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Tốc độ phản ứng: yếu tố ảnh hưởng",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Tốc độ phản ứng: yếu tố ảnh hưởng",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Cân bằng hóa học: chuyển dịch cân bằng theo Le Chatelier",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Phản ứng hóa học",
+  "subtopic": "Cân bằng hóa học: chuyển dịch cân bằng theo Le Chatelier",
+  "difficulty": "hard",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Axit–bazơ",
+  "subtopic": "Chất điện li mạnh, yếu và độ điện li",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Axit–bazơ",
+  "subtopic": "Chất điện li mạnh, yếu và độ điện li",
+  "difficulty": "medium",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Oxi hóa–khử",
+  "subtopic": "Điện phân dung dịch và nóng chảy",
+  "difficulty": "medium",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Oxi hóa–khử",
+  "subtopic": "Điện phân dung dịch và nóng chảy",
+  "difficulty": "hard",
+  "count": 5
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Cấu tạo nguyên tử",
+  "subtopic": "Liên kết ion, cộng hóa trị và lực liên phân tử",
+  "difficulty": "easy",
+  "count": 6
+ },
+ {
+  "subject": "chemistry",
+  "topic": "Cấu tạo nguyên tử",
+  "subtopic": "Liên kết ion, cộng hóa trị và lực liên phân tử",
+  "difficulty": "medium",
+  "count": 6
+ }
+]

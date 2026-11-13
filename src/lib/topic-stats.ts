@@ -1,5 +1,5 @@
 import { adminDb } from "@/lib/supabase/admin";
-import { classify } from "@/lib/syllabus";
+import { classify, zhTrackOf, type ZhTrack } from "@/lib/syllabus";
 
 export type TopicStats = {
   /** môn → khóa chuyên đề → số câu đang công bố */
@@ -10,6 +10,9 @@ export type TopicStats = {
   unassigned: Record<string, number>;
   /** môn → số câu ngoài phần liệt kê của đề cương (chỉ luyện thêm) */
   out: Record<string, number>;
+  /** Tiếng Trung: khối → số câu (tổng) và khối → khóa dạng câu → số câu */
+  zhTrack: Record<ZhTrack, number>;
+  zhByTopic: Record<ZhTrack, Record<string, number>>;
 };
 
 /** Đếm câu đang công bố theo chuyên đề. Đọc theo từng trang 1000 dòng (giới hạn của API) song song. */
@@ -18,9 +21,10 @@ export async function topicStats(): Promise<TopicStats> {
   const { count } = await db.from("questions").select("*", { count: "exact", head: true }).eq("status", "approved");
   const pages = Math.max(1, Math.ceil((count ?? 0) / 1000));
   const parts = await Promise.all(Array.from({ length: pages }, (_, i) => db.from("questions").select("subject, topic, subtopic").eq("status", "approved").order("id").range(i * 1000, i * 1000 + 999)));
-  const s: TopicStats = { byTopic: {}, byModule: {}, unassigned: {}, out: {} };
+  const s: TopicStats = { byTopic: {}, byModule: {}, unassigned: {}, out: {}, zhTrack: { science: 0, humanities: 0 }, zhByTopic: { science: {}, humanities: {} } };
   for (const { data } of parts) for (const r of data ?? []) {
     const c = classify(r);
+    if (r.subject === "chinese") { const tr = zhTrackOf(r.subtopic); s.zhTrack[tr]++; if (c.topic) s.zhByTopic[tr][c.topic] = (s.zhByTopic[tr][c.topic] ?? 0) + 1; }
     if (c.module === "out") { s.out[r.subject] = (s.out[r.subject] ?? 0) + 1; continue; }
     if (c.module) (s.byModule[r.subject] ??= {})[c.module] = ((s.byModule[r.subject] ??= {})[c.module] ?? 0) + 1;
     if (c.topic) (s.byTopic[r.subject] ??= {})[c.topic] = ((s.byTopic[r.subject] ??= {})[c.topic] ?? 0) + 1;

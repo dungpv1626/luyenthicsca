@@ -4,7 +4,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
-const cap = Number(process.env.AI_TOTAL_CAP_USD ?? 50);
+const cap = Number(process.env.AI_TOTAL_CAP_USD ?? 75);
 const { data } = await sb.from("ai_spend").select("usd");
 const spent = (data ?? []).reduce((s, r) => s + Number(r.usd), 0);
 console.log(`Đã chi ≈ $${spent.toFixed(2)} / $${cap} → còn ≈ $${(cap - spent).toFixed(2)}`);
