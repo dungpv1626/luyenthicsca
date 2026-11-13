@@ -10,7 +10,7 @@ export function HeaderShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("scroll", on);
   }, []);
   return (
-    <header className={`sticky top-0 z-30 bg-navy/95 text-white backdrop-blur-md transition-all duration-300 ${scrolled ? "shadow-[0_8px_30px_-12px_rgb(15_23_42/0.55)]" : "shadow-none"}`}>
+    <header className={`sticky top-0 z-30 bg-navy-deep/95 text-white backdrop-blur-md transition-all duration-300 ${scrolled ? "shadow-[0_8px_30px_-12px_rgb(15_23_42/0.55)]" : "shadow-none"}`}>
       <div className={`transition-all duration-300 ${scrolled ? "py-0" : "py-0.5"}`}>{children}</div>
       <div className="h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
     </header>

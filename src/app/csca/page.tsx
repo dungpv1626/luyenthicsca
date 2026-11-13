@@ -23,7 +23,7 @@ export default function Page() {
       </section>
       <section>
         <h2 className="mb-4 text-xl font-bold">Câu hỏi thường gặp</h2>
-        <div className="space-y-2">{FAQ.map(([q, a]) => <details key={q} className="card group"><summary className="cursor-pointer font-semibold marker:text-brand">{q}</summary><p className="mt-2 text-slate-600">{a}</p></details>)}</div>
+        <div className="space-y-2">{FAQ.map(([q, a]) => <details key={q} className="card group"><summary className="cursor-pointer font-semibold marker:text-brand-text">{q}</summary><p className="mt-2 text-slate-600">{a}</p></details>)}</div>
       </section>
       <div className="flex flex-wrap gap-3"><Link href="/quick-test" className="btn">Thi thử miễn phí ngay</Link><Link href="/truong" className="btn-outline">Xem trường yêu cầu CSCA</Link></div>
     </div>

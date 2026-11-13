@@ -9,8 +9,8 @@ const COLS = [
 
 export function Footer() {
   return (
-    <footer className="relative mt-20 bg-navy pb-20 text-white lg:pb-0">
-      <svg viewBox="0 0 1440 48" preserveAspectRatio="none" className="absolute inset-x-0 -top-[47px] h-[48px] w-full text-navy" aria-hidden="true"><path fill="currentColor" d="M0 48V22C160 2 320 0 480 12s320 30 480 22 320-26 480-12v26z" /></svg>
+    <footer className="relative mt-20 bg-navy-deep pb-20 text-white lg:pb-0">
+      <svg viewBox="0 0 1440 48" preserveAspectRatio="none" className="absolute inset-x-0 -top-[47px] h-[48px] w-full text-navy-deep" aria-hidden="true"><path fill="currentColor" d="M0 48V22C160 2 320 0 480 12s320 30 480 22 320-26 480-12v26z" /></svg>
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
           <Logo light className="!h-16 sm:!h-[4.5rem]" />

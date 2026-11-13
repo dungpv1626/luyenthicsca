@@ -20,7 +20,7 @@ export function TopicExplorer({ subject, stats, track = "science" }: { subject: 
         <p className="mt-1 text-sm text-slate-600">Mỗi chuyên đề là một mục trong đề cương chính thức. Chọn chuyên đề, luyện 10 câu, rồi quay lại chuyên đề khác.</p>
       </div>
       <nav className="flex flex-wrap gap-2" aria-label="Chọn môn">
-        {SUBJ.map((s) => <Link key={s} href={`/luyen-tap?subject=${s}#chuyen-de`} scroll={false} aria-current={s === subject ? "page" : undefined} className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 text-sm font-semibold ${s === subject ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand"}`}>{short(s)}</Link>)}
+        {SUBJ.map((s) => <Link key={s} href={`/luyen-tap?subject=${s}#chuyen-de`} scroll={false} aria-current={s === subject ? "page" : undefined} className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 text-sm font-semibold ${s === subject ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand-text"}`}>{short(s)}</Link>)}
       </nav>
       {isChinese && (
         <div className="space-y-3">
@@ -28,7 +28,7 @@ export function TopicExplorer({ subject, stats, track = "science" }: { subject: 
             {([["science", "Khối khoa học", "理科中文", "Thuật ngữ toán, lý, hóa, thí nghiệm, đọc biểu đồ và bài khoa học. Dành cho ngành kỹ thuật, khoa học tự nhiên."], ["humanities", "Khối văn", "文科中文", "Văn học, triết học, luật, giáo dục, lịch sử, nghệ thuật. Dành cho ngành khoa học xã hội và nhân văn."]] as const).map(([k, name, zh, desc]) => {
               const n = stats.zhTrack[k], on = track === k;
               return (
-                <Link key={k} href={`/luyen-tap?subject=chinese&track=${k}#chuyen-de`} scroll={false} role="tab" aria-selected={on} className={`block rounded-xl border p-3 ${on ? "border-2 border-brand bg-brand-soft/50" : "border-slate-200 bg-white hover:border-brand"} ${n === 0 ? "border-dashed bg-slate-50" : ""}`}>
+                <Link key={k} href={`/luyen-tap?subject=chinese&track=${k}#chuyen-de`} scroll={false} role="tab" aria-selected={on} className={`block rounded-xl border p-3 ${on ? "border-2 border-brand bg-brand-soft/50" : "border-slate-200 bg-surface hover:border-brand"} ${n === 0 ? "border-dashed bg-slate-50" : ""}`}>
                   <p className="font-bold text-ink">{name} <span className="text-xs font-normal text-muted">{zh}</span></p>
                   <p className="mt-0.5 text-sm text-slate-600">{desc}</p>
                   <span className={`chip mt-2 ${n === 0 ? "!bg-slate-200 !text-slate-600" : ""}`}>{n === 0 ? "Sắp có" : `${n.toLocaleString("vi-VN")} câu`}</span>
@@ -59,7 +59,7 @@ export function TopicExplorer({ subject, stats, track = "science" }: { subject: 
 function Card({ subject, topicKey, track, vi, en, zh, desc, n, sample }: { subject: string; topicKey: string; track?: ZhTrack; vi: string; en: string; zh: string; desc: string; n: number; sample?: boolean }) {
   const soon = n === 0, few = n > 0 && n < 15;
   return (
-    <form action={startPracticeAction} className={`flex flex-col rounded-xl border p-3 ${soon ? "border-dashed border-slate-300 bg-slate-50" : "border-slate-200 bg-white"}`}>
+    <form action={startPracticeAction} className={`flex flex-col rounded-xl border p-3 ${soon ? "border-dashed border-slate-300 bg-slate-50" : "border-slate-200 bg-surface"}`}>
       <input type="hidden" name="subject" value={subject} /><input type="hidden" name="topic_key" value={topicKey} /><input type="hidden" name="count" value="10" />
       {track && <input type="hidden" name="track" value={track} />}
       <p className="font-bold leading-snug text-ink">{vi}</p>

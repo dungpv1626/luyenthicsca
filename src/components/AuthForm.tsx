@@ -34,7 +34,7 @@ export function AuthForm({ mode, action, next, audience }: { mode: "login" | "re
       <p className="text-slate-600">Chúng tôi đã gửi email xác nhận tới <b className="break-all text-ink">{state.pending}</b>. Bấm vào liên kết trong email để kích hoạt tài khoản.</p>
       <ul className="space-y-1 rounded-xl bg-mist p-3 text-left text-sm text-slate-600"><li>• Email có thể mất 1–2 phút mới tới.</li><li>• Hãy xem cả mục <b>Spam</b> hoặc <b>Quảng cáo</b> (người gửi: no-reply@luyenthicsca.edu.vn).</li><li>• Nhập sai email? Quay lại và đăng ký lại bằng email đúng.</li></ul>
       <ResendBox email={state.pending} />
-      <Link className="inline-block py-2.5 text-sm font-semibold text-brand" href={`/dang-nhap?next=${encodeURIComponent(next)}`}>Đã xác nhận? Đăng nhập</Link>
+      <Link className="inline-block py-2.5 text-sm font-semibold text-brand-text" href={`/dang-nhap?next=${encodeURIComponent(next)}`}>Đã xác nhận? Đăng nhập</Link>
     </div>
   );
   return (
@@ -58,13 +58,13 @@ export function AuthForm({ mode, action, next, audience }: { mode: "login" | "re
         </>
       )}
       <div><label className="label" htmlFor="f-email">Email</label><input id="f-email" type="email" name="email" required defaultValue={v.email} className="input" /></div>
-      <div><label className="label" htmlFor="f-password">Mật khẩu</label><input id="f-password" type="password" name="password" required minLength={reg ? 8 : 1} autoComplete={reg ? "new-password" : "current-password"} className="input" />{!reg && <Link href="/quen-mat-khau" className="mt-1 inline-flex min-h-[2.75rem] items-center text-sm font-semibold text-brand hover:underline">Quên mật khẩu?</Link>}</div>
+      <div><label className="label" htmlFor="f-password">Mật khẩu</label><input id="f-password" type="password" name="password" required minLength={reg ? 8 : 1} autoComplete={reg ? "new-password" : "current-password"} className="input" />{!reg && <Link href="/quen-mat-khau" className="mt-1 inline-flex min-h-[2.75rem] items-center text-sm font-semibold text-brand-text hover:underline">Quên mật khẩu?</Link>}</div>
       {state?.error && <p role="alert" className="rounded bg-danger-bg p-2 text-sm text-danger">{state.error}</p>}
       {state?.unconfirmed && <ResendBox email={state.unconfirmed} />}
       <button disabled={pending} className="btn w-full">{pending ? "Đang xử lý…" : reg ? "Đăng ký" : "Đăng nhập"}</button>
       <p className="text-center text-sm text-slate-600">
-        {reg ? <>Đã có tài khoản? <Link className="inline-block py-2.5 font-semibold text-brand" href={`/dang-nhap?next=${encodeURIComponent(next)}`}>Đăng nhập</Link></>
-             : <>Chưa có tài khoản? <Link className="inline-block py-2.5 font-semibold text-brand" href={`/dang-ky?next=${encodeURIComponent(next)}`}>Đăng ký</Link></>}
+        {reg ? <>Đã có tài khoản? <Link className="inline-block py-2.5 font-semibold text-brand-text" href={`/dang-nhap?next=${encodeURIComponent(next)}`}>Đăng nhập</Link></>
+             : <>Chưa có tài khoản? <Link className="inline-block py-2.5 font-semibold text-brand-text" href={`/dang-ky?next=${encodeURIComponent(next)}`}>Đăng ký</Link></>}
       </p>
     </form>
   );

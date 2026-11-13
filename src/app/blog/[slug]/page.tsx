@@ -51,7 +51,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     <article className="mx-auto max-w-6xl">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
       {preview && <p role="status" className="mb-4 rounded-xl bg-warning-bg p-3 text-sm font-semibold text-amber-900">Bản xem trước: bài chưa công bố, chỉ nhân viên nội dung nhìn thấy và công cụ tìm kiếm không lập chỉ mục.</p>}
-      <nav aria-label="Đường dẫn" className="mb-4 text-sm text-muted"><Link href="/" className="hover:text-brand">Trang chủ</Link> › <Link href="/blog" className="hover:text-brand">Blog</Link> › <Link href={`/blog?c=${encodeURIComponent(post.category)}`} className="hover:text-brand">{post.category}</Link></nav>
+      <nav aria-label="Đường dẫn" className="mb-4 text-sm text-muted"><Link href="/" className="hover:text-brand-text">Trang chủ</Link> › <Link href="/blog" className="hover:text-brand-text">Blog</Link> › <Link href={`/blog?c=${encodeURIComponent(post.category)}`} className="hover:text-brand-text">{post.category}</Link></nav>
       <header className="max-w-3xl">
         <span className="chip">{post.category}</span>
         <h1 className="mt-3 text-3xl font-extrabold leading-tight text-navy sm:text-4xl">{post.title}</h1>
@@ -60,7 +60,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       </header>
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
         <div className="min-w-0 max-w-3xl">
-          {toc.length > 2 && <details className="card mb-6 lg:hidden"><summary className="cursor-pointer font-bold text-navy">Mục lục</summary><ol className="mt-2 space-y-1 text-sm">{toc.map((t) => <li key={t.id}><a href={`#${t.id}`} className="inline-block py-1.5 text-slate-600 hover:text-brand">{t.text}</a></li>)}</ol></details>}
+          {toc.length > 2 && <details className="card mb-6 lg:hidden"><summary className="cursor-pointer font-bold text-navy">Mục lục</summary><ol className="mt-2 space-y-1 text-sm">{toc.map((t) => <li key={t.id}><a href={`#${t.id}`} className="inline-block py-1.5 text-slate-600 hover:text-brand-text">{t.text}</a></li>)}</ol></details>}
           <Markdown>{post.body_md}</Markdown>
           <aside className="mesh-navy relative mt-12 overflow-hidden rounded-3xl p-6 text-white sm:p-8" aria-label="Bắt đầu luyện thi">
             <h2 className="text-2xl font-extrabold">Biết mình đang ở đâu chỉ sau 15 phút</h2>
@@ -68,7 +68,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             <div className="mt-5 flex flex-wrap gap-3"><Link href="/quick-test" className="btn-light">Làm Quick Test miễn phí <Icon name="arrow" className="h-4 w-4" /></Link><Link href="/thi-thu" className="btn-ghost-light">Xem các đề thi thử</Link></div>
           </aside>
         </div>
-        {toc.length > 2 && <aside className="hidden lg:block" aria-label="Mục lục"><div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-4"><p className="text-xs font-bold uppercase tracking-wider text-muted">Trong bài này</p><ol className="mt-2 space-y-0.5 text-sm">{toc.map((t) => <li key={t.id}><a href={`#${t.id}`} className="block rounded-lg px-2 py-1.5 text-slate-600 hover:bg-brand-soft hover:text-brand">{t.text}</a></li>)}</ol></div></aside>}
+        {toc.length > 2 && <aside className="hidden lg:block" aria-label="Mục lục"><div className="sticky top-24 rounded-2xl border border-slate-200 bg-surface p-4"><p className="text-xs font-bold uppercase tracking-wider text-muted">Trong bài này</p><ol className="mt-2 space-y-0.5 text-sm">{toc.map((t) => <li key={t.id}><a href={`#${t.id}`} className="block rounded-lg px-2 py-1.5 text-slate-600 hover:bg-brand-soft hover:text-brand-text">{t.text}</a></li>)}</ol></div></aside>}
       </div>
       {related.length > 0 && <section className="mt-14" aria-label="Bài liên quan"><h2 className="mb-4 text-xl font-extrabold text-navy">Bài liên quan</h2><div className="grid gap-4 sm:grid-cols-3">{related.map((p) => <Link key={p.id} href={`/blog/${p.slug}`} className="card card-hover"><h3 className="font-bold leading-snug text-navy">{p.title}</h3><p className="mt-2 line-clamp-2 text-sm text-slate-600">{p.meta_description}</p></Link>)}</div></section>}
     </article>

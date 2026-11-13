@@ -36,7 +36,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
             <div><label className="label" htmlFor="f-target">Readiness mục tiêu</label><input id="f-target" type="number" name="target" min={40} max={100} defaultValue={80} className="input" /></div>
             <div><label className="label" htmlFor="f-exam-date">Ngày thi dự kiến</label><input id="f-exam-date" type="date" name="exam_date" defaultValue={prof?.exam_date ?? ""} className="input" /></div>
           </div>
-          {sk.weak.length > 0 && <p className="rounded-xl bg-brand-soft p-3 text-sm"><b className="text-brand">Điểm yếu AI sẽ ưu tiên:</b> {sk.weak.slice(0, 4).map((t) => t.topic).join(", ")}</p>}
+          {sk.weak.length > 0 && <p className="rounded-xl bg-brand-soft p-3 text-sm"><b className="text-brand-text">Điểm yếu AI sẽ ưu tiên:</b> {sk.weak.slice(0, 4).map((t) => t.topic).join(", ")}</p>}
           <button className="btn w-full"><Icon name="sparkles" className="h-4 w-4" />Tạo lộ trình bằng AI</button>
         </form>
       </div>
@@ -74,13 +74,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
           const list = tasks.filter((t) => t.due_date === d.date);
           const isToday = d.date === today;
           return (
-            <div key={d.date} className={`rounded-2xl border p-3 ${isToday ? "border-brand bg-brand-soft/50" : "border-slate-200 bg-white"}`}>
+            <div key={d.date} className={`rounded-2xl border p-3 ${isToday ? "border-brand bg-brand-soft/50" : "border-slate-200 bg-surface"}`}>
               <p className="text-xs font-bold uppercase tracking-wider text-muted">{d.name}</p>
-              <p className={`text-sm font-semibold ${isToday ? "text-brand" : ""}`}>{new Date(d.date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}</p>
+              <p className={`text-sm font-semibold ${isToday ? "text-brand-text" : ""}`}>{new Date(d.date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}</p>
               <div className="mt-2 space-y-2">
                 {list.length === 0 && <p className="text-xs text-muted">Nghỉ</p>}
                 {list.map((t) => (
-                  <div key={t.id} className={`rounded-xl border bg-white p-2.5 text-sm ${t.done_at ? "border-emerald-200 opacity-70" : t.due_date < today ? "border-red-300" : "border-slate-200"}`}>
+                  <div key={t.id} className={`rounded-xl border bg-surface p-2.5 text-sm ${t.done_at ? "border-emerald-200 opacity-70" : t.due_date < today ? "border-red-300" : "border-slate-200"}`}>
                     <span className="chip !text-xs">{KIND[t.kind as keyof typeof KIND]}</span>
                     <p className={`mt-1 font-semibold leading-snug ${t.done_at ? "line-through" : ""}`}>{t.title}</p>
                     {t.subject && <p className="text-xs text-muted">{subjectName(t.subject)}</p>}
@@ -102,13 +102,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
           <section className="card"><h2 className="mb-3 font-bold">Sắp tới</h2>
             <ul className="divide-y divide-slate-100">{upcoming.map((t) => (
               <li key={t.id} className="flex items-center gap-3 py-2.5 text-sm">
-                <span className="w-24 shrink-0 font-semibold text-brand">{new Date(t.due_date).toLocaleDateString("vi-VN", { weekday: "short", day: "2-digit", month: "2-digit" })}</span>
+                <span className="w-24 shrink-0 font-semibold text-brand-text">{new Date(t.due_date).toLocaleDateString("vi-VN", { weekday: "short", day: "2-digit", month: "2-digit" })}</span>
                 <span className="chip !text-xs">{KIND[t.kind as keyof typeof KIND]}</span><span className="flex-1 font-medium">{t.title}</span><span className="hidden text-xs text-muted sm:block">{subjectName(t.subject)}</span>
               </li>))}</ul></section>
         );
       })()}
       <div className="flex justify-between text-sm text-muted"><span>Lộ trình do {plan.source === "claude" ? "AI (Claude)" : "hệ thống (theo luật)"} tạo.</span>
-        <form action={endPlanAction}><button className="font-semibold text-brand hover:underline">Kết thúc & tạo lộ trình mới</button></form></div>
+        <form action={endPlanAction}><button className="font-semibold text-brand-text hover:underline">Kết thúc & tạo lộ trình mới</button></form></div>
     </div>
   );
 }

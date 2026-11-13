@@ -25,8 +25,8 @@ export function Markdown({ children }: { children: string }) {
         h2: ({ children: c }) => <h2 id={slugify(text(c))} className="mb-3 mt-10 scroll-mt-24 text-2xl font-extrabold leading-snug text-navy">{c}</h2>,
         h3: ({ children: c }) => <h3 id={slugify(text(c))} className="mb-2 mt-6 scroll-mt-24 text-lg font-bold text-navy">{c}</h3>,
         p: ({ children: c }) => <p className="my-4 leading-8 text-slate-700">{withMath(c)}</p>,
-        ul: ({ children: c }) => <ul className="my-4 list-disc space-y-2 pl-6 leading-7 text-slate-700 marker:text-brand">{c}</ul>,
-        ol: ({ children: c }) => <ol className="my-4 list-decimal space-y-2 pl-6 leading-7 text-slate-700 marker:font-bold marker:text-brand">{c}</ol>,
+        ul: ({ children: c }) => <ul className="my-4 list-disc space-y-2 pl-6 leading-7 text-slate-700 marker:text-brand-text">{c}</ul>,
+        ol: ({ children: c }) => <ol className="my-4 list-decimal space-y-2 pl-6 leading-7 text-slate-700 marker:font-bold marker:text-brand-text">{c}</ol>,
         strong: ({ children: c }) => <strong className="font-bold text-ink">{withMath(c)}</strong>,
         em: ({ children: c }) => <em>{withMath(c)}</em>,
         li: ({ children: c }) => <li>{withMath(c)}</li>,
@@ -38,8 +38,8 @@ export function Markdown({ children }: { children: string }) {
         td: ({ children: c }) => <td className="border-b border-slate-100 px-3 py-2.5 align-top text-slate-700">{withMath(c)}</td>,
         code: ({ children: c }) => <code className="rounded bg-mist px-1.5 py-0.5 text-[0.9em]">{c}</code>,
         a: ({ href, children: c }) => {
-          if (href?.startsWith("/") && !href.startsWith("//")) return <Link href={href} className="font-semibold text-brand underline-offset-2 hover:underline">{c}</Link>;
-          if (href && /^https?:\/\//i.test(href)) return <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand underline-offset-2 hover:underline">{c}</a>;
+          if (href?.startsWith("/") && !href.startsWith("//")) return <Link href={href} className="font-semibold text-brand-text underline-offset-2 hover:underline">{c}</Link>;
+          if (href && /^https?:\/\//i.test(href)) return <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-text underline-offset-2 hover:underline">{c}</a>;
           return <span>{c}</span>;
         },
       }}>{children}</ReactMarkdown>

@@ -26,7 +26,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
   const statusOf = (k: string) => rv.get(k)?.status ?? "pending";
   const pendingIn = (sub: Subject) => TEMPLATES.filter((t) => t.subject === sub && statusOf(t.key) === "pending").length;
   const list = TEMPLATES.filter((t) => t.subject === cur && (!st || statusOf(t.key) === st)).sort((a, b) => Number(statusOf(b.key) === "pending") - Number(statusOf(a.key) === "pending"));
-  const tab = (href: string, on: boolean, label: React.ReactNode) => <a href={href} className={`inline-flex min-h-[2.25rem] items-center gap-1.5 rounded-lg px-3 text-sm font-semibold ${on ? "bg-brand text-white" : "border border-slate-200 bg-white hover:border-brand hover:text-brand"}`}>{label}</a>;
+  const tab = (href: string, on: boolean, label: React.ReactNode) => <a href={href} className={`inline-flex min-h-[2.25rem] items-center gap-1.5 rounded-lg px-3 text-sm font-semibold ${on ? "bg-brand text-white" : "border border-slate-200 bg-surface hover:border-brand hover:text-brand-text"}`}>{label}</a>;
 
   return (
     <div className="space-y-5">

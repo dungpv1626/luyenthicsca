@@ -5,6 +5,7 @@ import { AccountMenu } from "./AccountMenu";
 import { Logo } from "./Logo";
 import { HeaderShell } from "./HeaderShell";
 import { DesktopNav, MobileMenu } from "./NavLinks";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header({ me }: { me: Me | null }) {
   return (
@@ -21,6 +22,7 @@ export function Header({ me }: { me: Me | null }) {
           ) : (
             <Link href="/dang-nhap" className="rounded-full border border-white/40 px-4 py-2 font-semibold text-white transition hover:bg-white/10">Đăng nhập</Link>
           )}
+          <ThemeToggle onDark />
           <MobileMenu />
         </div>
       </div>

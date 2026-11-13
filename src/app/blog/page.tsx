@@ -26,20 +26,20 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ c
     <div className="space-y-8">
       <PageHeader en="Blog" vi="Kiến thức CSCA">Lịch thi, môn thi theo ngành, đăng ký, lệ phí, đề cương và chiến thuật ôn thi CSCA dành cho học sinh Việt Nam.</PageHeader>
       {!all.length ? (
-        <p className="card text-slate-600">Bài viết đang được chuẩn bị. Trong lúc chờ, bạn có thể <Link href="/quick-test" className="font-semibold text-brand hover:underline">làm Quick Test miễn phí</Link> để biết mình đang ở mức nào.</p>
+        <p className="card text-slate-600">Bài viết đang được chuẩn bị. Trong lúc chờ, bạn có thể <Link href="/quick-test" className="font-semibold text-brand-text hover:underline">làm Quick Test miễn phí</Link> để biết mình đang ở mức nào.</p>
       ) : (
         <>
           <nav aria-label="Chủ đề" className="flex flex-wrap gap-2 text-sm">
-            <Link href="/blog" className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 font-semibold ${!c ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand"}`}>Tất cả ({all.length})</Link>
-            {cats.map((k) => <Link key={k} href={`/blog?c=${encodeURIComponent(k)}`} className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 font-semibold ${c === k ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand"}`}>{k}</Link>)}
+            <Link href="/blog" className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 font-semibold ${!c ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand-text"}`}>Tất cả ({all.length})</Link>
+            {cats.map((k) => <Link key={k} href={`/blog?c=${encodeURIComponent(k)}`} className={`inline-flex min-h-[2.75rem] items-center rounded-full px-4 font-semibold ${c === k ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand-text"}`}>{k}</Link>)}
           </nav>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((p) => (
               <Link key={p.id} href={`/blog/${p.slug}`} className="card card-hover group flex flex-col">
                 <span className="chip w-fit">{p.category}</span>
-                <h2 className="mt-3 text-lg font-extrabold leading-snug text-navy group-hover:text-brand">{p.title}</h2>
+                <h2 className="mt-3 text-lg font-extrabold leading-snug text-navy group-hover:text-brand-text">{p.title}</h2>
                 <p className="mt-2 line-clamp-3 flex-1 text-sm text-slate-600">{p.meta_description}</p>
-                <p className="mt-4 flex items-center justify-between text-xs text-muted"><span>{fmtDate(p.publish_at)} · {p.read_minutes} phút đọc</span><Icon name="arrow" className="h-4 w-4 text-brand transition group-hover:translate-x-1" /></p>
+                <p className="mt-4 flex items-center justify-between text-xs text-muted"><span>{fmtDate(p.publish_at)} · {p.read_minutes} phút đọc</span><Icon name="arrow" className="h-4 w-4 text-brand-text transition group-hover:translate-x-1" /></p>
               </Link>
             ))}
           </div>

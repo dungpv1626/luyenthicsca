@@ -35,7 +35,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
       <form className="card flex flex-wrap items-center gap-2 text-sm">
         <input type="search" name="q" defaultValue={sp.q ?? ""} aria-label="Tìm theo tên, email, số điện thoại" placeholder="Tìm theo tên, email, số điện thoại…" className="input min-w-[12rem] flex-1" />
         <select name="role" aria-label="Lọc theo vai trò" defaultValue={sp.role ?? ""} className="input min-w-0 flex-1 sm:w-auto sm:flex-none"><option value="">Mọi vai trò</option>{Object.entries(ROLES).map(([k, v]) => <option key={k} value={k}>{v} ({roleCount(k)})</option>)}</select>
-        <button className="btn">Tìm</button>{(sp.q || sp.role) && <Link href="/admin/users" className="inline-flex min-h-[2.5rem] items-center px-2 font-semibold text-brand hover:underline">Xóa lọc</Link>}
+        <button className="btn">Tìm</button>{(sp.q || sp.role) && <Link href="/admin/users" className="inline-flex min-h-[2.5rem] items-center px-2 font-semibold text-brand-text hover:underline">Xóa lọc</Link>}
       </form>
       <div className="card divide-y divide-slate-100 !p-0">
         {view.map((u) => (
