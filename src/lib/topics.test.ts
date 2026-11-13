@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { classify, TOPICS, MODULES, topicByKey, OUT } from "./syllabus.ts";
+import { GAP_TEMPLATES } from "./templates/gaps.ts";
 
 const c = (subject: string, topic: string, subtopic: string | null = null) => classify({ subject, topic, subtopic });
 
@@ -45,4 +46,18 @@ test("câu chưa khớp quy tắc chuyên đề vẫn có mô-đun (quy tắc c�
 test("tên và mô tả chuyên đề truy được theo khóa", () => {
   assert.equal(topicByKey("physics", "magnetic")?.zh, "磁场");
   assert.equal(topicByKey("math", "xxx"), undefined);
+});
+
+test("mỗi khuôn lấp chuyên đề rơi đúng vào một chuyên đề của đề cương (không phải 'ngoài phạm vi' hay chưa gán)", () => {
+  for (const t of GAP_TEMPLATES) {
+    const got = classify({ subject: t.subject, topic: t.topic, subtopic: t.subtopic });
+    assert.ok(got.topic, `${t.key}: (${t.topic} | ${t.subtopic}) chưa vào chuyên đề nào (module=${got.module})`);
+    assert.notEqual(got.module, OUT, `${t.key}: bị xếp ngoài phạm vi`);
+    assert.ok(topicByKey(t.subject, got.topic), t.key);
+  }
+});
+
+test("khuôn lấp chuyên đề: mỗi chuyên đề ban đầu trống nay có ít nhất một khuôn", () => {
+  const covered = new Set(GAP_TEMPLATES.map((t) => `${t.subject}.${classify({ subject: t.subject, topic: t.topic, subtopic: t.subtopic }).topic}`));
+  for (const k of ["math.sets", "math.ineq", "math.conics", "math.complex", "math.normal", "physics.magnetic", "physics.induction", "physics.kinetic", "physics.momentum", "physics.energy", "physics.circular_gravity", "physics.electrostatics", "physics.first_law", "chemistry.ideal_gas_chem", "chemistry.equations"]) assert.ok(covered.has(k), `chưa có khuôn cho ${k}`);
 });

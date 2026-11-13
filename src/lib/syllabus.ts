@@ -186,6 +186,7 @@ const RULES: Record<string, Rule[]> = {
   ],
   chemistry: [
     [/phan ung hoa hoc/, /nhiet hoa hoc/, OUT],
+    [ANY, /can bang phuong trinh|phuong trinh hoa hoc|ky hieu hoa hoc/, "equations"],
     [ANY, /dien phan|dien li/, "electrolyte"], [ANY, /an toan phong|dung cu/, "lab_safety"], [ANY, /tach|tinh che|chung cat|ket tinh/, "separation"], [ANY, /cong nghiep|quy trinh|amoniac/, "industrial"],
     [ANY, /thu khi|dieu che|nhan biet khi/, "gas_prep"],
     [/cau tao nguyen tu|bang tuan hoan/, /lien ket|hinh hoc phan tu|luc lien phan tu/, "bonding"], [/cau tao nguyen tu|bang tuan hoan/, null, "atom_periodic"],

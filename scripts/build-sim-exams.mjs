@@ -18,16 +18,18 @@ const VI = { math: "Toán", physics: "Vật lý", chemistry: "Hóa học", chine
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 
 async function fetchAll(build) { const out = []; for (let from = 0; ; from += 1000) { const { data, error } = await build().range(from, from + 999); if (error) throw new Error(error.message); out.push(...data); if (data.length < 1000) break; } return out; }
-const qs = await fetchAll(() => sb.from("questions").select("id, subject, topic, difficulty, origin, module").eq("status", "approved").contains("translations", { en: {}, zh: {} }).order("id"));
+const qs = await fetchAll(() => sb.from("questions").select("id, subject, topic, difficulty, origin, module, template_key").eq("status", "approved").contains("translations", { en: {}, zh: {} }).order("id"));
 // Chỉ dùng câu thuộc một mô-đun của đề cương (bỏ câu "ngoài phần liệt kê" và chưa phân loại).
-// Câu sinh từ khuôn tham số rất nhiều nhưng na ná nhau: trong MỖI mô-đun chỉ đưa vào tối đa ½ số câu không-từ-khuôn (tối thiểu đủ cho vài đề).
+// Câu sinh từ khuôn tham số rất nhiều nhưng na ná nhau: mỗi KHUÔN chỉ đưa vào tối đa --per-template câu (mặc định 8) để đề có nhiều dạng bài khác nhau.
+const PER_TEMPLATE = Number(arg("per-template", 8));
 const shuf = (a) => { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 const pools = {};
 for (const s of Object.keys(SIM_FORMAT)) {
-  const quota = moduleQuotas(s, SIM_FORMAT[s].questions); pools[s] = [];
+  pools[s] = [];
   for (const m of MODULES[s]) {
-    const all = qs.filter((q) => q.subject === s && q.module === m.key), plain = all.filter((q) => q.origin !== "template"), tpl = shuf(all.filter((q) => q.origin === "template"));
-    pools[s].push(...plain, ...tpl.slice(0, Math.max(Math.floor(plain.length * 0.5), Math.min(tpl.length, quota[m.key] * 2))));
+    const all = qs.filter((q) => q.subject === s && q.module === m.key), plain = all.filter((q) => q.origin !== "template");
+    const byKey = new Map(); for (const q of all.filter((q) => q.origin === "template")) (byKey.get(q.template_key ?? "?") ?? byKey.set(q.template_key ?? "?", []).get(q.template_key ?? "?")).push(q);
+    pools[s].push(...plain, ...[...byKey.values()].flatMap((list) => shuf(list).slice(0, PER_TEMPLATE)));
   }
 }
 

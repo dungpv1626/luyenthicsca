@@ -3,8 +3,9 @@ import { MATH_TEMPLATES } from "./math.ts";
 import { PHYSICS_TEMPLATES } from "./physics.ts";
 import { CHEMISTRY_TEMPLATES } from "./chemistry.ts";
 import { EXTRA_TEMPLATES } from "./extra.ts";
+import { GAP_TEMPLATES } from "./gaps.ts";
 
-export const TEMPLATES: Template[] = [...MATH_TEMPLATES, ...PHYSICS_TEMPLATES, ...CHEMISTRY_TEMPLATES, ...EXTRA_TEMPLATES];
+export const TEMPLATES: Template[] = [...MATH_TEMPLATES, ...PHYSICS_TEMPLATES, ...CHEMISTRY_TEMPLATES, ...EXTRA_TEMPLATES, ...GAP_TEMPLATES];
 export { mkRng, validateVariant, LANGS } from "./core.ts";
 export type { Template, Variant, Lang } from "./core.ts";
 
