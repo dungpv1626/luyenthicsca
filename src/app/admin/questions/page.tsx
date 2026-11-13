@@ -5,7 +5,9 @@ import { DIFFICULTY, STATUS_LABEL, SUBJECTS, type Subject } from "@/lib/constant
 import { MODULES, moduleName } from "@/lib/syllabus";
 import { Rich } from "@/components/Rich";
 import { Pagination } from "@/components/admin/Pagination";
-import { setQuestionStatus } from "../actions";
+import { setQuestionStatus, bulkSetQuestionStatus } from "../actions";
+import { BulkBar } from "@/components/admin/BulkBar";
+import { SavedFilters } from "@/components/admin/SavedFilters";
 
 export const metadata = { title: "Ngân hàng câu hỏi – Quản trị" };
 const PER = 30;
@@ -39,6 +41,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
         {([["Tất cả", "/admin/questions", !filtered], ["Chờ duyệt", "/admin/questions?status=review", sp.status === "review"], ["Nháp", "/admin/questions?status=draft", sp.status === "draft"], ["Đã duyệt", "/admin/questions?status=approved", sp.status === "approved"], ["Chưa phân loại", "/admin/questions?module=none", sp.module === "none"]] as const).map(([label, href, on]) => (
           <Link key={label} href={href} aria-current={on ? "true" : undefined} className={`inline-flex min-h-[2.25rem] items-center rounded-lg border px-3 font-semibold ${on ? "border-brand bg-brand text-white" : "border-slate-200 bg-white text-slate-700 hover:border-brand hover:text-brand"}`}>{label}</Link>
         ))}
+        <SavedFilters base="/admin/questions" current={Object.entries(params).filter(([k, v]) => v && k !== "confirm").map(([k, v]) => `${k}=${encodeURIComponent(String(v))}`).join("&")} />
       </nav>
       <form className="card flex flex-wrap items-center gap-2 text-sm">
         <input name="q" defaultValue={term} aria-label="Tìm trong nội dung, chủ đề" placeholder="Tìm trong nội dung, chủ đề…" className="input min-w-[12rem] flex-1" type="search" />
@@ -55,6 +58,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
       <div className="card divide-y divide-slate-100 !p-0">
         {data?.map((x) => (
           <div key={x.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3 text-sm">
+            <input type="checkbox" name="ids" value={x.id} form="bulk" aria-label="Chọn câu hỏi" className="shrink-0" />
             <div className="min-w-0 flex-1 basis-64">
               <div className="line-clamp-2 font-medium"><Rich text={x.body} /></div>
               <p className="mt-0.5 text-xs text-muted">{SUBJECTS[x.subject as Subject]} · {x.topic}{x.subtopic ? ` › ${x.subtopic}` : ""} · {DIFFICULTY[x.difficulty as keyof typeof DIFFICULTY]} · {moduleName(x.subject, x.module)} · {ORIGIN[x.origin] ?? x.origin}</p>
@@ -67,6 +71,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
         ))}
         {!data?.length && <p className="p-5 text-muted">{filtered ? "Không có câu hỏi nào khớp bộ lọc." : "Chưa có câu hỏi."}</p>}
       </div>
+      <form id="bulk" action={bulkSetQuestionStatus}><BulkBar formId="bulk" canApprove={canApprove} /></form>
       <Pagination base="/admin/questions" params={params} page={page} total={count ?? 0} perPage={PER} />
     </div>
   );
