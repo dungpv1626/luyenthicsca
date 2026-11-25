@@ -19,7 +19,8 @@ try {
   const env = { ...process.env };
   for (const k of Object.keys(env)) if (/^(SUPABASE_SERVICE_ROLE_KEY|ANTHROPIC_API_KEY|PAYMENT_WEBHOOK_KEY)$/.test(k)) delete env[k];
   for (const args of [["build"], ["deploy"]]) {
-    const r = spawnSync("npx", ["opennextjs-cloudflare", ...args], { stdio: "inherit", env });
+    // Windows: npx là npx.cmd, cần shell mới chạy được.
+    const r = spawnSync("npx", ["opennextjs-cloudflare", ...args], { stdio: "inherit", env, shell: process.platform === "win32" });
     if (r.status !== 0) { code = r.status ?? 1; throw new Error(`opennextjs-cloudflare ${args[0]} failed`); }
   }
   code = 0;
