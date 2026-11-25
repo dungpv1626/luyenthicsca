@@ -4,23 +4,25 @@ import { DIFFICULTY, SUBJECTS, type Subject } from "@/lib/constants";
 import { MODULES, TOPICS, moduleName, moduleQuotas, type Subject as SylSubject } from "@/lib/syllabus";
 import { topicStats } from "@/lib/topic-stats";
 import { SIM_FORMAT } from "@/lib/sim";
+import { inScope, subjectScope } from "@/lib/reviewer";
 
 type Row = { subject: string; topic: string; difficulty: string; target: number; approved: number; in_review: number; rejected: number; drafted: number };
 
 export const metadata = { title: "Phủ đề cương – Quản trị" };
 
 export default async function Page() {
-  await requireAdmin("questions");
+  const me = await requireAdmin("questions");
+  const scope = await subjectScope(me);
   const [{ data }, { data: cov }, stats] = await Promise.all([adminDb().rpc("admin_blueprint_progress"), adminDb().rpc("admin_module_coverage"), topicStats()]);
   const covRows = (cov ?? []) as { subject: string; module: string; approved: number; in_review: number }[];
   const rows = (data ?? []) as Row[];
-  const subjects = Object.keys(SUBJECTS) as Subject[];
+  const subjects = (Object.keys(SUBJECTS) as Subject[]).filter((s) => inScope(scope, s));
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Phủ đề cương & tiến độ ngân hàng câu hỏi</h1>
       <section className="card space-y-4" aria-label="Phủ theo chuyên đề">
         <div><h2 className="font-bold">Phủ theo chuyên đề của đề cương chính thức</h2><p className="text-sm text-muted">Mỗi dòng là một mục nhỏ trong đề cương CSCA 2025 (csca.cn). <b>Thiếu</b> = chưa có câu; <b>Ít</b> = dưới 30 câu. “Đề mẫu” = nội dung có trong đề mẫu chính thức. Câu <b>ngoài phạm vi liệt kê</b> vẫn dùng để luyện thêm nhưng không vào đề mô phỏng. Tiếng Trung chia theo 6 dạng câu (số câu là tổng hai khối: khoa học và văn).</p></div>
-        {(["math", "physics", "chemistry", "chinese"] as const).map((s) => { const list = TOPICS[s]; const lack = list.filter((t) => !(stats.byTopic[s]?.[t.key])).length; return (
+        {(["math", "physics", "chemistry", "chinese"] as const).filter((s) => inScope(scope, s)).map((s) => { const list = TOPICS[s]; const lack = list.filter((t) => !(stats.byTopic[s]?.[t.key])).length; return (
           <div key={s} className="overflow-x-auto"><p className="mb-1 text-sm font-semibold">{SUBJECTS[s]} · {list.length} chuyên đề{lack > 0 && <span className="ml-2 rounded-full bg-danger-bg px-2 py-0.5 text-xs font-bold text-danger">{lack} chuyên đề đang thiếu</span>}</p>
             <table className="w-full min-w-[36rem] text-sm"><thead><tr className="text-left"><th className="py-1.5">Chuyên đề</th><th>Mô-đun</th><th>Đề mẫu</th><th className="text-right">Câu</th><th>Tình trạng</th></tr></thead>
               <tbody>{list.map((t) => { const n = stats.byTopic[s]?.[t.key] ?? 0; return (
@@ -31,7 +33,7 @@ export default async function Page() {
       </section>
       <section className="card space-y-4">
         <div><h2 className="font-bold">Phủ đề cương CSCA (theo mô-đun)</h2><p className="text-sm text-muted">Mô-đun theo đề cương; <b>tỉ trọng là ước lượng</b> vì đề cương không công bố số câu theo mô-đun (chỉnh trong <code>src/lib/syllabus.ts</code>). “Đủ cho” = số đề mô phỏng không trùng câu dựng được từ câu đang công bố (cần số câu mô-đun/đề).</p></div>
-        {(Object.keys(MODULES) as SylSubject[]).map((s) => { const q = moduleQuotas(s, SIM_FORMAT[s].questions); const total = covRows.filter((r) => r.subject === s && r.approved).reduce((a, r) => a + Number(r.approved), 0); return (
+        {(Object.keys(MODULES) as SylSubject[]).filter((s) => inScope(scope, s)).map((s) => { const q = moduleQuotas(s, SIM_FORMAT[s].questions); const total = covRows.filter((r) => r.subject === s && r.approved).reduce((a, r) => a + Number(r.approved), 0); return (
           <div key={s} className="overflow-x-auto"><p className="mb-1 text-sm font-semibold">{SUBJECTS[s]} · {SIM_FORMAT[s].questions} câu/đề</p>
             <table className="w-full min-w-[34rem] text-sm"><thead><tr className="text-left text-muted"><th className="py-1.5">Mô-đun</th><th>Tỉ trọng</th><th>Câu/đề</th><th>Đang công bố</th><th>Tỉ lệ</th><th>Đủ cho</th></tr></thead>
               <tbody>{MODULES[s].map((m) => { const c = Number(covRows.find((r) => r.subject === s && r.module === m.key)?.approved ?? 0); const sets = Math.floor(c / q[m.key]); return (

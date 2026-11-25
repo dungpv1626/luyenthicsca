@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { DIFFICULTY, LANGUAGES, STATUS_LABEL, SUBJECTS } from "@/lib/constants";
 import { saveQuestion } from "../../actions";
+import { inScope, subjectScope } from "@/lib/reviewer";
 
 export const metadata = { title: "Sửa câu hỏi – Quản trị" };
 
@@ -13,6 +14,9 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const isNew = id === "new";
   const { data: q } = isNew ? { data: null } : await adminDb().from("questions").select("*").eq("id", id).single();
   if (!isNew && !q) notFound();
+  const scope = await subjectScope(me);
+  if (q && !inScope(scope, q.subject)) notFound();
+  const subjectOptions = Object.fromEntries(Object.entries(SUBJECTS).filter(([k]) => inScope(scope, k)));
   const canApprove = me.role === "super_admin" || me.role === "academic_reviewer";
   const opts = (q?.options ?? {}) as Record<string, string>;
   const sel = (name: string, map: Record<string, string>, cur?: string) => (
@@ -24,7 +28,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       <h1 className="text-xl font-bold">{isNew ? "Câu hỏi mới" : "Sửa câu hỏi"}</h1>
       {error && <p className="rounded bg-danger-bg p-2 text-sm text-danger">Vui lòng điền đủ chủ đề, nội dung và 4 đáp án.</p>}
       <div className="grid grid-cols-2 gap-3">
-        <div><label className="label" htmlFor="a-subject">Môn</label>{sel("subject", SUBJECTS, q?.subject)}</div>
+        <div><label className="label" htmlFor="a-subject">Môn</label>{sel("subject", subjectOptions, q?.subject)}</div>
         <div><label className="label" htmlFor="a-topic">Chủ đề</label><input id="a-topic" name="topic" defaultValue={q?.topic} className="input" required /></div>
         <div><label className="label" htmlFor="a-difficulty">Độ khó</label>{sel("difficulty", DIFFICULTY, q?.difficulty ?? "medium")}</div>
         <div><label className="label" htmlFor="a-language">Ngôn ngữ</label>{sel("language", LANGUAGES, q?.language)}</div>

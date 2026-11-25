@@ -6,6 +6,7 @@ import { MODULES, moduleName } from "@/lib/syllabus";
 import { Rich } from "@/components/Rich";
 import { Pagination } from "@/components/admin/Pagination";
 import { setQuestionStatus, bulkSetQuestionStatus } from "../actions";
+import { inScope, subjectScope } from "@/lib/reviewer";
 import { BulkBar } from "@/components/admin/BulkBar";
 import { SavedFilters } from "@/components/admin/SavedFilters";
 
@@ -22,6 +23,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const term = (sp.q ?? "").replace(/[,()%*\\]/g, " ").trim().slice(0, 80);
   let q = adminDb().from("questions").select("id, subject, topic, subtopic, difficulty, body, status, auto_published, origin, module", { count: "exact" }).order("created_at", { ascending: false }).range((page - 1) * PER, page * PER - 1);
   if (term) q = q.or(`body.ilike.%${term}%,topic.ilike.%${term}%,subtopic.ilike.%${term}%`);
+  const scope = await subjectScope(me);
+  if (scope) q = q.in("subject", scope);
   if (sp.subject) q = q.eq("subject", sp.subject);
   if (sp.status) q = q.eq("status", sp.status);
   if (sp.confirm === "1") q = q.eq("status", "approved").eq("auto_published", true);
@@ -45,7 +48,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
       </nav>
       <form className="card flex flex-wrap items-center gap-2 text-sm">
         <input name="q" defaultValue={term} aria-label="Tìm trong nội dung, chủ đề" placeholder="Tìm trong nội dung, chủ đề…" className="input min-w-[12rem] flex-1" type="search" />
-        <select name="subject" aria-label="Lọc theo môn" defaultValue={sp.subject ?? ""} className={sel}><option value="">Mọi môn</option>{Object.entries(SUBJECTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+        <select name="subject" aria-label="Lọc theo môn" defaultValue={sp.subject ?? ""} className={sel}><option value="">{scope ? "Môn của tôi" : "Mọi môn"}</option>{Object.entries(SUBJECTS).filter(([k]) => inScope(scope, k)).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
         <select name="module" aria-label="Lọc theo mô-đun đề cương" defaultValue={sp.module ?? ""} className={sel}><option value="">Mọi mô-đun</option>
           {Object.entries(MODULES).map(([s, mods]) => <optgroup key={s} label={SUBJECTS[s as Subject]}>{mods.map((m) => <option key={m.key} value={m.key}>{m.name}</option>)}</optgroup>)}
           <option value="out">Ngoài phần liệt kê của đề cương</option><option value="none">Chưa phân loại</option></select>

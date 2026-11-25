@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { money, ROLES, SUBJECTS, type Subject } from "@/lib/constants";
-import { reviewSubjectsOf } from "@/lib/reviewer";
+import { pendingTemplateCount, reviewSubjectsOf } from "@/lib/reviewer";
 
 export const metadata = { title: "Tổng quan – Quản trị" };
 
@@ -62,7 +62,7 @@ export default async function Page() {
     const startOfDay = new Date(new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" }) + "T00:00:00+07:00").toISOString();
     const [total, approved, review, waiting, tplPending, reports, today, allMine] = await Promise.all([
       count("questions", own), count("questions", (q) => own(q.eq("status", "approved"))), count("questions", (q) => own(q.eq("status", "review"))),
-      count("questions", (q) => own(q.eq("status", "approved").eq("auto_published", true))), count("template_reviews", (q) => q.eq("status", "pending")), count("question_reports"),
+      count("questions", (q) => own(q.eq("status", "approved").eq("auto_published", true))), pendingTemplateCount(subjects.length ? subjects : null), count("question_reports"),
       reviewer ? count("questions", (q) => q.eq("reviewer", me.id).gte("reviewed_at", startOfDay)) : Promise.resolve(0),
       reviewer ? count("questions", (q) => q.eq("reviewer", me.id)) : Promise.resolve(0),
     ]);

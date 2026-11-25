@@ -2,6 +2,8 @@ import { ADMIN_AREAS, requireAdmin } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { ROLES } from "@/lib/constants";
 import { AdminShell, type NavGroup } from "@/components/admin/AdminShell";
+import { inScope, pendingTemplateCount, subjectScope } from "@/lib/reviewer";
+import { TEMPLATES } from "@/lib/templates/index.ts";
 
 type Area = keyof typeof ADMIN_AREAS;
 type Def = { href: string; label: string; area: Area; badge?: "review" | "templates" | "orders" | "leads" };
@@ -17,11 +19,14 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const me = await requireAdmin("dashboard");
   const db = adminDb();
   const count = async (t: string, f: (q: any) => any) => (await f(db.from(t).select("*", { count: "exact", head: true }))).count ?? 0; // eslint-disable-line @typescript-eslint/no-explicit-any
+  // Giáo viên đã gán môn: số việc chỉ tính môn của mình; môn không có khuôn (tiếng Trung) thì ẩn mục Khuôn câu hỏi.
+  const scope = await subjectScope(me);
   const [review, templates, orders, leads] = await Promise.all([
-    count("questions", (q) => q.eq("status", "review")), count("template_reviews", (q) => q.eq("status", "pending")),
+    count("questions", (q) => (scope ? q.in("subject", scope) : q).eq("status", "review")), pendingTemplateCount(scope),
     count("orders", (q) => q.eq("status", "pending")), count("consultations", (q) => q.eq("status", "new")),
   ]);
   const badges = { review, templates, orders, leads };
-  const groups: NavGroup[] = GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => (ADMIN_AREAS[i.area] as readonly string[]).includes(me.role)).map((i) => ({ href: i.href, label: i.label, badge: i.badge ? badges[i.badge] : undefined })) })).filter((g) => g.items.length);
+  const hasTemplates = TEMPLATES.some((t) => inScope(scope, t.subject));
+  const groups: NavGroup[] = GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => (ADMIN_AREAS[i.area] as readonly string[]).includes(me.role) && (i.href !== "/admin/templates" || hasTemplates)).map((i) => ({ href: i.href, label: i.label, badge: i.badge ? badges[i.badge] : undefined })) })).filter((g) => g.items.length);
   return <AdminShell groups={groups} name={me.full_name || me.email} roleLabel={ROLES[me.role]}>{children}</AdminShell>;
 }
