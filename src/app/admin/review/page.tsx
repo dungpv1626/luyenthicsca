@@ -85,6 +85,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const keep = Object.entries({ view: view === "offline" ? undefined : view, lot: lot ? sp.lot : undefined, subject, verify, module: mod, difficulty, origin, q: term }).filter(([, v]) => v) as [string, string][];
   const qs = new URLSearchParams(keep).toString();
   const here = `/admin/review${qs ? `?${qs}` : ""}`;
+  const editHref = q ? `/admin/questions/${q.id}?back=${encodeURIComponent(here)}` : "";
   const notMyQ = !!q && mine.length > 0 && !mine.includes(q.subject);
   const lotsHref = "/admin/review?view=lots";
   const skipHref = lot ? lotsHref : `/admin/review?${new URLSearchParams([...keep, ...(q ? [["skip", q.id]] : [])] as [string, string][])}`;
@@ -133,10 +134,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
             <button name="decision" value="reject" disabled={notMyQ} className="btn-outline min-h-[2.75rem] !border-red-300 !text-danger">{live ? "Loại (tắt ngay)" : "Loại"} <kbd className="ml-1 hidden rounded bg-danger-bg px-1.5 text-xs lg:inline">R</kbd></button>
           </div>
         </form>
-        <div className="mt-1 flex justify-between text-sm lg:mt-0"><Link href={`/admin/questions/${q.id}`} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand-text hover:underline">Sửa <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">E</kbd></Link><Link href={skipHref} className="inline-flex min-h-[2.5rem] items-center text-muted hover:underline">{lot ? "Tạm dừng" : "Bỏ qua"} <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">S</kbd></Link></div>
+        <div className="mt-1 flex justify-between text-sm lg:mt-0"><Link href={editHref} className="inline-flex min-h-[2.5rem] items-center font-semibold text-brand-text hover:underline">Sửa <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">E</kbd></Link><Link href={skipHref} className="inline-flex min-h-[2.5rem] items-center text-muted hover:underline">{lot ? "Tạm dừng" : "Bỏ qua"} <kbd className="ml-1 hidden rounded bg-slate-100 px-1.5 text-xs lg:inline">S</kbd></Link></div>
         <p className="hidden border-t border-slate-100 pt-2 text-xs text-muted lg:block">Phím tắt: A duyệt · R loại (gõ lý do trước, hoặc R để vào ô lý do) · S {lot ? "tạm dừng" : "bỏ qua"} · E sửa. Lô {q.batch_id ?? "—"} · nguồn: {q.origin}</p>
       </aside>
-      <ReviewHotkeys skipHref={skipHref} editHref={`/admin/questions/${q.id}`} canApprove={canApprove && !notMyQ} />
+      <ReviewHotkeys skipHref={skipHref} editHref={editHref} canApprove={canApprove && !notMyQ} />
     </div>
   );
 

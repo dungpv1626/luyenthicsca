@@ -34,6 +34,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const { data, count } = await q;
   const canApprove = me.role === "super_admin" || me.role === "academic_reviewer";
   const params = { q: term || undefined, subject: sp.subject, status: sp.status, module: sp.module, difficulty: sp.difficulty, origin: sp.origin, confirm: sp.confirm };
+  const listUrl = `/admin/questions?${new URLSearchParams(Object.entries({ ...params, page: page > 1 ? String(page) : undefined }).filter(([, v]) => v) as [string, string][])}`;
   const filtered = Object.values(params).some(Boolean);
   const sel = "input min-w-0 flex-1 sm:w-auto sm:flex-none";
 
@@ -69,7 +70,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
             <span className={`rounded px-2 py-0.5 text-xs font-semibold ${x.status === "approved" ? (x.auto_published ? "bg-warning-bg text-warning" : "bg-success-bg text-success") : "bg-slate-100 text-slate-600"}`}>{x.status === "approved" && x.auto_published ? "Đã công bố, chờ xác nhận" : STATUS_LABEL[x.status as keyof typeof STATUS_LABEL]}</span>
             {canApprove && x.status !== "approved" && <form action={setQuestionStatus.bind(null, x.id, "approved")}><button className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 text-success hover:bg-green-50">Duyệt</button></form>}
             {x.status === "draft" && <form action={setQuestionStatus.bind(null, x.id, "review")}><button className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 text-amber-700 hover:bg-warning-bg">Gửi duyệt</button></form>}
-            <Link href={`/admin/questions/${x.id}`} className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 font-semibold text-brand-text hover:bg-brand-soft">Sửa</Link>
+            <Link href={`/admin/questions/${x.id}?back=${encodeURIComponent(listUrl)}`} className="inline-flex min-h-[2.5rem] items-center rounded-lg px-3 font-semibold text-brand-text hover:bg-brand-soft">Sửa</Link>
           </div>
         ))}
         {!data?.length && <p className="p-5 text-muted">{filtered ? "Không có câu hỏi nào khớp bộ lọc." : "Chưa có câu hỏi."}</p>}

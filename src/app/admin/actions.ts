@@ -43,7 +43,10 @@ export async function saveQuestion(id: string | null, fd: FormData) {
       }]];
     })),
   };
-  if (!row.topic || !row.body || Object.values(row.options).some((o) => !o)) redirect(`/admin/questions/${id ?? "new"}?error=1`);
+  // Trang quay về sau khi lưu (ví dụ đang duyệt câu thì về lại trang duyệt); chỉ chấp nhận trang trong khu quản trị.
+  const backRaw = String(fd.get("back") ?? "");
+  const back = backRaw.startsWith("/admin/") && !backRaw.startsWith("//") ? backRaw : "/admin/questions";
+  if (!row.topic || !row.body || Object.values(row.options).some((o) => !o)) redirect(`/admin/questions/${id ?? "new"}?error=1&back=${encodeURIComponent(back)}`);
 
   const db = adminDb();
   // Giáo viên chỉ sửa/tạo câu thuộc môn mình phụ trách (cả môn cũ lẫn môn mới của câu).
@@ -53,7 +56,8 @@ export async function saveQuestion(id: string | null, fd: FormData) {
   const { error } = id ? await db.from("questions").update(row).eq("id", id) : await db.from("questions").insert(row);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/questions");
-  redirect("/admin/questions");
+  revalidatePath("/admin/review");
+  redirect(back);
 }
 
 export async function setQuestionStatus(id: string, status: "draft" | "review" | "approved") {
