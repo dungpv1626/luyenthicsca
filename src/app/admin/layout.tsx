@@ -2,13 +2,13 @@ import { ADMIN_AREAS, requireAdmin } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { ROLES } from "@/lib/constants";
 import { AdminShell, type NavGroup } from "@/components/admin/AdminShell";
-import { inScope, pendingTemplateCount, subjectScope } from "@/lib/reviewer";
+import { inScope, openReports, pendingTemplateCount, subjectScope } from "@/lib/reviewer";
 import { TEMPLATES } from "@/lib/templates/index.ts";
 
 type Area = keyof typeof ADMIN_AREAS;
 type Def = { href: string; label: string; area: Area; badge?: "review" | "templates" | "orders" | "leads" };
 const GROUPS: { title: string; items: Def[] }[] = [
-  { title: "Việc cần làm", items: [{ href: "/admin", label: "Tổng quan", area: "dashboard" }, { href: "/admin/review", label: "Duyệt câu hỏi", area: "questions", badge: "review" }, { href: "/admin/templates", label: "Khuôn câu hỏi", area: "questions", badge: "templates" }] },
+  { title: "Việc cần làm", items: [{ href: "/admin", label: "Tổng quan", area: "dashboard" }, { href: "/admin/templates", label: "Khuôn câu hỏi", area: "questions", badge: "templates" }, { href: "/admin/review", label: "Duyệt câu hỏi", area: "questions", badge: "review" }] },
   { title: "Nội dung", items: [{ href: "/admin/questions", label: "Ngân hàng câu hỏi", area: "questions" }, { href: "/admin/blueprint", label: "Phủ đề cương", area: "questions" }, { href: "/admin/blog", label: "Blog SEO", area: "content" }, { href: "/admin/data/schools", label: "Trường", area: "schools" }, { href: "/admin/data/scholarships", label: "Học bổng", area: "schools" }] },
   { title: "Đề thi & khóa học", items: [{ href: "/admin/levels", label: "Đề theo mức", area: "tests" }, { href: "/admin/tests", label: "Đề thi", area: "tests" }, { href: "/admin/data/courses", label: "Khóa học", area: "academy" }, { href: "/admin/data/lessons", label: "Bài giảng", area: "academy" }, { href: "/admin/data/teachers", label: "Giáo viên", area: "academy" }] },
   { title: "Kinh doanh", items: [{ href: "/admin/orders", label: "Đơn hàng", area: "orders", badge: "orders" }, { href: "/admin/leads", label: "Tư vấn khách hàng", area: "leads", badge: "leads" }, { href: "/admin/analytics", label: "Phân tích", area: "analytics" }] },
@@ -21,11 +21,12 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const count = async (t: string, f: (q: any) => any) => (await f(db.from(t).select("*", { count: "exact", head: true }))).count ?? 0; // eslint-disable-line @typescript-eslint/no-explicit-any
   // Giáo viên đã gán môn: số việc chỉ tính môn của mình; môn không có khuôn (tiếng Trung) thì ẩn mục Khuôn câu hỏi.
   const scope = await subjectScope(me);
-  const [review, templates, orders, leads] = await Promise.all([
-    count("questions", (q) => (scope ? q.in("subject", scope) : q).eq("status", "review")), pendingTemplateCount(scope),
+  const canReview = (ADMIN_AREAS.questions as readonly string[]).includes(me.role);
+  const [pendingQ, reports, templates, orders, leads] = await Promise.all([
+    count("questions", (q) => (scope ? q.in("subject", scope) : q).eq("status", "review")), canReview ? openReports(scope).then((m) => m.size) : 0, pendingTemplateCount(scope),
     count("orders", (q) => q.eq("status", "pending")), count("consultations", (q) => q.eq("status", "new")),
   ]);
-  const badges = { review, templates, orders, leads };
+  const badges = { review: pendingQ + reports, templates, orders, leads };
   const hasTemplates = TEMPLATES.some((t) => inScope(scope, t.subject));
   const groups: NavGroup[] = GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => (ADMIN_AREAS[i.area] as readonly string[]).includes(me.role) && (i.href !== "/admin/templates" || hasTemplates)).map((i) => ({ href: i.href, label: i.label, badge: i.badge ? badges[i.badge] : undefined })) })).filter((g) => g.items.length);
   return <AdminShell groups={groups} name={me.full_name || me.email} roleLabel={ROLES[me.role]}>{children}</AdminShell>;

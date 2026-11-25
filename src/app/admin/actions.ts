@@ -7,7 +7,8 @@ import { adminDb } from "@/lib/supabase/admin";
 import { markOrderPaid } from "@/lib/orders";
 import { pickQuestions } from "@/lib/exam";
 import { SUBJECT_KEYS, ROLES, type Role, type Subject } from "@/lib/constants";
-import { inScope, reviewSubjectsOf, sampleNeeded, subjectScope } from "@/lib/reviewer";
+import { inScope, loadLots, reviewSubjectsOf, subjectScope } from "@/lib/reviewer";
+import { parseLotKey } from "@/lib/batch-sample";
 import { TEMPLATES } from "@/lib/templates/index.ts";
 
 const pick = <T extends string>(v: FormDataEntryValue | null, allowed: readonly T[], d: T): T => (allowed.includes(v as T) ? (v as T) : d);
@@ -189,8 +190,9 @@ export async function reviewQuestionAction(id: string, next: string, fd: FormDat
     }
   }
   if (decision === "approve" && canApprove) {
-    // xác nhận: câu chờ duyệt → công bố; hoặc câu đã công bố tự động → đánh dấu đã có giáo viên xác nhận
-    await db.from("questions").update({ status: "approved", auto_published: false, confirmed_by_sample: false, reviewer: me.id, review_note: note || null, reviewed_at: now }).eq("id", id).or("status.eq.review,auto_published.eq.true");
+    // xác nhận: câu chờ duyệt → công bố; câu đang hiển thị (tự công bố, hoặc đã xác nhận nhưng bị báo lỗi lại) → ghi nhận giáo viên đã xem.
+    // reviewed_at mới làm các lượt báo lỗi trước đó được coi là đã xử lý.
+    await db.from("questions").update({ status: "approved", auto_published: false, confirmed_by_sample: false, reviewer: me.id, review_note: note || null, reviewed_at: now }).eq("id", id).in("status", ["review", "approved"]);
   } else if (decision === "reject") {
     if (!note) redirect(`${next}${next.includes("?") ? "&" : "?"}need_note=1`);
     // loại / tắt câu hỏi (kể cả câu đang công bố): học sinh sẽ không thấy nữa
@@ -200,32 +202,34 @@ export async function reviewQuestionAction(id: string, next: string, fd: FormDat
   redirect(next.startsWith("/admin/review") ? next : "/admin/review");
 }
 
-/** Gỡ cả một lô câu đã công bố tự động nhưng chưa có giáo viên xác nhận (đưa về hàng chờ duyệt). */
-export async function disableBatchAction(batchId: string) {
-  await requireAdmin("questions");
-  await adminDb().from("questions").update({ status: "review", auto_published: false, review_note: "Gỡ cả lô bởi quản trị" }).eq("batch_id", batchId).eq("auto_published", true);
-  revalidatePath("/admin/review");
+/** Kiểm tra quyền với một lô (lô × môn): giáo viên duyệt / quản trị cấp cao, đúng môn phụ trách. Trả về trạng thái lô tính lại ở server. */
+async function lotGuard(key: string) {
+  const back = "/admin/review?view=lots";
+  const me = await requireAdmin("questions");
+  const lot = parseLotKey(key);
+  if (!lot || (me.role !== "super_admin" && me.role !== "academic_reviewer") || !inScope(await subjectScope(me), lot.subject)) redirect(back);
+  const [state] = await loadLots(null, lot);
+  if (!state) redirect(back);
+  return { me, lot, state, back };
 }
 
-/**
- * Xác nhận cả lô theo mẫu: chỉ cho phép khi chính người này đã tự xác nhận đủ số mẫu trong lô
- * (xem sampleNeeded) và không loại câu nào trong lô. Các câu còn lại được đánh dấu confirmed_by_sample = true
- * để phân biệt với câu được xem từng câu.
- */
-export async function confirmBatchBySampleAction(batchId: string) {
-  const me = await requireAdmin("questions");
-  if (me.role !== "super_admin" && me.role !== "academic_reviewer") return;
-  const db = adminDb();
-  const mine = me.role === "academic_reviewer" ? await reviewSubjectsOf(me.id) : [];
-  const { data: rest } = await db.from("questions").select("id, subject").eq("batch_id", batchId).eq("status", "approved").eq("auto_published", true).limit(5000);
-  const { count: done } = await db.from("questions").select("*", { count: "exact", head: true }).eq("batch_id", batchId).eq("reviewer", me.id).eq("status", "approved").eq("auto_published", false).eq("confirmed_by_sample", false);
-  const { count: rejected } = await db.from("questions").select("*", { count: "exact", head: true }).eq("batch_id", batchId).eq("reviewer", me.id).eq("status", "rejected");
-  const { count: total } = await db.from("questions").select("*", { count: "exact", head: true }).eq("batch_id", batchId);
-  if (!rest?.length || !total) return;
-  if (mine.length && rest.some((r) => !mine.includes(r.subject))) return;
-  if ((rejected ?? 0) > 0 || (done ?? 0) < sampleNeeded(total)) return; // chưa đủ mẫu hoặc lô có lỗi → phải xem từng câu
-  await db.from("questions").update({ auto_published: false, confirmed_by_sample: true, reviewer: me.id, review_note: `Xác nhận theo mẫu (${done}/${total} câu đã xem từng câu)`, reviewed_at: new Date().toISOString() }).eq("batch_id", batchId).eq("status", "approved").eq("auto_published", true);
-  revalidatePath("/admin/review");
+/** Kết luận lô đạt: chỉ khi đã xem hết câu mẫu ngẫu nhiên và không loại câu nào. Các câu còn lại được đánh dấu "đạt kiểm tra mẫu". */
+export async function confirmLotAction(key: string) {
+  const { me, lot, state, back } = await lotGuard(key);
+  if (state.status !== "passed") redirect(back);
+  await adminDb().from("questions").update({ auto_published: false, confirmed_by_sample: true, reviewer: me.id, review_note: `Đạt kiểm tra mẫu (${state.sample.length} câu ngẫu nhiên, không lỗi)`, reviewed_at: new Date().toISOString() })
+    .eq("batch_id", lot.batch).eq("subject", lot.subject).eq("origin", "ai_generated").eq("status", "approved").eq("auto_published", true);
+  revalidatePath("/admin", "layout");
+  redirect(`${back}&ok=passed`);
+}
+
+/** Lô không đạt (hoặc nghi có lỗi chung): đưa các câu chưa được giáo viên xem về hàng chờ duyệt để xem từng câu. Học viên không thấy các câu này nữa. */
+export async function returnLotAction(key: string) {
+  const { lot, back } = await lotGuard(key);
+  await adminDb().from("questions").update({ status: "review", auto_published: false, review_note: "Lô không đạt kiểm tra mẫu: xem từng câu" })
+    .eq("batch_id", lot.batch).eq("subject", lot.subject).eq("origin", "ai_generated").eq("status", "approved").eq("auto_published", true);
+  revalidatePath("/admin", "layout");
+  redirect(`${back}&ok=returned`);
 }
 
 /** Super Admin gán môn phụ trách cho giáo viên duyệt (rỗng = mọi môn). */

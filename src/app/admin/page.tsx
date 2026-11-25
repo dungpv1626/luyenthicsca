@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { money, ROLES, SUBJECTS, type Subject } from "@/lib/constants";
-import { pendingTemplateCount, reviewSubjectsOf } from "@/lib/reviewer";
+import { loadLots, openReports, pendingTemplateCount, reviewSubjectsOf } from "@/lib/reviewer";
 
 export const metadata = { title: "Tổng quan – Quản trị" };
 
@@ -19,10 +19,12 @@ const HINTS: Record<string, string> = {
 type Step = { title: string; desc: string; href: string };
 /** Quy trình làm việc theo vai trò: cho người mới biết bắt đầu từ đâu. */
 const GUIDE: Record<string, Step[]> = {
+  // Theo mức tác động: khuôn phủ phần lớn câu hỏi với ít công nhất, rồi đến câu chưa công bố, mẫu lô, và báo lỗi.
   academic_reviewer: [
-    { title: "Duyệt câu hỏi chờ duyệt", desc: "Đọc đề ở cả 3 ngôn ngữ, tự giải để kiểm tra đáp án, rồi bấm Duyệt hoặc Loại kèm lý do.", href: "/admin/review" },
-    { title: "Xác nhận câu đang hiển thị", desc: "Các câu học viên đang làm nhưng chưa có giáo viên xác nhận. Câu bị báo lỗi nằm đầu hàng.", href: "/admin/review?view=live" },
-    { title: "Duyệt khuôn câu hỏi", desc: "Xem vài biến thể của một khuôn; duyệt khuôn là xác nhận toàn bộ biến thể.", href: "/admin/templates" },
+    { title: "Duyệt khuôn câu hỏi", desc: "Toán, Lý, Hóa. Soi tab “Cần soi” của mỗi khuôn rồi duyệt cả khuôn. Một khuôn có thể là hàng trăm câu.", href: "/admin/templates" },
+    { title: "Duyệt câu chờ duyệt", desc: "Câu chưa hiển thị cho học viên. Tự giải, đối chiếu 3 ngôn ngữ, rồi Duyệt hoặc Loại kèm lý do.", href: "/admin/review" },
+    { title: "Kiểm tra mẫu lô", desc: "Xem 5–20 câu ngẫu nhiên của mỗi lô AI soạn. Không lỗi thì kết luận cả lô đạt.", href: "/admin/review?view=lots" },
+    { title: "Xử lý báo lỗi", desc: "Câu học viên báo sai: xác nhận đúng hoặc tắt ngay.", href: "/admin/review?view=reports" },
   ],
   content_manager: [
     { title: "Viết và công bố bài blog", desc: "Sửa bài nháp, lên lịch hoặc công bố. Bài còn dòng giữ chỗ sẽ bị chặn công bố.", href: "/admin/blog" },
@@ -60,20 +62,24 @@ export default async function Page() {
 
   if (content) {
     const startOfDay = new Date(new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" }) + "T00:00:00+07:00").toISOString();
-    const [total, approved, review, waiting, tplPending, reports, today, allMine] = await Promise.all([
-      count("questions", own), count("questions", (q) => own(q.eq("status", "approved"))), count("questions", (q) => own(q.eq("status", "review"))),
-      count("questions", (q) => own(q.eq("status", "approved").eq("auto_published", true))), pendingTemplateCount(subjects.length ? subjects : null), count("question_reports"),
+    const scope = subjects.length ? subjects : null;
+    const [live, checked, review, tplPending, reports, lots, today, allMine] = await Promise.all([
+      count("questions", (q) => own(q.eq("status", "approved"))), count("questions", (q) => own(q.eq("status", "approved").eq("auto_published", false))),
+      count("questions", (q) => own(q.eq("status", "review"))), pendingTemplateCount(scope), openReports(scope), loadLots(scope),
       reviewer ? count("questions", (q) => q.eq("reviewer", me.id).gte("reviewed_at", startOfDay)) : Promise.resolve(0),
       reviewer ? count("questions", (q) => q.eq("reviewer", me.id)) : Promise.resolve(0),
     ]);
     if (reviewer) mine = { today, total: allMine };
+    const openLots = lots.filter((l) => l.status !== "done");
+    const readyLots = openLots.filter((l) => l.status === "passed" || l.status === "failed").length;
+    // Thứ tự = thứ tự ưu tiên; việc đầu tiên còn tồn được đưa lên khối "Bắt đầu từ đây".
     tasks.push(
+      { title: "Khuôn câu hỏi chờ duyệt", desc: "Duyệt một khuôn là xác nhận toàn bộ biến thể của nó (thường hàng chục đến hàng trăm câu).", n: tplPending, href: "/admin/templates", cta: "Duyệt khuôn", urgent: tplPending > 0 },
       { title: "Câu hỏi chờ duyệt", desc: "Chưa hiển thị cho học viên. Duyệt để công bố hoặc loại kèm lý do.", n: review, href: "/admin/review", cta: "Bắt đầu duyệt", urgent: review > 0 },
-      { title: "Câu đang hiển thị, chờ giáo viên xác nhận", desc: "Học viên đang thấy các câu này. Câu bị báo lỗi nhiều nằm đầu hàng.", n: waiting, href: "/admin/review?view=live", cta: "Xác nhận" },
-      { title: "Khuôn câu hỏi chờ duyệt", desc: "Duyệt một khuôn là xác nhận toàn bộ biến thể của nó.", n: tplPending, href: "/admin/templates", cta: "Xem khuôn" },
-      { title: "Báo lỗi từ học viên", desc: "Học viên bấm báo lỗi trên câu hỏi.", n: reports, href: "/admin/review?view=live", cta: "Xem báo lỗi" },
+      { title: "Lô câu hỏi cần kiểm tra mẫu", desc: readyLots ? `${readyLots} lô đã xem đủ mẫu, chờ bạn kết luận.` : "Xem vài câu ngẫu nhiên của mỗi lô AI soạn để kết luận cả lô.", n: openLots.length, href: "/admin/review?view=lots", cta: "Kiểm tra mẫu" },
+      { title: "Báo lỗi từ học viên", desc: "Câu đang hiển thị bị học viên báo sai, chưa có giáo viên xem lại.", n: reports.size, href: "/admin/review?view=reports", cta: "Xem báo lỗi", urgent: reports.size > 0 },
     );
-    kpis.push({ label: "Câu đã duyệt / tổng", value: `${approved.toLocaleString("vi-VN")} / ${total.toLocaleString("vi-VN")}`, href: "/admin/questions" });
+    kpis.push({ label: "Câu có giáo viên xem / đang hiển thị", value: `${checked.toLocaleString("vi-VN")} / ${live.toLocaleString("vi-VN")}`, href: "/admin/questions" });
   }
   if (business) {
     const [users, attempts, paidOrders, paid, pendingOrders, newLeads] = await Promise.all([
@@ -120,7 +126,7 @@ export default async function Page() {
           <p className="mt-2 text-sm text-slate-700">Hiện không có việc tồn đọng. Bạn có thể xem lại các bước làm việc bên dưới.</p>
         )}
         {steps.length > 0 && (
-          <ol className="mt-4 grid gap-3 border-t border-brand/20 pt-4 md:grid-cols-3">
+          <ol className={`mt-4 grid gap-3 border-t border-brand/20 pt-4 ${steps.length === 4 ? "md:grid-cols-2 xl:grid-cols-4" : "md:grid-cols-3"}`}>
             {steps.map((s, i) => (
               <li key={s.title}>
                 <Link href={s.href} className="flex h-full gap-3 rounded-xl bg-surface p-3 transition hover:shadow-card">
