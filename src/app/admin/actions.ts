@@ -7,7 +7,8 @@ import { adminDb } from "@/lib/supabase/admin";
 import { markOrderPaid } from "@/lib/orders";
 import { pickQuestions } from "@/lib/exam";
 import { SUBJECT_KEYS, ROLES, type Role, type Subject } from "@/lib/constants";
-import { reviewSubjectsOf, sampleNeeded } from "@/lib/reviewer";
+import { inScope, reviewSubjectsOf, sampleNeeded, subjectScope } from "@/lib/reviewer";
+import { TEMPLATES } from "@/lib/templates/index.ts";
 
 const pick = <T extends string>(v: FormDataEntryValue | null, allowed: readonly T[], d: T): T => (allowed.includes(v as T) ? (v as T) : d);
 
@@ -44,6 +45,10 @@ export async function saveQuestion(id: string | null, fd: FormData) {
   if (!row.topic || !row.body || Object.values(row.options).some((o) => !o)) redirect(`/admin/questions/${id ?? "new"}?error=1`);
 
   const db = adminDb();
+  // Giáo viên chỉ sửa/tạo câu thuộc môn mình phụ trách (cả môn cũ lẫn môn mới của câu).
+  const scope = await subjectScope(me);
+  const old = id ? (await db.from("questions").select("subject").eq("id", id).single()).data : null;
+  if (!inScope(scope, row.subject) || (old && !inScope(scope, old.subject))) redirect("/admin/questions");
   const { error } = id ? await db.from("questions").update(row).eq("id", id) : await db.from("questions").insert(row);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/questions");
@@ -53,7 +58,9 @@ export async function saveQuestion(id: string | null, fd: FormData) {
 export async function setQuestionStatus(id: string, status: "draft" | "review" | "approved") {
   const me = await requireAdmin("questions");
   if (status === "approved" && me.role !== "super_admin" && me.role !== "academic_reviewer") return;
-  await adminDb().from("questions").update({ status, reviewer: status === "approved" ? me.id : null }).eq("id", id);
+  const scope = await subjectScope(me);
+  const q = adminDb().from("questions").update({ status, reviewer: status === "approved" ? me.id : null }).eq("id", id);
+  await (scope ? q.in("subject", scope) : q);
   revalidatePath("/admin/questions");
 }
 
@@ -66,7 +73,9 @@ export async function bulkSetQuestionStatus(fd: FormData) {
   const ids = fd.getAll("ids").map(String).filter(Boolean).slice(0, 100);
   if (!ids.length) return;
   // Chỉ chuyển nháp -> chờ duyệt, hoặc chưa duyệt -> đã duyệt; không đụng vào câu đã duyệt.
-  const q = adminDb().from("questions").update({ status, reviewer: status === "approved" ? me.id : null }).in("id", ids);
+  const scope = await subjectScope(me);
+  const base = adminDb().from("questions").update({ status, reviewer: status === "approved" ? me.id : null }).in("id", ids);
+  const q = scope ? base.in("subject", scope) : base;
   await (status === "review" ? q.eq("status", "draft") : q.neq("status", "approved"));
   revalidatePath("/admin/questions");
 }
@@ -286,23 +295,66 @@ export async function createLevelSets(fd: FormData) {
 const SUBJECTS_VI: Record<string, string> = { math: "Toán", physics: "Vật lý", chemistry: "Hóa học", chinese: "Professional Chinese" };
 
 // ===== Duyệt KHUÔN câu hỏi tham số (duyệt một khuôn = duyệt toàn bộ biến thể của nó) =====
-export async function reviewTemplateAction(key: string, fd: FormData) {
+/** Trang quay về sau thao tác với khuôn: chỉ chấp nhận đường dẫn trong /admin/templates. */
+const templatesBack = (fd: FormData) => {
+  const b = String(fd.get("back") ?? "");
+  return b.startsWith("/admin/templates") && !b.includes("//") ? b : "/admin/templates";
+};
+const withMsg = (url: string, msg: string) => {
+  const u = new URL(url, "http://x");
+  u.searchParams.delete("ok"); u.searchParams.delete("error");
+  for (const [k, v] of new URLSearchParams(msg)) u.searchParams.set(k, v);
+  return u.pathname + u.search;
+};
+
+/** Kiểm tra quyền duyệt khuôn: giáo viên duyệt / quản trị cấp cao, và khuôn thuộc môn được phân công. */
+async function templateGuard(key: string, back: string) {
   const me = await requireAdmin("questions");
+  if (me.role !== "super_admin" && me.role !== "academic_reviewer") redirect(withMsg(back, "error=" + encodeURIComponent("Chỉ giáo viên duyệt / quản trị cấp cao mới duyệt được khuôn.")));
+  const tpl = TEMPLATES.find((t) => t.key === key);
+  if (!tpl || !inScope(await subjectScope(me), tpl.subject)) redirect(withMsg(back, "error=" + encodeURIComponent("Khuôn này không thuộc môn bạn phụ trách.")));
+  return me;
+}
+
+export async function reviewTemplateAction(key: string, fd: FormData) {
+  const back = templatesBack(fd);
+  const me = await templateGuard(key, back);
   const decision = String(fd.get("decision"));
   const note = String(fd.get("note") ?? "").trim().slice(0, 500);
-  const canApprove = me.role === "super_admin" || me.role === "academic_reviewer";
-  if (!canApprove) redirect("/admin/templates?error=" + encodeURIComponent("Chỉ giáo viên duyệt / quản trị cấp cao mới duyệt được khuôn."));
   const db = adminDb();
   const now = new Date().toISOString();
   if (decision === "approve") {
     await db.from("template_reviews").upsert({ template_key: key, status: "approved", reviewer: me.id, note: note || null, reviewed_at: now });
     await db.from("questions").update({ status: "approved", auto_published: false, reviewer: me.id, review_note: note || "Giáo viên xác nhận khuôn", reviewed_at: now }).eq("template_key", key).neq("status", "rejected");
   } else if (decision === "reject") {
-    if (!note) redirect("/admin/templates?error=" + encodeURIComponent("Cần ghi lý do khi loại khuôn."));
+    if (!note) redirect(withMsg(back, "error=" + encodeURIComponent("Cần ghi lý do khi loại khuôn.")));
     await db.from("template_reviews").upsert({ template_key: key, status: "rejected", reviewer: me.id, note, reviewed_at: now });
     await db.from("questions").update({ status: "rejected", auto_published: false, reviewer: me.id, review_note: `Loại khuôn: ${note}`, reviewed_at: now }).eq("template_key", key).neq("status", "rejected");
   }
-  revalidatePath("/admin/templates");
+  revalidatePath("/admin/templates", "layout");
   revalidatePath("/admin/review");
-  redirect("/admin/templates?ok=1");
+  redirect(withMsg(back, "ok=1"));
+}
+
+/** Gỡ một biến thể lẻ (giá trị lạ, đề vô lý…) mà không loại cả khuôn. Duyệt khuôn sau đó không bật lại câu đã gỡ. */
+export async function removeVariantAction(key: string, id: string, fd: FormData) {
+  const back = templatesBack(fd);
+  const me = await templateGuard(key, back);
+  const note = String(fd.get("note") ?? "").trim().slice(0, 300);
+  await adminDb().from("questions").update({ status: "rejected", auto_published: false, reviewer: me.id, review_note: `Gỡ biến thể: ${note || "giá trị không hợp lý"}`, reviewed_at: new Date().toISOString() }).eq("id", id).eq("template_key", key);
+  revalidatePath("/admin/templates", "layout");
+  redirect(withMsg(back, "ok=removed"));
+}
+
+/** Đưa biến thể đã gỡ trở lại: theo trạng thái khuôn (khuôn đã duyệt → đã xác nhận; chưa → hiển thị chờ xác nhận). */
+export async function restoreVariantAction(key: string, id: string, fd: FormData) {
+  const back = templatesBack(fd);
+  const me = await templateGuard(key, back);
+  const db = adminDb();
+  const { data: tr } = await db.from("template_reviews").select("status").eq("template_key", key).maybeSingle();
+  if (tr?.status === "rejected") redirect(withMsg(back, "error=" + encodeURIComponent("Khuôn đang bị loại: hãy duyệt lại khuôn trước.")));
+  const confirmed = tr?.status === "approved";
+  await db.from("questions").update({ status: "approved", auto_published: !confirmed, reviewer: confirmed ? me.id : null, review_note: null, reviewed_at: confirmed ? new Date().toISOString() : null }).eq("id", id).eq("template_key", key);
+  revalidatePath("/admin/templates", "layout");
+  redirect(withMsg(back, "ok=restored"));
 }
