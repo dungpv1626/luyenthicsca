@@ -64,11 +64,18 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const { data: liveBatches } = live ? await base().not("batch_id", "is", null).select("batch_id").limit(5000) : { data: [] as { batch_id: string }[] };
   const batchCount = new Map<string, number>(); for (const b of liveBatches ?? []) batchCount.set(b.batch_id, (batchCount.get(b.batch_id) ?? 0) + 1);
   const topBatches = [...batchCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
-  const { data: bRows } = topBatches.length ? await db.from("questions").select("batch_id, status, reviewer, auto_published, confirmed_by_sample").in("batch_id", topBatches.map(([b]) => b)).limit(8000) : { data: [] as { batch_id: string; status: string; reviewer: string | null; auto_published: boolean; confirmed_by_sample: boolean }[] };
-  const batchInfo = (b: string) => {
-    const rows = (bRows ?? []).filter((r) => r.batch_id === b);
-    return { total: rows.length, done: rows.filter((r) => r.reviewer === me.id && r.status === "approved" && !r.auto_published && !r.confirmed_by_sample).length, rejected: rows.filter((r) => r.reviewer === me.id && r.status === "rejected").length };
-  };
+  // Đếm bằng count (không tải dòng) để lô lớn không bị cắt; cùng điều kiện với confirmBatchBySampleAction ở server.
+  const cnt = async (b: string, f: (q: any) => any) => (await f(db.from("questions").select("*", { count: "exact", head: true }).eq("batch_id", b))).count ?? 0; // eslint-disable-line @typescript-eslint/no-explicit-any
+  const infoList = await Promise.all(topBatches.map(async ([b]) => {
+    const [total, done, rejected] = await Promise.all([
+      cnt(b, (q) => q),
+      cnt(b, (q) => q.eq("reviewer", me.id).eq("status", "approved").eq("auto_published", false).eq("confirmed_by_sample", false)),
+      cnt(b, (q) => q.eq("reviewer", me.id).eq("status", "rejected")),
+    ]);
+    return [b, { total, done, rejected }] as const;
+  }));
+  const infoMap = new Map(infoList);
+  const batchInfo = (b: string) => infoMap.get(b) ?? { total: 0, done: 0, rejected: 0 };
 
   const langs: [string, string, L][] = q ? [["vi", "Tiếng Việt", { body: q.body, options: q.options, explanation: q.explanation }], ...(["en", "zh"] as const).filter((k) => q.translations?.[k]).map((k) => [k, k === "en" ? "English" : "中文", q.translations[k]] as [string, string, L])] : [];
   const verifyInfo = q ? VERIFY[q.verify_status as keyof typeof VERIFY] : null;
@@ -89,7 +96,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
       <form className="card flex flex-wrap gap-2 !p-3 text-sm">
         <input type="hidden" name="view" value={view} />
         <input name="q" defaultValue={term} placeholder="Tìm nội dung, chủ đề…" aria-label="Tìm câu hỏi" className="input min-w-0 flex-1 sm:w-56 sm:flex-none" />
-        <select name="subject" aria-label="Lọc theo môn" defaultValue={subject ?? ""} className="input w-auto"><option value="">Mọi môn</option>{subjectOptions.map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+        <select name="subject" aria-label="Lọc theo môn" defaultValue={subject ?? ""} className="input w-auto"><option value="">{mine.length ? "Môn của tôi" : "Mọi môn"}</option>{subjectOptions.map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
         <select name="module" aria-label="Lọc theo mô-đun đề cương" defaultValue={mod ?? ""} className="input w-auto"><option value="">Mọi mô-đun</option>{modOptions.map((k) => <optgroup key={k} label={SUBJECTS[k].split(" (")[0]}>{MODULES[k].map((m) => <option key={m.key} value={m.key}>{m.name}</option>)}</optgroup>)}<option value="none">Chưa phân loại</option></select>
         <select name="difficulty" aria-label="Lọc theo độ khó" defaultValue={difficulty ?? ""} className="input w-auto"><option value="">Mọi độ khó</option>{Object.entries(DIFFICULTY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
         <select name="origin" aria-label="Lọc theo nguồn" defaultValue={origin ?? ""} className="input w-auto"><option value="">Mọi nguồn</option><option value="ai">AI soạn</option><option value="template">Khuôn tham số</option><option value="manual">Soạn tay</option></select>
@@ -144,7 +151,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
         <section className="card space-y-3">
           <div><h2 className="font-bold">Xử lý theo lô</h2><p className="text-sm text-muted">Xác nhận theo mẫu: bạn cần tự xem và xác nhận đủ số câu mẫu của lô (10%, tối thiểu 5, tối đa 20) và không loại câu nào; các câu còn lại được xác nhận hàng loạt và <b>đánh dấu “xác nhận theo mẫu”</b> để phân biệt với câu được xem từng câu. Nếu lô có vấn đề chung, hãy gỡ cả lô.</p></div>
           <div className="divide-y divide-slate-100">
-            {topBatches.map(([b, n]) => { const i = batchInfo(b); const need = sampleNeeded(i.total); const ok = i.done >= need && i.rejected === 0; return (
+            {topBatches.map(([b, n]) => { const i = batchInfo(b); const need = sampleNeeded(i.total); const ok = i.total > 0 && i.done >= need && i.rejected === 0; return (
               <div key={b} className="flex flex-wrap items-center gap-2 py-2 text-sm">
                 <div className="min-w-0 flex-1"><p className="font-semibold">Lô …{b.slice(-9)} · còn {n} câu chờ xác nhận</p><p className="text-xs text-muted">Mẫu bạn đã xem: {i.done}/{need}{i.rejected > 0 ? ` · bạn đã loại ${i.rejected} câu → phải xem từng câu` : ""}</p></div>
                 <form action={confirmBatchBySampleAction.bind(null, b)}><ConfirmButton disabled={!canApprove || !ok} className="btn-outline min-h-[2.5rem] disabled:opacity-40" title="Xác nhận cả lô theo mẫu?" message={`${n} câu còn lại của lô sẽ được đánh dấu “xác nhận theo mẫu” dựa trên ${i.done} câu bạn đã xem từng câu. Học viên vẫn thấy các câu này.`} confirmText="Xác nhận cả lô">Xác nhận theo mẫu</ConfirmButton></form>
