@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SubmitButton } from "@/components/SubmitButton";
-import { requireMe } from "@/lib/auth";
+import { requireStudent } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { getSkillProfile } from "@/lib/skills";
 import { addDays, todayVN, subjectName } from "@/lib/plan";
@@ -16,7 +16,7 @@ const DOW = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "
 export const metadata = { title: "Lộ trình học cá nhân" };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ w?: string; error?: string }> }) {
-  const me = await requireMe("/lo-trinh");
+  const me = await requireStudent("/lo-trinh");
   const { w, error } = await searchParams;
   const db = adminDb();
   const journey = await getJourney(me.id);

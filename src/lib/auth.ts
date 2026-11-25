@@ -19,6 +19,16 @@ export async function requireMe(next = "/dashboard"): Promise<Me> {
   return me;
 }
 
+/** Nhân viên (mọi vai trò trừ học viên): làm việc ở /admin, không dùng các trang cá nhân của học viên. */
+export const isStaff = (role: Role) => role !== "student";
+
+/** Trang cá nhân của học viên (dashboard, lộ trình, hồ sơ năng lực…): nhân viên được đưa về trang quản trị. */
+export async function requireStudent(next = "/dashboard"): Promise<Me> {
+  const me = await requireMe(next);
+  if (isStaff(me.role)) redirect("/admin");
+  return me;
+}
+
 /** Quyền admin theo bảng phân quyền trong tài liệu. */
 export const ADMIN_AREAS = {
   questions: ["super_admin", "content_manager", "academic_reviewer"],

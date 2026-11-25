@@ -3,8 +3,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-/** Menu tài khoản (avatar). `children` là form đăng xuất render từ server. */
-export function AccountMenu({ name, isStaff, children }: { name: string; isStaff: boolean; children: React.ReactNode }) {
+/** Menu tài khoản (avatar). `children` là form đăng xuất render từ server. `roleLabel` có giá trị = nhân viên: menu chỉ gồm việc quản trị. */
+export function AccountMenu({ name, roleLabel, children }: { name: string; roleLabel: string | null; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const path = usePathname();
   const ref = useRef<HTMLDivElement>(null);
@@ -23,13 +23,21 @@ export function AccountMenu({ name, isStaff, children }: { name: string; isStaff
       </button>
       {open && (
         <div className="absolute right-0 top-full z-40 mt-2 w-56 rounded-2xl border border-slate-200 bg-surface p-2 text-ink shadow-xl">
-          <p className="truncate px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted">{name}</p>
-          <Link href="/dashboard" className={item}>Dashboard</Link>
-          <Link href="/lo-trinh" className={item}>Lộ trình của tôi</Link>
-          <Link href="/khoa-hoc-cua-toi" className={item}>Khóa học của tôi</Link>
-          <Link href="/don-hang" className={item}>Đơn hàng</Link>
+          <div className="px-3 py-2">
+            <p className="truncate text-xs font-semibold uppercase tracking-wider text-muted">{name}</p>
+            {roleLabel && <p className="mt-0.5 text-xs font-semibold text-brand-text">{roleLabel}</p>}
+          </div>
+          {roleLabel ? (
+            <Link href="/admin" className={item}>Trang quản trị</Link>
+          ) : (
+            <>
+              <Link href="/dashboard" className={item}>Dashboard</Link>
+              <Link href="/lo-trinh" className={item}>Lộ trình của tôi</Link>
+              <Link href="/khoa-hoc-cua-toi" className={item}>Khóa học của tôi</Link>
+              <Link href="/don-hang" className={item}>Đơn hàng</Link>
+            </>
+          )}
           <Link href="/doi-mat-khau" className={item}>Đổi mật khẩu</Link>
-          {isStaff && <Link href="/admin" className={item}>Trang quản trị</Link>}
           <div className="mt-1 border-t border-slate-100 pt-1">{children}</div>
         </div>
       )}

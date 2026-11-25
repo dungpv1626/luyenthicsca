@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SubmitButton } from "@/components/SubmitButton";
-import { requireMe } from "@/lib/auth";
+import { requireStudent } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { getSkillProfile } from "@/lib/skills";
 import { getJourney } from "@/lib/journey-data";
@@ -15,7 +15,7 @@ import { toggleTaskAction, startTaskAction } from "../plan-actions";
 export const metadata = { title: "Dashboard" };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ pw?: string }> }) {
-  const me = await requireMe("/dashboard");
+  const me = await requireStudent("/dashboard");
   const { pw } = await searchParams;
   const db = adminDb();
   const today = todayVN();

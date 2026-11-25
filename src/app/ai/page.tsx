@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireMe } from "@/lib/auth";
+import { requireStudent } from "@/lib/auth";
 import { getSkillProfile } from "@/lib/skills";
 import { PageHeader } from "@/components/Section";
 import { ScoreRing } from "@/components/ScoreRing";
@@ -10,7 +10,7 @@ import { Icon } from "@/components/Icon";
 export const metadata = { title: "Hồ sơ năng lực" };
 
 export default async function Page() {
-  const me = await requireMe("/ai");
+  const me = await requireStudent("/ai");
   const p = await getSkillProfile(me.id);
   const last = p.attempts.at(-1);
   const delta = p.attempts.length > 1 ? p.attempts.at(-1)!.readiness - p.attempts.at(-2)!.readiness : null;

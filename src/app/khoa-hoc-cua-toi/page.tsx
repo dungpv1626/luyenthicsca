@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { requireMe } from "@/lib/auth";
+import { requireStudent } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/Section";
 
 export const metadata = { title: "Khóa học của tôi" };
 
 export default async function Page() {
-  const me = await requireMe("/khoa-hoc-cua-toi");
+  const me = await requireStudent("/khoa-hoc-cua-toi");
   const db = adminDb();
   const [{ data: paid }, { data: free }, { data: prog }] = await Promise.all([
     db.from("orders").select("course_id").eq("user_id", me.id).eq("status", "paid").not("course_id", "is", null),

@@ -13,12 +13,16 @@ const safeNext = (n: FormDataEntryValue | null) => (typeof n === "string" && n.s
 
 export async function signIn(_: unknown, fd: FormData) {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email: String(fd.get("email")), password: String(fd.get("password")) });
+  const { data, error } = await supabase.auth.signInWithPassword({ email: String(fd.get("email")), password: String(fd.get("password")) });
   if (error) {
     if (error.code === "email_not_confirmed" || /not confirmed/i.test(error.message)) return { error: "Email này chưa được xác nhận. Hãy mở email xác nhận (kiểm tra cả mục Spam/Quảng cáo) hoặc gửi lại email bên dưới.", unconfirmed: String(fd.get("email")), values: keep(fd) };
     return { error: "Email hoặc mật khẩu không đúng.", values: keep(fd) };
   }
-  redirect(safeNext(fd.get("next")));
+  const next = safeNext(fd.get("next"));
+  // Nhân viên luôn vào trang quản trị (trừ khi đang được đưa tới một trang quản trị cụ thể).
+  const { data: p } = await adminDb().from("profiles").select("role").eq("id", data.user.id).single();
+  if (p?.role && p.role !== "student" && !next.startsWith("/admin")) redirect("/admin");
+  redirect(next);
 }
 
 /** Gửi lại email xác nhận đăng ký. Trả về thông báo để hiển thị. */
