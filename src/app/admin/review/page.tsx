@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { DIFFICULTY, SUBJECTS, type Subject } from "@/lib/constants";
@@ -22,17 +23,20 @@ const LOT_STATUS: Record<Lot["status"], [string, string]> = {
 const LOT_ORDER: Lot["status"][] = ["passed", "failed", "doing", "todo", "done"];
 type L = { body: string; options: Record<string, string>; explanation: string };
 type SP = { view?: string; lot?: string; subject?: string; verify?: string; module?: string; difficulty?: string; origin?: string; q?: string; skip?: string; need_note?: string; not_mine?: string; ok?: string };
-type View = "offline" | "lots" | "reports" | "live";
+type View = "offline" | "lots" | "reports";
 
 export const metadata = { title: "Duyệt câu hỏi – Quản trị" };
 
+const LIVE_LIST = "/admin/questions?confirm=1";
 const subjectName = (s: string) => SUBJECTS[s as Subject]?.split(" (")[0] ?? s;
 const lotName = (l: { batch: string; subject: string }) => `Lô …${l.batch.slice(-6)} · ${subjectName(l.subject)}`;
 
 export default async function Page({ searchParams }: { searchParams: Promise<SP> }) {
   const me = await requireAdmin("questions");
   const sp = await searchParams;
-  const view: View = (["lots", "reports", "live"] as const).find((v) => v === sp.view) ?? "offline";
+  // Danh sách mọi câu đang hiển thị (chưa có giáo viên xem) là danh sách có phân trang ở Ngân hàng câu hỏi, không phải luồng duyệt từng câu.
+  if (sp.view === "live") redirect(LIVE_LIST);
+  const view: View = (["lots", "reports"] as const).find((v) => v === sp.view) ?? "offline";
   const { subject, verify, module: mod, difficulty, origin, skip, need_note, not_mine, ok } = sp;
   const term = (sp.q ?? "").replace(/[%,()*\\]/g, " ").trim().slice(0, 60);
   const db = adminDb();
@@ -43,7 +47,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
 
   const base = (head = false) => {
     let q = head ? db.from("questions").select("*", { count: "exact", head: true }) : db.from("questions").select("*");
-    q = view === "live" ? q.eq("status", "approved").eq("auto_published", true) : q.eq("status", "review");
+    q = q.eq("status", "review");
     if (mine.length) q = q.in("subject", mine);
     if (subject) q = q.eq("subject", subject);
     if (verify) q = q.eq("verify_status", verify);
@@ -72,7 +76,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const lotSel = view === "lots" ? parseLotKey(sp.lot) : null;
   const lot = lotSel ? lots.find((l) => l.batch === lotSel.batch && l.subject === lotSel.subject) ?? null : null;
   let cand: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
-  if (view === "offline" || view === "live") cand = (await base().order("created_at").limit(80)).data ?? [];
+  if (view === "offline") cand = (await base().order("created_at").limit(80)).data ?? [];
   else if (view === "reports" && reports.size) cand = (await db.from("questions").select("*").in("id", [...reports.keys()].slice(0, 200))).data ?? [];
   else if (lot?.next && lot.status !== "failed") cand = (await db.from("questions").select("*").eq("id", lot.next)).data ?? [];
   const ids = cand.map((x) => x.id);
@@ -95,7 +99,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const myReports = q ? (reps ?? []).filter((r) => r.question_id === q.id) : [];
   const modOptions = (Object.keys(MODULES) as Subject[]).filter((k) => !subject || subject === k).filter((k) => !mine.length || mine.includes(k));
   const cols = langs.length >= 3 ? "xl:grid-cols-3" : langs.length === 2 ? "xl:grid-cols-2" : "";
-  const live = view === "live" || view === "reports" || !!lot;
+  const live = view === "reports" || !!lot;
   const tab = (v: View, label: string, n: number) => (
     <Link href={v === "offline" ? "/admin/review" : `/admin/review?view=${v}`} aria-current={view === v ? "page" : undefined} className={`inline-flex min-h-[2.75rem] items-center gap-1.5 rounded-full px-4 text-sm font-semibold ${view === v ? "bg-brand text-white" : "border border-slate-200 hover:border-brand hover:text-brand-text"}`}>
       {label}<span className={`rounded-full px-1.5 text-xs font-bold ${view === v ? "bg-white/25" : n > 0 ? "bg-amber-100 text-warning" : "bg-slate-100 text-slate-500"}`}>{n.toLocaleString("vi-VN")}</span>
@@ -151,20 +155,17 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
         {tab("offline", "Chờ duyệt", nOff ?? 0)}
         {tab("lots", "Kiểm tra mẫu lô", openLots.length)}
         {tab("reports", "Báo lỗi từ học viên", reports.size)}
-        <Link href="/admin/review?view=live" className={`ml-auto text-sm hover:underline ${view === "live" ? "font-semibold text-brand-text" : "text-muted"}`}>Tất cả câu đang hiển thị ({(nLive ?? 0).toLocaleString("vi-VN")})</Link>
+        <Link href={LIVE_LIST} className="ml-auto text-sm text-muted hover:text-brand-text hover:underline" title="Mở danh sách ở Ngân hàng câu hỏi (có phân trang, tìm kiếm, lọc)">Danh sách {(nLive ?? 0).toLocaleString("vi-VN")} câu đang hiển thị chưa có giáo viên xem →</Link>
       </div>
 
       {ok && <p className="rounded-xl bg-success-bg p-3 text-sm text-emerald-800">{ok === "passed" ? "Đã ghi nhận: lô đạt kiểm tra mẫu." : ok === "returned" ? "Đã đưa các câu còn lại của lô về hàng Chờ duyệt. Học viên không thấy các câu này cho đến khi được duyệt." : "Đã ghi nhận."}</p>}
       {!canApprove && <p className="rounded-xl bg-warning-bg p-3 text-sm text-warning">Tài khoản của bạn có thể xem và loại câu, nhưng chỉ giáo viên duyệt chuyên môn hoặc quản trị cấp cao mới được duyệt.</p>}
       {not_mine && <p className="rounded-xl bg-danger-bg p-3 text-sm text-danger">Câu này thuộc môn bạn không được gán duyệt.</p>}
 
-      {(view === "offline" || view === "live") && (
+      {view === "offline" && (
         <>
-          <p className="rounded-xl bg-brand-soft p-3 text-sm text-slate-700">{view === "offline"
-            ? <>Câu <b>chưa hiển thị cho học viên</b>: câu AI soạn chưa qua kiểm tra tự động, câu bị học viên báo lỗi nhiều, và các lô không đạt kiểm tra mẫu. <b>Duyệt</b> = công bố. <b>Loại</b> = bỏ hẳn (ghi lý do).</>
-            : <>Toàn bộ câu <b>đang hiển thị</b> nhưng chưa có giáo viên xem. Không cần làm hết danh sách này: câu AI soạn được kiểm tra qua tab <b>Kiểm tra mẫu lô</b>, biến thể khuôn được duyệt ở <b>Khuôn câu hỏi</b>.</>}</p>
+          <p className="rounded-xl bg-brand-soft p-3 text-sm text-slate-700">Câu <b>chưa hiển thị cho học viên</b>: câu AI soạn chưa qua kiểm tra tự động, câu bị học viên báo lỗi nhiều, và các lô không đạt kiểm tra mẫu. Hệ thống đưa ra <b>từng câu một</b> (còn {(nOff ?? 0).toLocaleString("vi-VN")} câu). <b>Duyệt</b> = công bố. <b>Loại</b> = bỏ hẳn (ghi lý do).</p>
           <form className="card flex flex-wrap gap-2 !p-3 text-sm">
-            {view === "live" && <input type="hidden" name="view" value="live" />}
             <input name="q" defaultValue={term} placeholder="Tìm nội dung, chủ đề…" aria-label="Tìm câu hỏi" className="input min-w-0 flex-1 sm:w-56 sm:flex-none" />
             <select name="subject" aria-label="Lọc theo môn" defaultValue={subject ?? ""} className="input w-auto"><option value="">{mine.length ? "Môn của tôi" : "Mọi môn"}</option>{subjectOptions.map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
             <select name="module" aria-label="Lọc theo mô-đun đề cương" defaultValue={mod ?? ""} className="input w-auto"><option value="">Mọi mô-đun</option>{modOptions.map((k) => <optgroup key={k} label={subjectName(k)}>{MODULES[k].map((m) => <option key={m.key} value={m.key}>{m.name}</option>)}</optgroup>)}<option value="none">Chưa phân loại</option></select>
@@ -173,7 +174,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
             <select name="verify" aria-label="Lọc theo kết quả kiểm tra AI" defaultValue={verify ?? ""} className="input w-auto"><option value="">Mọi kết quả kiểm tra</option><option value="mismatch">Lệch đáp án</option><option value="invalid">Lỗi cấu trúc</option><option value="pass">Đạt</option><option value="unchecked">Chưa kiểm tra</option></select>
             <button className="btn-outline">Lọc</button>
           </form>
-          {decision || <div className="card text-center text-slate-600">{view === "offline" ? "Hàng chờ trống. Chuyển sang tab Kiểm tra mẫu lô." : "Không còn câu nào khớp bộ lọc."}</div>}
+          {decision || <div className="card text-center text-slate-600">{keep.length ? "Không còn câu nào khớp bộ lọc." : "Hàng chờ trống. Chuyển sang tab Kiểm tra mẫu lô."}</div>}
         </>
       )}
 
