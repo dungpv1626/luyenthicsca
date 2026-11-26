@@ -37,7 +37,7 @@ export function AccountMenu({ name, roleLabel, children }: { name: string; roleL
               <Link href="/don-hang" className={item}>Đơn hàng</Link>
             </>
           )}
-          <Link href="/doi-mat-khau" className={item}>Đổi mật khẩu</Link>
+          <Link href={roleLabel ? "/admin/doi-mat-khau" : "/doi-mat-khau"} className={item}>Đổi mật khẩu</Link>
           <div className="mt-1 border-t border-slate-100 pt-1">{children}</div>
         </div>
       )}

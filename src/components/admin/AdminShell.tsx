@@ -46,12 +46,12 @@ export function AdminShell({ groups, name, roleLabel, children }: { groups: NavG
           </Link>
           <div className="ml-auto flex items-center gap-2 text-sm">
             <Link href="/" className="hidden min-h-[2.5rem] items-center rounded-lg px-3 font-semibold text-brand-text hover:bg-brand-soft sm:inline-flex">Xem trang học viên ↗</Link>
-            <div className="hidden text-right leading-tight sm:block"><p className="max-w-[12rem] truncate font-semibold">{name}</p><p className="text-xs text-muted">{roleLabel}</p></div>
+            <div className="hidden text-right leading-tight sm:block"><p className="max-w-[12rem] truncate font-semibold">{name}</p><p className="text-xs text-muted">{roleLabel} · <Link href="/admin/doi-mat-khau" className="font-semibold text-brand-text hover:underline">Đổi mật khẩu</Link></p></div>
             <ThemeToggle />
             <form action={signOut}><button className="btn-outline !min-h-[2.5rem] !px-4">Đăng xuất</button></form>
           </div>
         </div>
-        {open && <div id="admin-menu-mobile" className="max-h-[70vh] overflow-y-auto border-t border-slate-100 bg-surface p-3 md:hidden">{nav}<Link href="/" className="mt-3 inline-flex min-h-[2.5rem] items-center px-3 text-sm font-semibold text-brand-text">Xem trang học viên ↗</Link></div>}
+        {open && <div id="admin-menu-mobile" className="max-h-[70vh] overflow-y-auto border-t border-slate-100 bg-surface p-3 md:hidden">{nav}<div className="mt-3 flex flex-wrap gap-x-2 border-t border-slate-100 pt-2"><Link href="/admin/doi-mat-khau" className="inline-flex min-h-[2.5rem] items-center px-3 text-sm font-semibold text-brand-text">Đổi mật khẩu</Link><Link href="/" className="inline-flex min-h-[2.5rem] items-center px-3 text-sm font-semibold text-brand-text">Xem trang học viên ↗</Link></div></div>}
       </header>
       <div className="mx-auto grid max-w-[92rem] grid-cols-[minmax(0,1fr)] gap-6 px-3 py-5 sm:px-5 md:grid-cols-[14rem_minmax(0,1fr)]">
         <aside className="hidden md:block"><div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-surface p-3 shadow-sm">{nav}</div></aside>

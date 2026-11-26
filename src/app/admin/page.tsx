@@ -43,7 +43,8 @@ const GUIDE: Record<string, Step[]> = {
   ],
 };
 
-export default async function Page() {
+export default async function Page({ searchParams }: { searchParams: Promise<{ pw?: string }> }) {
+  const { pw } = await searchParams;
   const me = await requireAdmin("dashboard");
   const db = adminDb();
   const count = async (t: string, f?: (q: any) => any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -103,6 +104,7 @@ export default async function Page() {
 
   return (
     <div className="space-y-5">
+      {pw === "reset" && <p role="status" className="rounded-xl bg-success-bg p-3 text-sm font-medium text-emerald-800">Đã đặt mật khẩu mới. Các thiết bị khác đã bị đăng xuất.</p>}
       <div>
         <h1 className="font-bold">Xin chào, {me.full_name || "bạn"}</h1>
         <p className="mt-1 text-sm text-slate-600">

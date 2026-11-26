@@ -1,6 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { adminDb } from "@/lib/supabase/admin";
 import { requestOrigin } from "@/lib/site";
 
 type State = { error?: string; ok?: string } | undefined;
@@ -38,7 +39,9 @@ export async function resetPassword(_: State, fd: FormData): Promise<State> {
   const { error } = await supabase.auth.updateUser({ password: pw });
   if (error) return { error: /different|same/i.test(error.message) ? "Mật khẩu mới phải khác mật khẩu cũ." : "Không đổi được mật khẩu. Vui lòng thử lại." };
   await supabase.auth.signOut({ scope: "others" }); // đăng xuất các thiết bị khác
-  redirect("/dashboard?pw=reset");
+  // Nhân viên về trang quản trị (Dashboard học viên sẽ chuyển họ đi và làm mất thông báo).
+  const { data: p } = await adminDb().from("profiles").select("role").eq("id", user.id).single();
+  redirect(p?.role && p.role !== "student" ? "/admin?pw=reset" : "/dashboard?pw=reset");
 }
 
 /** Đổi mật khẩu khi đang đăng nhập: bắt buộc nhập đúng mật khẩu hiện tại. */
