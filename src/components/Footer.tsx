@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
+import { COMPANY } from "@/lib/company";
+import { POLICIES } from "@/content/policies";
 
 const COLS = [
   ["Học tập", [["/thi-thu", "Thi thử"], ["/luyen-tap", "Luyện tập"], ["/ai", "Hồ sơ năng lực"], ["/lo-trinh", "Lộ trình"], ["/gia-su", "Gia sư AI"]]],
@@ -23,7 +25,29 @@ export function Footer() {
           </div>
         ))}
       </div>
-      <div className="border-t border-white/10 py-4 text-center text-xs text-white/60">© {new Date().getFullYear()} Luyenthicsca.edu.vn — Readiness Score là chỉ số ước lượng, không phải điểm thi chính thức.</div>
+
+      {/* Thông tin doanh nghiệp và chính sách: công bố theo quy định với website thương mại điện tử. */}
+      <div className="border-t border-white/10">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 text-sm md:grid-cols-[1.4fr_2fr]">
+          <address className="not-italic text-white/80">
+            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Đơn vị chủ quản</h4>
+            <p className="mt-2 font-semibold text-white">{COMPANY.name}</p>
+            <p className="mt-1">Mã số doanh nghiệp: {COMPANY.taxCode}</p>
+            <p>Địa chỉ: {COMPANY.address}</p>
+            <p>Người đại diện: {COMPANY.representative}</p>
+            <p className="mt-2">Điện thoại/Zalo: <a href={`tel:${COMPANY.phoneHref}`} className="font-semibold text-white hover:underline">{COMPANY.phone}</a></p>
+            <p>Email: <span className="font-semibold text-white">{COMPANY.email}</span></p>
+            <p>Hỗ trợ: {COMPANY.hours}</p>
+          </address>
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Chính sách và điều khoản</h4>
+            <ul className="mt-2 grid gap-x-6 sm:grid-cols-2">
+              {POLICIES.map((p) => <li key={p.slug}><Link href={`/${p.slug}`} className="-mx-2 block rounded-lg px-2 py-1.5 text-white/85 transition hover:bg-white/10 hover:text-white">{p.title}</Link></li>)}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-white/60">© {new Date().getFullYear()} {COMPANY.name} · {COMPANY.brand} (luyenthicsca.edu.vn) — Readiness Score là chỉ số ước lượng, không phải điểm thi chính thức.</div>
     </footer>
   );
 }
