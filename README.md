@@ -36,7 +36,7 @@ cp .env.example .env.local   # điền khóa Supabase, Anthropic, ngân hàng
 Kiểm tra: `npm run typecheck && npm test && npm run build`.
 
 ## Thanh toán
-Đơn hàng sinh mã `LTCxxxxxx` làm nội dung chuyển khoản, hiển thị VietQR. Hai cách mở khóa đề:
+Đơn hàng sinh mã `LTCxxxxxx` làm nội dung chuyển khoản, hiển thị VietQR và thông tin chuyển khoản bằng chữ. Tài khoản nhận tiền (MBBANK 535 368 368, CÔNG TY TNHH NOVAPATH GLOBAL) cố định trong `src/lib/company.ts`, khớp Chính sách thanh toán; webhook SePay phải theo dõi đúng tài khoản này. Hai cách mở khóa đề:
 - **Tự động:** cấu hình webhook của SePay (hoặc dịch vụ tương tự) trỏ tới `POST /api/payment/webhook` với header `Authorization: Apikey $PAYMENT_WEBHOOK_KEY`.
 - **Thủ công:** Admin → Đơn hàng → "Xác nhận đã thu".
 
@@ -58,7 +58,7 @@ npm run cf:deploy    # build + deploy; cần CLOUDFLARE_API_TOKEN và CLOUDFLARE
                      # Script tạm gỡ .env.local để KHÔNG nhúng khóa bí mật vào mã Worker (OpenNext ghi mọi file .env* vào bundle).
 ```
 Biến không bí mật nằm trong `wrangler.jsonc`. Khóa bí mật đặt bằng `npx wrangler secret put <TÊN>`:
-`NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `PAYMENT_ACCOUNT_NO`, `PAYMENT_WEBHOOK_KEY`.
+`NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `PAYMENT_WEBHOOK_KEY`.
 Chạy `npm run cf:build` khi đã có `.env.local`: biến `NEXT_PUBLIC_*` được nhúng vào bản build tại thời điểm build.
 
 
@@ -140,10 +140,20 @@ Mỗi cấp có đề **theo môn** và đề **tổng hợp 4 môn**. Migration
 - Dữ liệu: `src/lib/journey-data.ts` (bài đã nộp, hồ sơ, lộ trình, chủ đề yếu). Giao diện: `src/components/JourneyPipeline.tsx`.
 - Chặng "Vá lỗ hổng" chỉ xong khi đủ buổi luyện VÀ hết chuyên đề yếu (dưới 60%); chặng "Luyện đề theo mức" cần 3 đề và đạt từ 60/100.
 
-## Gói đăng ký theo năm (Free / Starter / Pro / Max)
+## Gói dịch vụ (Mức 1–5, theo Chính sách giá)
 
-- Định nghĩa gói, giá, hạn mức Gia sư AI: `src/lib/plans.ts` (Free 5, Starter 20, Pro 150 lượt/ngày; Max như Pro cộng video và ping mentor, `forSale: false` nên chỉ hiện "Sắp ra mắt").
-- Không còn bán đề lẻ: đề có `price_vnd > 0` là "đề trả phí", mở bằng gói Starter trở lên. Người đã mua lẻ trước đây vẫn giữ quyền (đơn `test_id` đã paid).
-- Gói còn hiệu lực = đơn `paid` có `plan` và `paid_at + 365 ngày` > hiện tại (`activePlan`, `getPlan` trong `src/lib/entitlement.ts`). Hoàn tiền (refunded) tự thu hồi quyền; không có bảng đăng ký riêng.
-- Trang `/bang-gia`, mua gói `buyPlanAction` (VietQR + webhook như đơn cũ). **Cần chạy migration `0017_plans.sql`** (thêm cột `orders.plan`).
-- Chưa làm: video bài giảng, ping mentor, tự gia hạn, cộng dồn ngày khi gia hạn sớm, trừ tiền khi nâng cấp Starter lên Pro.
+- Định nghĩa gói, giá, thời hạn, hạn mức Gia sư AI: `src/lib/plans.ts`. **Phải khớp Chính sách giá đã khai với Bộ Công Thương** (test `src/lib/policies.test.ts` so bảng giá trong chính sách với `PLANS`):
+  Mức 1 Nền tảng miễn phí (đề cấp 1 + đề miễn phí, 5 lượt AI/ngày) · Mức 2 Cơ bản 39.000đ/30 ngày: đề luyện **cấp 1–2** mọi môn kể cả tổng hợp, không đề mô phỏng (20 lượt) · Mức 3 Gói theo môn 290.000đ/3 tháng: **mọi cấp và đề mô phỏng của một môn** chọn khi mua, không đề tổng hợp (150 lượt) · Mức 4 Gói trọn bộ 690.000đ/3 tháng: mọi đề (150 lượt) · Mức 5 Gói đồng hành 1.990.000đ/12 tháng: như Trọn bộ + hỗ trợ ưu tiên qua Zalo.
+  Chính sách đã khai chỉ ghi giá và thời hạn, nên quyền lợi từng gói (trường `tier`, `features`) chỉnh được mà không phải sửa chính sách/tờ khai.
+- Quyền = các đơn `paid` có `plan` còn hạn (`accessFrom`, `getAccess` trong `src/lib/entitlement.ts`); tháng tính theo lịch (`planEnd`). Mở đề trả phí theo tầng `basic` / `subject` / `full` (`canOpenPaidTest`, dựa vào `tests.level`, `tests.sim`, `tests.scope`, `tests.subject`); quyền nhiều gói cộng dồn; `plansThatOpen` gợi ý gói ở đề đang khóa. Hoàn tiền (refunded) tự thu hồi quyền.
+- Không bán đề lẻ; người đã mua lẻ trước đây vẫn giữ quyền (đơn `test_id` đã paid).
+- Trang `/bang-gia`, mua gói `buyPlanAction` (Gói theo môn gửi kèm môn). **Cần chạy migration `0018_plans_policy.sql`** (cột `orders.plan`, `orders.plan_subject`, `profiles.terms_accepted_at`, `profiles.marketing_opt_in`; thay cho 0017).
+
+
+## Chính sách và tờ khai Bộ Công Thương
+
+- 9 văn bản gốc: `Chinh_sach_rieng/*.docx`; nội dung trên website: `src/content/policies.ts`, trang dùng chung `src/components/PolicyPage.tsx`, mỗi văn bản một đường dẫn:
+  `/chinh-sach-bao-mat`, `/giai-quyet-khieu-nai`, `/chinh-sach-gia`, `/chinh-sach-thanh-toan`, `/dieu-khoan-su-dung`, `/chinh-sach-hoan-tien`, `/chinh-sach-cung-cap-dich-vu`, `/ho-tro-truc-tuyen`, `/quyen-va-nghia-vu`.
+- Phiếu thông tin Mẫu 01: `Phieu_thong_tin_Mau_01_luyenthicsca.edu.vn_v3.docx`. Thông tin doanh nghiệp hiển thị ở chân trang: `src/lib/company.ts`.
+- Đổi giá/gói/tài khoản ngân hàng thì đổi đồng thời: chính sách (Word + `policies.ts`), phiếu Mẫu 01, `plans.ts`/`company.ts`. `npm test` báo lỗi nếu bảng giá hoặc tài khoản trong chính sách lệch với website.
+- Đăng ký tài khoản bắt buộc tích đồng ý Điều khoản và Chính sách bảo mật (lưu `terms_accepted_at`, tùy chọn nhận tin `marketing_opt_in`).

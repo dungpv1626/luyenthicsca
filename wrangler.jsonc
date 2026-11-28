@@ -14,8 +14,6 @@
   ],
   "vars": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://gikncgdtbbqtrqjilqvp.supabase.co",
-    "ANTHROPIC_MODEL": "claude-sonnet-5-5",
-    "PAYMENT_BANK_ID": "VCB",
-    "PAYMENT_ACCOUNT_NAME": "CONG TY LUYENTHICSCA"
+    "ANTHROPIC_MODEL": "claude-sonnet-5-5"
   }
 }

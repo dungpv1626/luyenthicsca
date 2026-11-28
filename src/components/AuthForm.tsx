@@ -59,6 +59,18 @@ export function AuthForm({ mode, action, next, audience }: { mode: "login" | "re
       )}
       <div><label className="label" htmlFor="f-email">Email</label><input id="f-email" type="email" name="email" required defaultValue={v.email} className="input" /></div>
       <div><label className="label" htmlFor="f-password">Mật khẩu</label><input id="f-password" type="password" name="password" required minLength={reg ? 8 : 1} autoComplete={reg ? "new-password" : "current-password"} className="input" />{!reg && <Link href="/quen-mat-khau" className="mt-1 inline-flex min-h-[2.75rem] items-center text-sm font-semibold text-brand-text hover:underline">Quên mật khẩu?</Link>}</div>
+      {reg && (
+        <div className="space-y-2 text-sm text-slate-600">
+          <label className="flex items-start gap-2.5">
+            <input type="checkbox" name="terms" value="1" required defaultChecked={v.terms === "1"} className="mt-0.5 h-4 w-4 shrink-0 accent-brand" />
+            <span>Tôi đã đọc và đồng ý với <Link href="/dieu-khoan-su-dung" target="_blank" className="font-semibold text-brand-text hover:underline">Điều khoản sử dụng</Link>, <Link href="/chinh-sach-bao-mat" target="_blank" className="font-semibold text-brand-text hover:underline">Chính sách bảo mật</Link> và <Link href="/chinh-sach-hoan-tien" target="_blank" className="font-semibold text-brand-text hover:underline">Chính sách hoàn tiền</Link>. Nếu dưới 18 tuổi, tôi đã được cha mẹ hoặc người giám hộ đồng ý.</span>
+          </label>
+          <label className="flex items-start gap-2.5">
+            <input type="checkbox" name="marketing" value="1" defaultChecked={v.marketing === "1"} className="mt-0.5 h-4 w-4 shrink-0 accent-brand" />
+            <span>Nhận thông tin khuyến mại và tin tức về kỳ thi CSCA qua email hoặc Zalo (không bắt buộc).</span>
+          </label>
+        </div>
+      )}
       {state?.error && <p role="alert" className="rounded bg-danger-bg p-2 text-sm text-danger">{state.error}</p>}
       {state?.unconfirmed && <ResendBox email={state.unconfirmed} />}
       <button disabled={pending} className="btn w-full">{pending ? "Đang xử lý…" : reg ? "Đăng ký" : "Đăng nhập"}</button>

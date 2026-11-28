@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { todayVN } from "@/lib/plan";
-import { getPlan } from "@/lib/entitlement";
+import { getAccess } from "@/lib/entitlement";
 import { planDef } from "@/lib/plans";
 
 export type ChatMsg = { role: "user" | "assistant"; content: string };
@@ -26,9 +26,9 @@ export async function askTutor(messages: ChatMsg[], ctx?: { attemptId: string; q
   const day = todayVN();
   const { data: u } = await db.from("tutor_usage").select("count").eq("user_id", me.id).eq("day", day).maybeSingle();
   const used = u?.count ?? 0;
-  const { plan } = await getPlan(me.id);
-  const limit = planDef(plan).tutorPerDay;
-  if (used >= limit) return { error: plan === "pro" || plan === "max" ? `Bạn đã dùng hết ${limit} lượt hỏi hôm nay. Hãy quay lại vào ngày mai.` : `Bạn đã dùng hết ${limit} lượt hỏi hôm nay (gói ${planDef(plan).name}). Nâng cấp ở trang Bảng giá để hỏi nhiều hơn, hoặc quay lại vào ngày mai.`, left: 0 };
+  const { plan, tutorPerDay } = await getAccess(me.id);
+  const limit = tutorPerDay;
+  if (used >= limit) return { error: limit >= 150 ? `Bạn đã dùng hết ${limit} lượt hỏi hôm nay. Hãy quay lại vào ngày mai.` : `Bạn đã dùng hết ${limit} lượt hỏi hôm nay (gói ${planDef(plan).name}). Nâng cấp ở trang Bảng giá để hỏi nhiều hơn, hoặc quay lại vào ngày mai.`, left: 0 };
 
   let context = "";
   if (ctx) {

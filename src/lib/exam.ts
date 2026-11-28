@@ -1,5 +1,6 @@
 import { adminDb } from "./supabase/admin";
-import { getPlan } from "./entitlement";
+import { getAccess } from "./entitlement";
+import { canOpenPaidTest } from "./plans";
 import { generateReport } from "./ai";
 import { scoreAttempt, type ScoredQuestion } from "./scoring";
 import { QUICK_TEST, SUBJECT_KEYS, type Difficulty, type Subject } from "./constants";
@@ -71,10 +72,12 @@ export async function createAttempt(p: {
   return data.id as string;
 }
 
-/** Đề miễn phí, hoặc có gói trả phí đang hiệu lực, hoặc đã mua lẻ trước đây → được làm bài. */
-export async function canAccessTest(userId: string, test: { id: string; price_vnd: number }) {
+/** Đề miễn phí; hoặc gói còn hạn mở được đề này (theo tầng: Cơ bản / Gói theo môn / Trọn bộ, xem canOpenPaidTest); hoặc đã mua lẻ trước đây → được làm bài. */
+export async function canAccessTest(userId: string, test: { id: string; price_vnd: number; scope?: string | null; subject?: string | null; level?: number | null; sim?: boolean | null }) {
   if (test.price_vnd === 0) return true;
-  if ((await getPlan(userId)).plan !== "free") return true;
+  let t = test;
+  if (t.scope === undefined || t.level === undefined || t.sim === undefined) t = { ...t, ...((await adminDb().from("tests").select("scope, subject, level, sim").eq("id", test.id).single()).data ?? {}) };
+  if (canOpenPaidTest(await getAccess(userId), t)) return true;
   const { data } = await adminDb().from("orders").select("id").eq("user_id", userId).eq("test_id", test.id).eq("status", "paid").limit(1);
   return !!data?.length;
 }

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { adminDb } from "@/lib/supabase/admin";
 
-const FIELDS = ["email", "full_name", "phone", "audience", "target", "exam_date"] as const;
+const FIELDS = ["email", "full_name", "phone", "audience", "target", "exam_date", "terms", "marketing"] as const;
 /** Giữ lại giá trị đã nhập (trừ mật khẩu) vì React 19 xóa form sau mỗi lần submit. */
 const keep = (fd: FormData) => Object.fromEntries(FIELDS.map((k) => [k, String(fd.get(k) ?? "")]));
 
@@ -42,16 +42,24 @@ export async function signUp(_: unknown, fd: FormData) {
   const supabase = await createClient();
   const password = String(fd.get("password"));
   if (password.length < 8) return { error: "Mật khẩu tối thiểu 8 ký tự.", values: keep(fd) };
+  // Bắt buộc đồng ý Điều khoản sử dụng và Chính sách bảo mật (kiểm tra cả ở server, không chỉ ô bắt buộc trên trình duyệt).
+  if (fd.get("terms") !== "1") return { error: "Vui lòng đọc và tích ô đồng ý Điều khoản sử dụng và Chính sách bảo mật.", values: keep(fd) };
+  const acceptedAt = new Date().toISOString();
+  const marketing = fd.get("marketing") === "1";
   const { data, error } = await supabase.auth.signUp({
     email: String(fd.get("email")),
     password,
-    options: { data: { full_name: String(fd.get("full_name")), phone: String(fd.get("phone") ?? ""), audience: String(fd.get("audience") ?? "") } },
+    // Lưu cả trong hồ sơ đăng nhập để luôn có bằng chứng đồng ý, kể cả khi bảng profiles chưa có cột mới.
+    options: { data: { full_name: String(fd.get("full_name")), phone: String(fd.get("phone") ?? ""), audience: String(fd.get("audience") ?? ""), terms_accepted_at: acceptedAt, marketing_opt_in: marketing } },
   });
   if (error) return { error: error.message, values: keep(fd) };
-  // nguồn truy cập đầu tiên (first-touch) từ cookie; lỗi ở đây không được làm hỏng việc đăng ký
   if (data.user) {
+    const db = adminDb();
+    // đồng ý điều khoản / nhận tin (migration 0018); lỗi ở đây không được làm hỏng việc đăng ký
+    try { await db.from("profiles").update({ terms_accepted_at: acceptedAt, marketing_opt_in: marketing }).eq("id", data.user.id); } catch { /* bỏ qua */ }
+    // nguồn truy cập đầu tiên (first-touch) từ cookie
     const attr = parseAttribution((await cookies()).get(ATTR_COOKIE)?.value);
-    if (attr) { try { await adminDb().from("profiles").update({ signup_source: attr }).eq("id", data.user.id); } catch { /* bỏ qua */ } }
+    if (attr) { try { await db.from("profiles").update({ signup_source: attr }).eq("id", data.user.id); } catch { /* bỏ qua */ } }
   }
   if (!data.session) return { pending: String(fd.get("email")), values: keep(fd) };
   const target = String(fd.get("target") ?? "").trim();

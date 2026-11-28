@@ -5,6 +5,7 @@ import { getMe } from "@/lib/auth";
 import { adminDb } from "@/lib/supabase/admin";
 import { canAccessTest } from "@/lib/exam";
 import { DIFFICULTY, SUBJECTS, type Subject } from "@/lib/constants";
+import { planDef, plansThatOpen } from "@/lib/plans";
 import { LEVELS, mixText } from "@/lib/levels";
 import { SIM_FORMAT, SIM_MIX, secondsPerQuestion, score100 } from "@/lib/sim";
 import { MODULES, type Subject as SylSubject } from "@/lib/syllabus";
@@ -65,7 +66,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <div className="border-t border-slate-100 pt-4">
           {!me ? <Link href={`/dang-nhap?next=/thi-thu/${id}`} className="btn w-full sm:w-auto">Đăng nhập để làm bài</Link>
             : access ? <form action={startMockAction.bind(null, id)} className="flex flex-wrap items-center gap-3"><SubmitButton className="btn w-full sm:w-auto" pendingText="Đang mở bài thi…">{open ? "Tiếp tục làm bài" : done.some((a) => !(a.breakdown as Breakdown | null)?.insufficient) ? "Làm lại bài này" : "Bắt đầu làm bài"}</SubmitButton>{open && <p className="text-sm text-warning">Bạn đang làm dở, còn <b className="font-mono">{String(Math.floor(leftSec / 60)).padStart(2, "0")}:{String(leftSec % 60).padStart(2, "0")}</b>. Đồng hồ vẫn chạy.</p>}</form>
-            : <div className="flex flex-wrap items-center gap-3"><Link href="/bang-gia" className="btn w-full sm:w-auto">Mở khóa bằng gói Starter hoặc Pro</Link><p className="text-sm text-muted">Một gói mở toàn bộ đề Mức 1–4 và đề mô phỏng trong 12 tháng.</p></div>}
+            : <div className="flex flex-wrap items-center gap-3"><Link href="/bang-gia" className="btn w-full sm:w-auto">Xem gói để mở khóa</Link><p className="text-sm text-muted">Mở bằng: {plansThatOpen(t).map((k) => k === "theo_mon" && t.subject ? `${planDef(k).name} (${(SUBJECTS[t.subject as Subject] ?? t.subject).split(" (")[0]})` : planDef(k).name).join(", ")}.</p></div>}
         </div>
       </div>
 
