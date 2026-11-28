@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireMe } from "@/lib/auth";
 import { SubmitButton } from "@/components/SubmitButton";
 import { adminDb } from "@/lib/supabase/admin";
@@ -26,6 +27,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
   return (
     <div>
       <PageHeader en="Practice" vi="Ngân hàng câu hỏi">Học theo chuyên đề của đề cương CSCA, hoặc tự chọn môn, độ khó và số câu. Mỗi câu có giải thích; câu sai được lưu để luyện lại.</PageHeader>
+      <p className="rounded-2xl bg-brand-soft p-4 text-sm text-slate-700"><b>Luyện tập theo chuyên đề miễn phí cho mọi gói.</b> Các gói trả phí khác nhau ở phần <Link href="/thi-thu" className="font-semibold text-brand-text hover:underline">Thi thử</Link>: đề cấp 2–4, đề mô phỏng thi thật và số lượt Gia sư AI. <Link href="/bang-gia" className="font-semibold text-brand-text hover:underline">So sánh các gói</Link>.</p>
       {error && <p className="mb-4 rounded-xl bg-warning-bg p-3 text-sm text-warning">Chưa có câu hỏi phù hợp với lựa chọn này. Hãy thử bộ lọc khác.</p>}
       {sk.weak.length > 0 && (
         <section className="card mb-6 !p-4" aria-label="Chủ đề nên ôn">

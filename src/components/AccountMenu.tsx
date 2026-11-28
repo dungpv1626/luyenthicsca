@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 /** Menu tài khoản (avatar). `children` là form đăng xuất render từ server. `roleLabel` có giá trị = nhân viên: menu chỉ gồm việc quản trị. */
-export function AccountMenu({ name, roleLabel, children }: { name: string; roleLabel: string | null; children: React.ReactNode }) {
+export function AccountMenu({ name, roleLabel, plan = null, children }: { name: string; roleLabel: string | null; plan?: { label: string; days: number | null; paid: boolean } | null; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const path = usePathname();
   const ref = useRef<HTMLDivElement>(null);
@@ -26,6 +26,7 @@ export function AccountMenu({ name, roleLabel, children }: { name: string; roleL
           <div className="px-3 py-2">
             <p className="truncate text-xs font-semibold uppercase tracking-wider text-muted">{name}</p>
             {roleLabel && <p className="mt-0.5 text-xs font-semibold text-brand-text">{roleLabel}</p>}
+            {plan && <Link href="/bang-gia" className="mt-1 block rounded-lg bg-brand-soft px-2 py-1 text-xs font-semibold text-brand-text hover:underline">Gói: {plan.label}{plan.days !== null && ` · còn ${plan.days} ngày`}{!plan.paid && " · Nâng cấp"}</Link>}
           </div>
           {roleLabel ? (
             <Link href="/admin" className={item}>Trang quản trị</Link>

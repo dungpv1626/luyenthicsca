@@ -4,7 +4,9 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BottomNav } from "@/components/NavLinks";
-import { getMe } from "@/lib/auth";
+import { getMe, isStaff } from "@/lib/auth";
+import { getAccess } from "@/lib/entitlement";
+import { daysLeft, hasPaidAccess, planDef } from "@/lib/plans";
 import { headers } from "next/headers";
 import { ChromeSync } from "@/components/ChromeSync";
 import { AttributionTracker } from "@/components/AttributionTracker";
@@ -28,6 +30,9 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const me = await getMe();
+  // Gói của học viên để hiện ở menu tài khoản (nhân viên không có gói)
+  const acc = me && !isStaff(me.role) ? await getAccess(me.id) : null;
+  const plan = acc ? { label: `Mức ${planDef(acc.plan).level} – ${planDef(acc.plan).name}`, days: acc.endsAt ? daysLeft(acc.endsAt) : null, paid: hasPaidAccess(acc) } : null;
   const isAdmin = ((await headers()).get("x-pathname") ?? "").startsWith("/admin");
   return (
     <html lang="vi" suppressHydrationWarning data-admin={isAdmin ? "1" : undefined} className={beVietnam.variable}>
@@ -36,7 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ChromeSync />
         <AttributionTracker />
         {CF_BEACON && <Script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: CF_BEACON })} strategy="afterInteractive" />}
-        <div data-chrome><Header me={me} /></div>
+        <div data-chrome><Header me={me} plan={plan} /></div>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-24 lg:pb-8">{children}</main>
         <div data-chrome><Footer /></div>
         <div data-chrome><BottomNav /></div>
